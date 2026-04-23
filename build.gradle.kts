@@ -28,31 +28,34 @@ if (lolibTree.files.isEmpty()) {
 }
 
 dependencies {
-    // Paper API 1.21
-    compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
-    
+    // Paper API 1.21.4 (includes Adventure API)
+    compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
+
     // LoAPI (local)
     implementation(lolibTree)
-    
+
     // Runtime dependencies (loaded via DependencyManager from LoAPI)
     // These are marked as compileOnly because they will be downloaded at runtime
     compileOnly("org.apache.commons:commons-math3:3.6.1")
-    compileOnly("commons-io:commons-io:2.17.0")
-    
+    compileOnly("commons-io:commons-io:2.18.0")
+
+    // Adventure API (included in Paper, but explicit for clarity)
+    compileOnly("net.kyori:adventure-api:4.17.0")
+    compileOnly("net.kyori:adventure-text-minimessage:4.17.0")
+
     // Optional plugin integrations (soft dependencies)
-    compileOnly("com.github.oraxen:oraxen:1.171.0")
-    compileOnly("com.github.LoneDev6:api-itemsadder:3.6.1")
-    
+    compileOnly("com.github.oraxen:oraxen:1.180.0")
+    compileOnly("com.github.LoneDev6:api-itemsadder:3.6.4")
+
     // Test dependencies
-    testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
-    testImplementation("io.kotest:kotest-runner-junit5:5.7.2")
-    testImplementation("io.kotest:kotest-assertions-core:5.7.2")
-    testImplementation("io.kotest:kotest-property:5.7.2")
-    testImplementation("org.mockito:mockito-core:5.7.0")
-    testImplementation("org.mockito:mockito-inline:5.2.0")
-    testImplementation("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.11.4")
+    testImplementation("io.kotest:kotest-runner-junit5:5.9.1")
+    testImplementation("io.kotest:kotest-assertions-core:5.9.1")
+    testImplementation("io.kotest:kotest-property:5.9.1")
+    testImplementation("org.mockito:mockito-core:5.14.2")
+    testImplementation("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
     testImplementation("org.apache.commons:commons-math3:3.6.1")
-    testImplementation("commons-io:commons-io:2.17.0")
+    testImplementation("commons-io:commons-io:2.18.0")
 }
 
 tasks {

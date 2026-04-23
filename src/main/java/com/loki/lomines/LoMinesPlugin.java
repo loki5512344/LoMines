@@ -100,9 +100,9 @@ public final class LoMinesPlugin extends LoPlugin {
     protected void dependencies(DependencyManager dependencyManager) {
         // Load Apache Commons Math3 for EnumeratedDistribution
         dependencyManager.add("org.apache.commons", "commons-math3", "3.6.1");
-        
+
         // Load Apache Commons IO for file utilities
-        dependencyManager.add("commons-io", "commons-io", "2.17.0");
+        dependencyManager.add("commons-io", "commons-io", "2.18.0");
     }
     
     /**
