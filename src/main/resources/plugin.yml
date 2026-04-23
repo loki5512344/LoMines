@@ -1,0 +1,44 @@
+name: LoMines
+version: ${version}
+description: ${description}
+main: com.loki.lomines.LoMinesPlugin
+author: loki
+api-version: "1.21"
+website: https://github.com/loki/lomines
+softdepend: [PlaceholderAPI, WorldGuard, Oraxen, ItemsAdder]
+
+# LoAPI will handle dependency loading via DependencyManager
+# Dependencies: commons-math3 and commons-io will be loaded at runtime
+
+commands:
+  lm:
+    description: Main LoMines command
+    aliases: [lomines, mine, mines]
+    permission: lomines.use
+    usage: /<command> <subcommand>
+
+permissions:
+  lomines.admin:
+    description: Access to all LoMines admin commands
+    default: op
+    children:
+      lomines.use: true
+      lomines.stats: true
+      lomines.stats.others: true
+      lomines.admin.wand: true
+      lomines.admin.maskscan: true
+  lomines.stats:
+    description: View mining stats and leaderboards (/lm stats, /lm top)
+    default: true
+  lomines.stats.others:
+    description: View another player's stats (/lm stats player)
+    default: op
+  lomines.admin.maskscan:
+    description: Scan marker blocks and enable mask fill mode for a mine
+    default: op
+  lomines.admin.wand:
+    description: Group wand and /lm group prefix for batch mine creation
+    default: op
+  lomines.use:
+    description: Basic LoMines usage
+    default: true

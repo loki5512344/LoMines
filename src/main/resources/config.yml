@@ -1,0 +1,13 @@
+# LoMines Configuration
+
+# Enable statistics tracking for players
+statistics-enabled: true
+
+# Enable debug logging
+debug: false
+
+# WorldGuard Integration Settings
+worldguard:
+  enabled: true
+  auto-create-regions: false
+  region-priority: 10
