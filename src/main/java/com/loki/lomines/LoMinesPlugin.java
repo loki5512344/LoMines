@@ -148,8 +148,11 @@ public final class LoMinesPlugin extends LoPlugin {
      * Registers all plugin commands.
      */
     private void registerCommands() {
-        commandManager.register(new com.loki.lomines.command.MineCommands(this));
-        
+        commandManager.register(new com.loki.lomines.command.AdminCommands(this));
+        commandManager.register(new com.loki.lomines.command.PlayerCommands(this));
+        commandManager.register(new com.loki.lomines.command.StatsCommands(this));
+        commandManager.register(new com.loki.lomines.command.MaskCommands(this));
+
         loLogger().info("Commands registered");
     }
     
