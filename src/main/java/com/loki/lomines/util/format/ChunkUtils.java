@@ -1,4 +1,4 @@
-package com.loki.lomines.util;
+package com.loki.lomines.util.format;
 
 import org.bukkit.Chunk;
 import org.bukkit.World;

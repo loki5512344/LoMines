@@ -1,4 +1,4 @@
-package com.loki.lomines.data;
+package com.loki.lomines.data.stats;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;

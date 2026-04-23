@@ -1,4 +1,4 @@
-package com.loki.lomines.data;
+package com.loki.lomines.data.stats;
 
 import com.loki.lomines.LoMinesPlugin;
 import dev.lolib.scheduler.Scheduler;

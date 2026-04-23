@@ -1,4 +1,4 @@
-package com.loki.lomines.data;
+package com.loki.lomines.data.reward;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;

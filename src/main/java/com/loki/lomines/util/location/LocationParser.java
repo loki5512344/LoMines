@@ -1,4 +1,4 @@
-package com.loki.lomines.util;
+package com.loki.lomines.util.location;
 
 import com.loki.lomines.data.ConfigParseException;
 import org.bukkit.Bukkit;

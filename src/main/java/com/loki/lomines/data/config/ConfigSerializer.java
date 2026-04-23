@@ -1,4 +1,4 @@
-package com.loki.lomines.data;
+package com.loki.lomines.data.config;
 
 import com.loki.lomines.util.LocationParser;
 import org.bukkit.Location;

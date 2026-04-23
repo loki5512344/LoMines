@@ -1,4 +1,4 @@
-package com.loki.lomines.util;
+package com.loki.lomines.util.selection;
 
 import java.util.Map;
 import java.util.Optional;

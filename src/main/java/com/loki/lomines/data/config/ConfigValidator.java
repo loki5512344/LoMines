@@ -1,4 +1,4 @@
-package com.loki.lomines.data;
+package com.loki.lomines.data.config;
 
 import org.bukkit.Location;
 import org.bukkit.Material;

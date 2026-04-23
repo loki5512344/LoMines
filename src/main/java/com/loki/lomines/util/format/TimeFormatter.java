@@ -1,4 +1,4 @@
-package com.loki.lomines.util;
+package com.loki.lomines.util.format;
 
 /**
  * Utility class for formatting time from Minecraft ticks to human-readable formats.

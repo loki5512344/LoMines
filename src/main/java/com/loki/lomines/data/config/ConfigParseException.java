@@ -1,4 +1,4 @@
-package com.loki.lomines.data;
+package com.loki.lomines.data.config;
 
 /**
  * Exception thrown when configuration parsing fails.
