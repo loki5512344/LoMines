@@ -20,7 +20,8 @@ public final class ConfigLoader {
     private final ConfigSerializer serializer;
 
     public ConfigLoader() {
-        this.parser = new ConfigParser();
+        RewardParser rewardParser = new RewardParser();
+        this.parser = new ConfigParser(rewardParser);
         this.validator = new ConfigValidator();
         this.serializer = new ConfigSerializer();
     }

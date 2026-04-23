@@ -18,6 +18,12 @@ import java.util.Map;
  */
 final class ConfigParser {
 
+    private final RewardParser rewardParser;
+
+    ConfigParser(RewardParser rewardParser) {
+        this.rewardParser = rewardParser;
+    }
+
     /**
      * Parses selection coordinates from the YAML configuration.
      * Reads selection.1 through selection.10 fields.
@@ -150,48 +156,14 @@ final class ConfigParser {
 
     /**
      * Parses rewards from the YAML configuration.
+     * Delegates to RewardParser for actual parsing logic.
      *
      * @param yaml the YAML configuration
      * @return list of parsed Reward objects
      * @throws ConfigParseException if reward configuration is invalid
      */
     List<Reward> parseRewards(YamlConfiguration yaml) throws ConfigParseException {
-        List<Reward> rewards = new ArrayList<>();
-
-        if (!yaml.contains("random-rewards")) {
-            return rewards;
-        }
-
-        List<?> rewardsList = yaml.getList("random-rewards");
-        if (rewardsList == null) {
-            return rewards;
-        }
-
-        for (int i = 0; i < rewardsList.size(); i++) {
-            Object rewardObj = rewardsList.get(i);
-
-            if (!(rewardObj instanceof Map)) {
-                throw new ConfigParseException(
-                    "Invalid reward at index " + i + ": expected map, got " +
-                    (rewardObj != null ? rewardObj.getClass().getSimpleName() : "null")
-                );
-            }
-
-            @SuppressWarnings("unchecked")
-            Map<String, Object> rewardMap = (Map<String, Object>) rewardObj;
-
-            try {
-                Reward reward = parseReward(rewardMap);
-                rewards.add(reward);
-            } catch (ConfigParseException e) {
-                throw new ConfigParseException(
-                    "Error parsing reward at index " + i + ": " + e.getMessage(),
-                    e
-                );
-            }
-        }
-
-        return rewards;
+        return rewardParser.parseRewards(yaml);
     }
 
     /**
@@ -246,219 +218,5 @@ final class ConfigParser {
             return key;
         }
         return key.toLowerCase();
-    }
-
-    private Reward parseReward(Map<String, Object> rewardMap) throws ConfigParseException {
-        double chance = parseRewardField(rewardMap, "chance", Double.class);
-        boolean preventDrops = parseRewardField(rewardMap, "prevent-drops", Boolean.class, false);
-
-        List<org.bukkit.Material> materials = parseRewardMaterials(rewardMap);
-        List<org.bukkit.inventory.ItemStack> items = parseRewardItems(rewardMap);
-        List<String> commands = parseRewardCommands(rewardMap);
-
-        return new Reward(materials, chance, items, commands, preventDrops);
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T> T parseRewardField(Map<String, Object> map, String key, Class<T> type)
-            throws ConfigParseException {
-        if (!map.containsKey(key)) {
-            throw new ConfigParseException("Missing required '" + key + "' field in reward");
-        }
-
-        Object value = map.get(key);
-
-        if (type == Double.class) {
-            return (T) parseDoubleValue(key, value);
-        } else if (type == Boolean.class) {
-            if (!(value instanceof Boolean)) {
-                throw new ConfigParseException(
-                    "Invalid '" + key + "' value: expected boolean, got " +
-                    (value != null ? value.getClass().getSimpleName() : "null")
-                );
-            }
-            return (T) value;
-        }
-
-        throw new ConfigParseException("Unsupported type: " + type);
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T> T parseRewardField(Map<String, Object> map, String key, Class<T> type, T defaultValue) {
-        if (!map.containsKey(key)) {
-            return defaultValue;
-        }
-
-        Object value = map.get(key);
-        if (type.isInstance(value)) {
-            return (T) value;
-        }
-
-        return defaultValue;
-    }
-
-    private Double parseDoubleValue(String key, Object value) throws ConfigParseException {
-        try {
-            if (value instanceof Number) {
-                return ((Number) value).doubleValue();
-            } else if (value instanceof String) {
-                return Double.parseDouble((String) value);
-            } else {
-                throw new ConfigParseException(
-                    "Invalid '" + key + "' type: expected number, got " +
-                    (value != null ? value.getClass().getSimpleName() : "null")
-                );
-            }
-        } catch (NumberFormatException e) {
-            throw new ConfigParseException("Invalid '" + key + "' value: " + value, e);
-        }
-    }
-
-    private List<org.bukkit.Material> parseRewardMaterials(Map<String, Object> rewardMap)
-            throws ConfigParseException {
-        if (!rewardMap.containsKey("blocks")) {
-            throw new ConfigParseException("Missing required 'blocks' field in reward");
-        }
-
-        Object blocksObj = rewardMap.get("blocks");
-        if (!(blocksObj instanceof List)) {
-            throw new ConfigParseException(
-                "Invalid 'blocks' type: expected list, got " +
-                (blocksObj != null ? blocksObj.getClass().getSimpleName() : "null")
-            );
-        }
-
-        @SuppressWarnings("unchecked")
-        List<String> blocksList = (List<String>) blocksObj;
-
-        List<org.bukkit.Material> materials = new ArrayList<>();
-        for (String blockName : blocksList) {
-            if (blockName == null || blockName.trim().isEmpty()) {
-                throw new ConfigParseException("Block name cannot be null or empty");
-            }
-
-            try {
-                org.bukkit.Material material = org.bukkit.Material.valueOf(blockName.toUpperCase());
-                materials.add(material);
-            } catch (IllegalArgumentException e) {
-                throw new ConfigParseException(
-                    "Unknown material in reward blocks: '" + blockName + "'",
-                    e
-                );
-            }
-        }
-
-        return materials;
-    }
-
-    private List<org.bukkit.inventory.ItemStack> parseRewardItems(Map<String, Object> rewardMap)
-            throws ConfigParseException {
-        List<org.bukkit.inventory.ItemStack> items = new ArrayList<>();
-
-        if (!rewardMap.containsKey("items")) {
-            return items;
-        }
-
-        Object itemsObj = rewardMap.get("items");
-        if (!(itemsObj instanceof List)) {
-            throw new ConfigParseException(
-                "Invalid 'items' type: expected list, got " +
-                (itemsObj != null ? itemsObj.getClass().getSimpleName() : "null")
-            );
-        }
-
-        List<?> itemsList = (List<?>) itemsObj;
-
-        for (int i = 0; i < itemsList.size(); i++) {
-            Object itemObj = itemsList.get(i);
-
-            if (!(itemObj instanceof Map)) {
-                throw new ConfigParseException(
-                    "Invalid item at index " + i + ": expected map, got " +
-                    (itemObj != null ? itemObj.getClass().getSimpleName() : "null")
-                );
-            }
-
-            @SuppressWarnings("unchecked")
-            Map<String, Object> itemMap = (Map<String, Object>) itemObj;
-
-            org.bukkit.inventory.ItemStack item = parseRewardItem(itemMap, i);
-            items.add(item);
-        }
-
-        return items;
-    }
-
-    private org.bukkit.inventory.ItemStack parseRewardItem(Map<String, Object> itemMap, int index)
-            throws ConfigParseException {
-        if (!itemMap.containsKey("type")) {
-            throw new ConfigParseException("Missing required 'type' field in item at index " + index);
-        }
-
-        String typeName = String.valueOf(itemMap.get("type"));
-        org.bukkit.Material material;
-        try {
-            material = org.bukkit.Material.valueOf(typeName.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new ConfigParseException(
-                "Unknown material in item type: '" + typeName + "'",
-                e
-            );
-        }
-
-        int amount = parseItemAmount(itemMap);
-
-        return new org.bukkit.inventory.ItemStack(material, amount);
-    }
-
-    private int parseItemAmount(Map<String, Object> itemMap) throws ConfigParseException {
-        if (!itemMap.containsKey("amount")) {
-            return 1;
-        }
-
-        Object amountObj = itemMap.get("amount");
-        try {
-            if (amountObj instanceof Number) {
-                return ((Number) amountObj).intValue();
-            } else if (amountObj instanceof String) {
-                return Integer.parseInt((String) amountObj);
-            } else {
-                throw new ConfigParseException(
-                    "Invalid 'amount' type: expected number, got " +
-                    (amountObj != null ? amountObj.getClass().getSimpleName() : "null")
-                );
-            }
-        } catch (NumberFormatException e) {
-            throw new ConfigParseException("Invalid 'amount' value: " + amountObj, e);
-        }
-    }
-
-    private List<String> parseRewardCommands(Map<String, Object> rewardMap)
-            throws ConfigParseException {
-        List<String> commands = new ArrayList<>();
-
-        if (!rewardMap.containsKey("commands")) {
-            return commands;
-        }
-
-        Object commandsObj = rewardMap.get("commands");
-        if (!(commandsObj instanceof List)) {
-            throw new ConfigParseException(
-                "Invalid 'commands' type: expected list, got " +
-                (commandsObj != null ? commandsObj.getClass().getSimpleName() : "null")
-            );
-        }
-
-        @SuppressWarnings("unchecked")
-        List<String> commandsList = (List<String>) commandsObj;
-
-        for (String command : commandsList) {
-            if (command == null || command.trim().isEmpty()) {
-                throw new ConfigParseException("Command cannot be null or empty");
-            }
-            commands.add(command);
-        }
-
-        return commands;
     }
 }
