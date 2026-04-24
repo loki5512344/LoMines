@@ -2,7 +2,7 @@ package com.loki.lomines.handler;
 
 import com.loki.lomines.LoMinesPlugin;
 import com.loki.lomines.core.Mine;
-import com.loki.lomines.data.MineConfig;
+import com.loki.lomines.data.config.MineConfig;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 

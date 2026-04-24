@@ -1,6 +1,6 @@
 package com.loki.lomines.util.location;
 
-import com.loki.lomines.data.ConfigParseException;
+import com.loki.lomines.data.config.ConfigParseException;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;

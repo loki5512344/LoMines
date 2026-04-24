@@ -2,7 +2,7 @@ package com.loki.lomines.command;
 
 import com.loki.lomines.LoMinesPlugin;
 import com.loki.lomines.core.Mines;
-import com.loki.lomines.data.ConfigParseException;
+import com.loki.lomines.data.config.ConfigParseException;
 import dev.lolib.commands.annotation.Arg;
 import dev.lolib.commands.annotation.Command;
 import dev.lolib.commands.annotation.Subcommand;

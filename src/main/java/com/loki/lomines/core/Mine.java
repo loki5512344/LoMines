@@ -3,7 +3,7 @@ package com.loki.lomines.core;
 import com.loki.lomines.LoMinesPlugin;
 import com.loki.lomines.block.BlockSetter;
 import com.loki.lomines.data.FillMode;
-import com.loki.lomines.data.MineConfig;
+import com.loki.lomines.data.config.MineConfig;
 import com.loki.lomines.util.BlockKeys;
 import com.loki.lomines.handler.ActionBarHandler;
 import com.loki.lomines.handler.MineBlockHandler;

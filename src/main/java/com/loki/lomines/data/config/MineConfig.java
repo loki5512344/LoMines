@@ -2,8 +2,6 @@ package com.loki.lomines.data.config;
 
 import org.bukkit.Location;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -14,64 +12,69 @@ import java.util.Objects;
  * Use the Builder pattern to create instances.
  */
 public final class MineConfig {
-    
+
     // Regions
     private final List<Location> selections;
-    
+
     // Blocks
     private final Map<String, Double> blocks;
-    
+
     /** How blocks are placed on reset. */
     private final FillMode fillMode;
     /** Vanilla material name for {@link FillMode#MASK} scan (e.g. pink_concrete). */
     private final String maskMarkerMaterial;
     /** Block centers for mask mode; ignored when {@link #fillMode} is {@link FillMode#CUBOID}. */
     private final List<Location> maskPositions;
-    
+
     // Rewards
     private final List<Reward> rewards;
-    
+
     // Reset
     private final int resetTicks;
     private final double resetPercent;
     private final boolean resetOnPercentEnabled;
     private final List<String> resetCommands;
     private final String broadcastReset;
-    
+
     // Teleportation
     private final boolean teleportOnReset;
     private final Location teleportLocation;
-    
+
     // Action Bar
     private final boolean actionBarEnabled;
     private final String actionBarMessage;
     private final double actionBarRange;
-    
+
     // Timer
     private final String timerFormat;
-    
-    private MineConfig(Builder builder) {
-        this.selections = List.copyOf(builder.selections);
-        this.blocks = Map.copyOf(builder.blocks);
-        this.fillMode = builder.fillMode;
-        this.maskMarkerMaterial = builder.maskMarkerMaterial;
-        this.maskPositions = List.copyOf(builder.maskPositions);
-        this.rewards = List.copyOf(builder.rewards);
-        this.resetTicks = builder.resetTicks;
-        this.resetPercent = builder.resetPercent;
-        this.resetOnPercentEnabled = builder.resetOnPercentEnabled;
-        this.resetCommands = List.copyOf(builder.resetCommands);
-        this.broadcastReset = builder.broadcastReset;
-        this.teleportOnReset = builder.teleportOnReset;
-        this.teleportLocation = builder.teleportLocation;
-        this.actionBarEnabled = builder.actionBarEnabled;
-        this.actionBarMessage = builder.actionBarMessage;
-        this.actionBarRange = builder.actionBarRange;
-        this.timerFormat = builder.timerFormat;
+
+    MineConfig(List<Location> selections, Map<String, Double> blocks, FillMode fillMode,
+               String maskMarkerMaterial, List<Location> maskPositions, List<Reward> rewards,
+               int resetTicks, double resetPercent, boolean resetOnPercentEnabled,
+               List<String> resetCommands, String broadcastReset, boolean teleportOnReset,
+               Location teleportLocation, boolean actionBarEnabled, String actionBarMessage,
+               double actionBarRange, String timerFormat) {
+        this.selections = List.copyOf(selections);
+        this.blocks = Map.copyOf(blocks);
+        this.fillMode = fillMode;
+        this.maskMarkerMaterial = maskMarkerMaterial;
+        this.maskPositions = List.copyOf(maskPositions);
+        this.rewards = List.copyOf(rewards);
+        this.resetTicks = resetTicks;
+        this.resetPercent = resetPercent;
+        this.resetOnPercentEnabled = resetOnPercentEnabled;
+        this.resetCommands = List.copyOf(resetCommands);
+        this.broadcastReset = broadcastReset;
+        this.teleportOnReset = teleportOnReset;
+        this.teleportLocation = teleportLocation;
+        this.actionBarEnabled = actionBarEnabled;
+        this.actionBarMessage = actionBarMessage;
+        this.actionBarRange = actionBarRange;
+        this.timerFormat = timerFormat;
     }
-    
-    public static Builder builder() {
-        return new Builder();
+
+    public static MineConfigBuilder builder() {
+        return new MineConfigBuilder();
     }
     
     // Getters
@@ -175,117 +178,5 @@ public final class MineConfig {
         return Objects.hash(selections, blocks, fillMode, maskMarkerMaterial, maskPositions, rewards, resetTicks, resetPercent,
                 resetOnPercentEnabled, resetCommands, broadcastReset, teleportOnReset,
                 teleportLocation, actionBarEnabled, actionBarMessage, actionBarRange, timerFormat);
-    }
-    
-    public static final class Builder {
-        private List<Location> selections = new ArrayList<>();
-        private Map<String, Double> blocks = new HashMap<>();
-        private FillMode fillMode = FillMode.CUBOID;
-        private String maskMarkerMaterial = "pink_concrete";
-        private List<Location> maskPositions = new ArrayList<>();
-        private List<Reward> rewards = new ArrayList<>();
-        private int resetTicks = 6000;
-        private double resetPercent = 10.0;
-        private boolean resetOnPercentEnabled = false;
-        private List<String> resetCommands = new ArrayList<>();
-        private String broadcastReset = "";
-        private boolean teleportOnReset = false;
-        private Location teleportLocation = null;
-        private boolean actionBarEnabled = true;
-        private String actionBarMessage = "";
-        private double actionBarRange = 50.0;
-        private String timerFormat = "mm:ss";
-        
-        private Builder() {
-        }
-        
-        public Builder selections(List<Location> selections) {
-            this.selections = new ArrayList<>(selections);
-            return this;
-        }
-        
-        public Builder blocks(Map<String, Double> blocks) {
-            this.blocks = new HashMap<>(blocks);
-            return this;
-        }
-        
-        public Builder fillMode(FillMode fillMode) {
-            this.fillMode = fillMode != null ? fillMode : FillMode.CUBOID;
-            return this;
-        }
-        
-        public Builder maskMarkerMaterial(String maskMarkerMaterial) {
-            this.maskMarkerMaterial = maskMarkerMaterial != null ? maskMarkerMaterial : "pink_concrete";
-            return this;
-        }
-        
-        public Builder maskPositions(List<Location> maskPositions) {
-            this.maskPositions = maskPositions != null ? new ArrayList<>(maskPositions) : new ArrayList<>();
-            return this;
-        }
-        
-        public Builder rewards(List<Reward> rewards) {
-            this.rewards = new ArrayList<>(rewards);
-            return this;
-        }
-        
-        public Builder resetTicks(int resetTicks) {
-            this.resetTicks = resetTicks;
-            return this;
-        }
-        
-        public Builder resetPercent(double resetPercent) {
-            this.resetPercent = resetPercent;
-            return this;
-        }
-        
-        public Builder resetOnPercentEnabled(boolean resetOnPercentEnabled) {
-            this.resetOnPercentEnabled = resetOnPercentEnabled;
-            return this;
-        }
-        
-        public Builder resetCommands(List<String> resetCommands) {
-            this.resetCommands = new ArrayList<>(resetCommands);
-            return this;
-        }
-        
-        public Builder broadcastReset(String broadcastReset) {
-            this.broadcastReset = broadcastReset;
-            return this;
-        }
-        
-        public Builder teleportOnReset(boolean teleportOnReset) {
-            this.teleportOnReset = teleportOnReset;
-            return this;
-        }
-        
-        public Builder teleportLocation(Location teleportLocation) {
-            this.teleportLocation = teleportLocation;
-            return this;
-        }
-        
-        public Builder actionBarEnabled(boolean actionBarEnabled) {
-            this.actionBarEnabled = actionBarEnabled;
-            return this;
-        }
-        
-        public Builder actionBarMessage(String actionBarMessage) {
-            this.actionBarMessage = actionBarMessage;
-            return this;
-        }
-        
-        public Builder actionBarRange(double actionBarRange) {
-            this.actionBarRange = actionBarRange;
-            return this;
-        }
-        
-        public Builder timerFormat(String timerFormat) {
-            this.timerFormat = timerFormat;
-            return this;
-        }
-        
-        public MineConfig build() {
-            return new MineConfig(this);
-        }
     }
 }
