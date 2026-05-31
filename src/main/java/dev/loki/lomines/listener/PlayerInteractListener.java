@@ -13,10 +13,13 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
 /**
  * Group wand: ЛКМ / ПКМ по блоку — углы; Shift+ПКМ — GUI группы.
+ * Also starts/stops particle visualization when holding the wand.
  */
 public final class PlayerInteractListener implements Listener {
 
@@ -54,6 +57,9 @@ public final class PlayerInteractListener implements Listener {
             session.setPos1(slot, block.getLocation());
             player.sendMessage(Component.text(
                     "Угол 1 для шахты " + (slot + 1) + " установлен.", NamedTextColor.GREEN));
+
+            // Start showing particles when selection is made
+            plugin.getWandParticleService().startShowingParticles(player);
             return;
         }
 
@@ -68,6 +74,34 @@ public final class PlayerInteractListener implements Listener {
             session.setPos2(slot, block.getLocation());
             player.sendMessage(Component.text(
                     "Угол 2 для шахты " + (slot + 1) + " установлен.", NamedTextColor.GREEN));
+
+            // Start showing particles when selection is made
+            plugin.getWandParticleService().startShowingParticles(player);
         }
+    }
+
+    /**
+     * Starts/stops particle visualization when player switches items.
+     */
+    @EventHandler
+    public void onItemHeld(PlayerItemHeldEvent event) {
+        Player player = event.getPlayer();
+
+        // Check if player switched to wand
+        if (GroupWandItem.isWand(plugin, player.getInventory().getItem(event.getNewSlot()))) {
+            plugin.getWandParticleService().startShowingParticles(player);
+        }
+        // Check if player switched away from wand
+        else if (GroupWandItem.isWand(plugin, player.getInventory().getItem(event.getPreviousSlot()))) {
+            plugin.getWandParticleService().stopShowingParticles(player.getUniqueId());
+        }
+    }
+
+    /**
+     * Stops particles when player disconnects.
+     */
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        plugin.getWandParticleService().stopShowingParticles(event.getPlayer().getUniqueId());
     }
 }

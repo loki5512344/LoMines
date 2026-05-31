@@ -5,6 +5,7 @@ import dev.loki.lomines.core.Mines;
 import dev.loki.lomines.data.stats.StatsManager;
 import dev.loki.lomines.integration.IntegrationManager;
 import dev.loki.lomines.wand.GroupWandManager;
+import dev.loki.lomines.wand.WandParticleService;
 import dev.lolib.commands.CommandManager;
 import dev.lolib.core.LoPlugin;
 import dev.lolib.core.dependency.DependencyManager;
@@ -21,6 +22,7 @@ public final class LoMinesPlugin extends LoPlugin {
     private StatsManager statsManager;
     private CommandManager commandManager;
     private IntegrationManager integrationManager;
+    private WandParticleService wandParticleService;
 
     @Override
     protected void enable() {
@@ -36,6 +38,7 @@ public final class LoMinesPlugin extends LoPlugin {
             this.statsManager = components.statsManager();
             this.commandManager = components.commandManager();
             this.integrationManager = components.integrationManager();
+            this.wandParticleService = new WandParticleService(this);
 
             initializer.loadMines(mines);
             this.mineTicker = initializer.startTicker(mines);
@@ -78,6 +81,10 @@ public final class LoMinesPlugin extends LoPlugin {
                 integrationManager.shutdown();
             }
 
+            if (wandParticleService != null) {
+                wandParticleService.stopAll();
+            }
+
             loLogger().info("LoMines has been disabled!");
         } catch (Exception e) {
             loLogger().error("Error during plugin shutdown: " + e.getMessage());
@@ -110,5 +117,9 @@ public final class LoMinesPlugin extends LoPlugin {
 
     public IntegrationManager getIntegrationManager() {
         return integrationManager;
+    }
+
+    public WandParticleService getWandParticleService() {
+        return wandParticleService;
     }
 }
