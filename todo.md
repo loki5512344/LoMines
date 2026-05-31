@@ -51,7 +51,20 @@
 - Команда `/lm edit <mine>` для открытия редактора
 - Разрешение `lomines.admin.edit`
 
-### 7. Ghost blocks фикс ✅
+### 7. Player-spawn для застрявших игроков ✅
+- `PlayerSpawnConfig.java` — настройка точки спавна для застрявших игроков
+- `PlayerSpawnConfigLoader.java` — загрузка из YAML
+- Обновлен `MineConfig`:
+  - `playerSpawn` — отдельная точка для телепорта застрявших
+  - `getSpawnForStuckPlayer()` — возвращает player-spawn или fallback на teleport
+- Обновлен `MineResetHandler.teleportPlayers()`:
+  - Использует `player-spawn` если настроен
+  - Иначе использует `teleport` (backward compatibility)
+- `findSafeTeleportLocation()` с ограничением вверх:
+  - Максимум 3 блока вверх (не телепортирует слишком высоко)
+  - Приоритет: соседние блоки (тот же Y) → вверх (max 3) → вниз → диагональ
+
+### 8. Ghost blocks фикс ✅
 - `BlockUpdateUtil.java` — утилита для отправки пакетов обновления блоков
   - `sendBlockUpdate()` — обновить один блок для всех видящих игроков
   - `sendRegionUpdate()` — batch-обновление для кубоидного региона
@@ -64,7 +77,7 @@
 **Проблема:** Ghost blocks (невидимые блоки) возникают при быстрой установке блоков, когда сервер не отправляет пакеты клиенту.
 **Решение:** Принудительная отправка `player.sendBlockChange()` после установки блоков.
 
-### 8. WorldGuard интеграция ✅
+### 9. WorldGuard интеграция ✅
 - `WorldGuardConfig.java` — настройки авто-регионов
   - Шаблоны имён: `{mine_name}_{random_4}`, `{random_6}`, и т.д.
   - Настройка владельцев и членов (name или uuid:xxx)
@@ -208,12 +221,15 @@ dev.loki.lomines/
 │       │   └── ResetConfig.java
 │       ├── reward/
 │       │   └── RewardConfig.java
+│       ├── spawn/                 ← ✅ NEW: Player spawn config
+│       │   └── PlayerSpawnConfig.java
 │       ├── teleport/
 │       │   └── TeleportConfig.java
 │       ├── ui/
 │       │   └── UIConfig.java
 │       ├── loader/                ← ✅ SPLIT FROM ConfigLoader
 │       │   ├── BlockConfigLoader.java
+│       │   ├── PlayerSpawnConfigLoader.java
 │       │   ├── RegionConfigLoader.java
 │       │   ├── ResetConfigLoader.java
 │       │   ├── RewardConfigLoader.java
@@ -338,6 +354,7 @@ dev.loki.lomines/
 
 ## 📦 Git история
 
+- `bb2e47a` - feat: player-spawn config for stuck players, limit teleport height
 - `0612465` - fix: ghost blocks and safe teleport location
 - `3ba6f30` - feat: WorldGuard auto-region creation, split ConfigLoader
 - `23d527e` - docs: update TODO with WorldGuard progress
@@ -354,4 +371,4 @@ dev.loki.lomines/
 ---
 
 *Последнее обновление: 2026-05-31  
-Система конфигурации полностью переписана!* 🎉
+Добавлена настройка телепорта застрявших игроков!* 🎉
