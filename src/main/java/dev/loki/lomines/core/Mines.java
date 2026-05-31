@@ -198,4 +198,11 @@ public final class Mines {
     public WorldGuardRegionService getWorldGuardService() {
         return worldGuardService;
     }
+
+    /**
+     * Returns the file manager for saving mine configurations.
+     */
+    public MineFileManager getFileManager() {
+        return fileManager;
+    }
 }

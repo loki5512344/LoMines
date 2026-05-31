@@ -135,6 +135,16 @@ public record MineFileManager(Path minesFolder, ConfigLoader configLoader) {
     }
 
     /**
+     * Saves a mine configuration to file.
+     *
+     * @param config the configuration to save
+     * @throws ConfigLoader.ConfigLoadException if saving fails
+     */
+    public void saveConfig(MineConfig config) throws ConfigLoader.ConfigLoadException {
+        configLoader.save(config);
+    }
+
+    /**
      * Saves mask positions for mask fill mode.
      */
     public void saveMaskPositions(String name, BlockKey markerMaterial, java.util.List<Location> positions) throws IOException, ConfigLoader.ConfigLoadException {

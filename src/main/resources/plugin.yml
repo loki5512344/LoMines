@@ -28,6 +28,8 @@ permissions:
       lomines.admin.wand: true
       lomines.admin.maskscan: true
       lomines.admin.edit: true
+      lomines.admin.setteleport: true
+      lomines.admin.setspawn: true
   lomines.stats:
     description: View mining stats and leaderboards (/lm stats, /lm top)
     default: true
@@ -46,3 +48,9 @@ permissions:
   lomines.use:
     description: Basic LoMines usage
     default: true
+  lomines.admin.setteleport:
+    description: Set teleport location for mine reset (/lm setteleport <mine>)
+    default: op
+  lomines.admin.setspawn:
+    description: Set safe spawn location for stuck players (/lm setspawn <mine>, /lm clearspawn <mine>)
+    default: op

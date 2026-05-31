@@ -184,10 +184,17 @@ public final class MineEditGui {
         if (meta != null) {
             meta.displayName(Component.text("§aТелепорт", NamedTextColor.GREEN));
             boolean enabled = config.teleport().enabled();
+            boolean spawnEnabled = config.playerSpawn().enabled();
             meta.lore(List.of(
                     Component.text("Включено: " + (enabled ? "§aДа" : "§cНет"), NamedTextColor.GRAY),
+                    Component.text("Точка спавна (застрявших): " + (spawnEnabled ? "§aДа" : "§7Нет"), NamedTextColor.GRAY),
                     Component.empty(),
-                    Component.text("§eНажмите для редактирования", NamedTextColor.YELLOW)
+                    Component.text("§eНажмите для редактирования", NamedTextColor.YELLOW),
+                    Component.empty(),
+                    Component.text("§7Команды:", NamedTextColor.DARK_GRAY),
+                    Component.text("§7/lm setteleport <mine>", NamedTextColor.GRAY),
+                    Component.text("§7/lm setspawn <mine>", NamedTextColor.GRAY),
+                    Component.text("§7/lm clearspawn <mine>", NamedTextColor.GRAY)
             ));
             stack.setItemMeta(meta);
         }

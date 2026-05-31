@@ -20,7 +20,8 @@ public class LoMinesTabCompleter implements TabCompleter {
 
     // Static command lists for fast lookup
     private static final List<String> ADMIN_COMMANDS = List.of(
-            "create", "delete", "reset", "reload", "list", "maskscan"
+            "create", "delete", "reset", "reload", "list", "maskscan",
+            "edit", "setteleport", "setspawn", "clearspawn"
     );
 
     private static final List<String> PLAYER_COMMANDS = List.of(
@@ -29,7 +30,8 @@ public class LoMinesTabCompleter implements TabCompleter {
 
     private static final List<String> ALL_COMMANDS = List.of(
             "create", "delete", "reset", "reload", "list", "wand", "group",
-            "stats", "top", "maskscan", "help"
+            "stats", "top", "maskscan", "edit", "setteleport", "setspawn",
+            "clearspawn", "help"
     );
 
     public LoMinesTabCompleter(LoMinesPlugin plugin) {
@@ -65,7 +67,7 @@ public class LoMinesTabCompleter implements TabCompleter {
             String partial = args[1].toLowerCase();
 
             switch (subcommand) {
-                case "delete", "reset", "maskscan" ->
+                case "delete", "reset", "maskscan", "edit", "setteleport", "setspawn", "clearspawn" ->
                         completions.addAll(getMineNames(partial));
                 case "create" -> {
                     if (partial.isEmpty()) {
@@ -106,8 +108,10 @@ public class LoMinesTabCompleter implements TabCompleter {
 
     private boolean hasPermission(CommandSender sender, String command) {
         return switch (command) {
-            case "create", "delete", "reset", "reload", "list", "maskscan" ->
+            case "create", "delete", "reset", "reload", "list", "maskscan", "edit" ->
                     sender.hasPermission("lomines.admin");
+            case "setteleport" -> sender.hasPermission("lomines.admin.setteleport");
+            case "setspawn", "clearspawn" -> sender.hasPermission("lomines.admin.setspawn");
             case "wand", "group" -> sender.hasPermission("lomines.admin.wand");
             case "stats" -> sender.hasPermission("lomines.stats");
             case "top" -> sender.hasPermission("lomines.stats");
