@@ -17,6 +17,29 @@
 - Исправлены импорты в тестах
 
 ### 2. Полная перепись системы конфигурации ✅
+- Section-based конфигурация с type-safe BlockKey
+- Human-readable durations (5m, 30s, 2h)
+- YAML inheritance через defaults.yml
+- MiniMessage поддержка для форматирования
+
+### 3. Обновление core классов ✅
+- `Mine.java` — использует RegionConfig, BlockConfig, UIConfig
+- `Mines.java` — использует новый ConfigLoader
+- `MineFileManager.java` — создание конфигов с новой системой
+- `MineRepository.java` — работа с новым MineConfig
+- `MaskScanService.java` — использует BlockKey для маркеров
+- `BukkitBlockSetter.java` — Map<BlockKey, Double>
+
+### 4. Обновление обработчиков ✅
+- `ActionBarHandler.java` — UIConfig с MiniMessage
+- `MineBlockHandler.java` — ResetConfig
+- `MineRewardHandler.java` — RewardConfig
+- `MineResetHandler.java` — новые секции конфигурации
+
+### 5. Автодополнение команд ✅
+- `LoMinesTabCompleter.java` — tab completion для всех команд
+- Подсказки для имён шахт, игроков, субкоманд
+- Permission-based фильтрация
 
 #### Новая архитектура (Section-based):
 ```
@@ -68,22 +91,27 @@ data/config/
 - [x] **Phase 7:** Утилиты и хелперы ✅
 - [x] **Phase 8:** Рефакторинг пакетов com.loki → dev.loki ✅
 - [x] **Phase 9:** Полная перепись системы конфигурации ✅
-- [ ] **Phase 10:** GUI редакторы (0/5)
-- [ ] **Phase 11:** Интеграции PlaceholderAPI, Oraxen, ItemsAdder
-- [ ] **Phase 12:** Обновить Mine.java для использования новой конфигурации
-- [ ] **Phase 13:** Обновить остальные классы для работы с новой системой
+- [x] **Phase 10:** Обновление core классов для новой системы ✅
+- [x] **Phase 11:** Обновление handlers для новой конфигурации ✅
+- [x] **Phase 12:** Автодополнение команд (tab completer) ✅
+- [ ] **Phase 13:** GUI редакторы (0/5)
+- [ ] **Phase 14:** Интеграции PlaceholderAPI, Oraxen, ItemsAdder
 
 ---
 
 ## 🎯 Следующие шаги
 
-### Приоритет 1: Интеграция новой конфигурации
-1. [ ] Обновить `Mine.java` — использовать новые `RegionConfig`, `BlockConfig`
-2. [ ] Обновить `Mines.java` — использовать новый `ConfigLoader`
-3. [ ] Обновить `MineFileManager.java` — миграция на новый loader
-4. [ ] Обновить `MineRepository.java` — работа с новым `MineConfig`
+### ✅ Приоритет 1: Интеграция новой конфигурации (ВЫПОЛНЕНО)
+- [x] Обновить `Mine.java` — использовать новые `RegionConfig`, `BlockConfig`
+- [x] Обновить `Mines.java` — использовать новый `ConfigLoader`
+- [x] Обновить `MineFileManager.java` — миграция на новый loader
+- [x] Обновить `MineRepository.java` — работа с новым `MineConfig`
+- [x] Обновить `BukkitBlockSetter.java` — использовать `BlockKey`
+- [x] Обновить все handlers — ActionBarHandler, MineBlockHandler, MineResetHandler, MineRewardHandler
+- [x] Обновить команды — MaskCommands
+- [x] Добавить автодополнение — LoMinesTabCompleter
 
-### Приоритет 2: Интеграции
+### Приоритет 2: Интеграции с плагинами
 1. [ ] Включить `OraxenBlockSetter.java` — использовать `BlockKey.Oraxen`
 2. [ ] Включить `ItemsAdderBlockSetter.java` — использовать `BlockKey.ItemsAdder`
 3. [ ] PlaceholderAPI интеграция
