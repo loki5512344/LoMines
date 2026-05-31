@@ -6,24 +6,27 @@ import dev.loki.lomines.data.config.MineConfig;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Main GUI for editing a mine.
  * Provides navigation to sub-editors for different configuration sections.
+ * Improved UX with better materials, enhanced lore, and clearer information display.
  */
 public final class MineEditGui {
 
     private static final int SIZE = 54;
     private static final String TITLE_PREFIX = "Редактор шахты: ";
 
-    // Slot constants
+    // Slot constants - organized in visual groups
     public static final int SLOT_BACK = 49;
     public static final int SLOT_BLOCKS = 10;
     public static final int SLOT_REGIONS = 12;
@@ -34,6 +37,16 @@ public final class MineEditGui {
     public static final int SLOT_SAVE = 32;
     public static final int SLOT_DELETE = 34;
     public static final int SLOT_INFO = 40;
+
+    // UI Constants
+    private static final String CLICK_EDIT = "§e▸ Нажмите для редактирования";
+    private static final String CLICK_BACK = "§c▸ Нажмите чтобы закрыть";
+    private static final String CLICK_SAVE = "§a▸ Нажмите для сохранения";
+    private static final String CLICK_DELETE = "§c▸ Нажмите для удаления";
+    private static final String SECTION_CONTENT = "§7Содержимое:";
+    private static final String SECTION_SETTINGS = "§7Настройки:";
+    private static final String SEPARATOR = "§8────────────────";
+    private static final String COMMANDS_HEADER = "§8Команды:";
 
     private MineEditGui() {
     }
@@ -106,37 +119,87 @@ public final class MineEditGui {
         return pane;
     }
 
+    /**
+     * Formats location as short readable string.
+     */
+    private static String formatLocation(Location loc) {
+        if (loc == null) return "§7не задана";
+        return String.format("§7%.0f §8/§7 %.0f §8/§7 %.0f §8(§7%s§8)",
+                loc.getX(), loc.getY(), loc.getZ(), loc.getWorld().getName());
+    }
+
+    /**
+     * Truncates string for preview display.
+     */
+    private static String truncate(String str, int maxLen) {
+        if (str == null || str.isEmpty()) return "§7не задан";
+        if (str.length() <= maxLen) return str;
+        return str.substring(0, maxLen - 3) + "...";
+    }
+
     private static ItemStack blocksItem(MineConfig config) {
         ItemStack stack = new ItemStack(Material.DIAMOND_PICKAXE);
         ItemMeta meta = stack.getItemMeta();
         if (meta != null) {
-            meta.displayName(Component.text("§aБлоки", NamedTextColor.GREEN));
+            meta.displayName(Component.text("§a§lБлоки", NamedTextColor.GREEN));
+
             int blockCount = config.blocks().blockCount();
             String fillMode = config.blocks().fillMode().name();
-            meta.lore(List.of(
-                    Component.text("Типов блоков: " + blockCount, NamedTextColor.GRAY),
-                    Component.text("Режим заполнения: " + fillMode, NamedTextColor.GRAY),
-                    Component.empty(),
-                    Component.text("§eНажмите для редактирования", NamedTextColor.YELLOW)
-            ));
+            boolean hasCustom = config.blocks().hasCustomBlocks();
+
+            List<Component> lore = new ArrayList<>();
+            lore.add(Component.text(SEPARATOR, NamedTextColor.DARK_GRAY));
+            lore.add(Component.text(SECTION_SETTINGS, NamedTextColor.GRAY));
+            lore.add(Component.text("  §fТипов: §7" + blockCount, NamedTextColor.WHITE));
+            lore.add(Component.text("  §fРежим: §7" + fillMode, NamedTextColor.WHITE));
+            lore.add(Component.text("  §fКастомные: " + (hasCustom ? "§aДа" : "§7Нет"), NamedTextColor.WHITE));
+
+            // Show first few blocks as preview
+            var weights = config.blocks().weights();
+            if (!weights.isEmpty()) {
+                lore.add(Component.empty());
+                lore.add(Component.text("§7Топ блоков:", NamedTextColor.GRAY));
+                weights.entrySet().stream()
+                        .sorted((a, b) -> Double.compare(b.getValue(), a.getValue()))
+                        .limit(3)
+                        .forEach(e -> lore.add(Component.text(
+                                String.format("  §8• §7%s §8(§7%.0f%%§8)",
+                                        e.getKey().serialize(), e.getValue() * 100),
+                                NamedTextColor.GRAY)));
+            }
+
+            lore.add(Component.empty());
+            lore.add(Component.text(CLICK_EDIT, NamedTextColor.YELLOW));
+
+            meta.lore(lore);
             stack.setItemMeta(meta);
         }
         return stack;
     }
 
     private static ItemStack regionsItem(MineConfig config) {
-        ItemStack stack = new ItemStack(Material.GRASS_BLOCK);
+        ItemStack stack = new ItemStack(Material.COMPASS);
         ItemMeta meta = stack.getItemMeta();
         if (meta != null) {
-            meta.displayName(Component.text("§aРегионы", NamedTextColor.GREEN));
+            meta.displayName(Component.text("§a§lРегионы", NamedTextColor.GREEN));
+
             int regionCount = config.region().regionCount();
             int volume = config.region().totalVolume();
-            meta.lore(List.of(
-                    Component.text("Количество регионов: " + regionCount, NamedTextColor.GRAY),
-                    Component.text("Общий объём: " + volume + " блоков", NamedTextColor.GRAY),
-                    Component.empty(),
-                    Component.text("§7Только просмотр (изменяется через палочку)", NamedTextColor.GRAY)
-            ));
+
+            List<Component> lore = new ArrayList<>();
+            lore.add(Component.text(SEPARATOR, NamedTextColor.DARK_GRAY));
+            lore.add(Component.text(SECTION_SETTINGS, NamedTextColor.GRAY));
+            lore.add(Component.text("  §fКоличество: §7" + regionCount, NamedTextColor.WHITE));
+            lore.add(Component.text("  §fОбщий объём: §7" + volume + " §8блоков", NamedTextColor.WHITE));
+
+            // Show world info
+            lore.add(Component.empty());
+            lore.add(Component.text("  §fМир: §7" + config.worldName(), NamedTextColor.WHITE));
+
+            lore.add(Component.empty());
+            lore.add(Component.text("§8Изменяется через палочку", NamedTextColor.DARK_GRAY));
+
+            meta.lore(lore);
             stack.setItemMeta(meta);
         }
         return stack;
@@ -146,17 +209,32 @@ public final class MineEditGui {
         ItemStack stack = new ItemStack(Material.CLOCK);
         ItemMeta meta = stack.getItemMeta();
         if (meta != null) {
-            meta.displayName(Component.text("§aСброс", NamedTextColor.GREEN));
+            meta.displayName(Component.text("§a§lСброс", NamedTextColor.GREEN));
+
             String interval = config.reset().intervalDisplay();
             double percent = config.reset().percentTrigger();
             boolean percentEnabled = config.reset().isPercentTriggerEnabled();
-            meta.lore(List.of(
-                    Component.text("Интервал: " + interval, NamedTextColor.GRAY),
-                    Component.text("Триггер по %: " + (percentEnabled ? percent + "%" : "выключен"), NamedTextColor.GRAY),
-                    Component.text("Команд при сбросе: " + config.reset().commands().size(), NamedTextColor.GRAY),
-                    Component.empty(),
-                    Component.text("§eНажмите для редактирования", NamedTextColor.YELLOW)
-            ));
+            int cmdCount = config.reset().commands().size();
+            String broadcast = config.reset().broadcastMessage();
+
+            List<Component> lore = new ArrayList<>();
+            lore.add(Component.text(SEPARATOR, NamedTextColor.DARK_GRAY));
+            lore.add(Component.text(SECTION_SETTINGS, NamedTextColor.GRAY));
+            lore.add(Component.text("  §fИнтервал: §7" + interval, NamedTextColor.WHITE));
+            lore.add(Component.text("  §fТриггер по %: " + (percentEnabled ? "§a" + percent + "%" : "§7выключен"), NamedTextColor.WHITE));
+            lore.add(Component.text("  §fКоманд: §7" + cmdCount, NamedTextColor.WHITE));
+
+            // Show broadcast status
+            lore.add(Component.empty());
+            lore.add(Component.text("  §fСообщение: " + (broadcast.isEmpty() ? "§7нет" : "§aесть"), NamedTextColor.WHITE));
+            if (!broadcast.isEmpty()) {
+                lore.add(Component.text("    §8" + truncate(broadcast, 25), NamedTextColor.DARK_GRAY));
+            }
+
+            lore.add(Component.empty());
+            lore.add(Component.text(CLICK_EDIT, NamedTextColor.YELLOW));
+
+            meta.lore(lore);
             stack.setItemMeta(meta);
         }
         return stack;
@@ -166,13 +244,38 @@ public final class MineEditGui {
         ItemStack stack = new ItemStack(Material.GOLD_INGOT);
         ItemMeta meta = stack.getItemMeta();
         if (meta != null) {
-            meta.displayName(Component.text("§aНаграды", NamedTextColor.GREEN));
-            int rewardCount = config.rewards().entries().size();
-            meta.lore(List.of(
-                    Component.text("Настроено наград: " + rewardCount, NamedTextColor.GRAY),
-                    Component.empty(),
-                    Component.text("§eНажмите для редактирования", NamedTextColor.YELLOW)
-            ));
+            meta.displayName(Component.text("§a§lНаграды", NamedTextColor.GREEN));
+
+            var entries = config.rewards().entries();
+            int rewardCount = entries.size();
+
+            // Count reward types
+            long itemRewards = entries.stream()
+                    .flatMap(e -> e.items().stream()).count();
+            long cmdRewards = entries.stream()
+                    .filter(e -> !e.commands().isEmpty()).count();
+            long preventDrops = entries.stream()
+                    .filter(RewardConfig.RewardEntry::preventVanillaDrops).count();
+
+            List<Component> lore = new ArrayList<>();
+            lore.add(Component.text(SEPARATOR, NamedTextColor.DARK_GRAY));
+            lore.add(Component.text(SECTION_SETTINGS, NamedTextColor.GRAY));
+            lore.add(Component.text("  §fЗаписей: §7" + rewardCount, NamedTextColor.WHITE));
+
+            if (rewardCount > 0) {
+                lore.add(Component.empty());
+                lore.add(Component.text("§7Типы наград:", NamedTextColor.GRAY));
+                lore.add(Component.text("  §8• §fПредметов: §7" + itemRewards, NamedTextColor.WHITE));
+                lore.add(Component.text("  §8• §fКоманд: §7" + cmdRewards, NamedTextColor.WHITE));
+                if (preventDrops > 0) {
+                    lore.add(Component.text("  §8• §cБлокируют дроп: §7" + preventDrops, NamedTextColor.WHITE));
+                }
+            }
+
+            lore.add(Component.empty());
+            lore.add(Component.text(CLICK_EDIT, NamedTextColor.YELLOW));
+
+            meta.lore(lore);
             stack.setItemMeta(meta);
         }
         return stack;
@@ -182,87 +285,144 @@ public final class MineEditGui {
         ItemStack stack = new ItemStack(Material.ENDER_PEARL);
         ItemMeta meta = stack.getItemMeta();
         if (meta != null) {
-            meta.displayName(Component.text("§aТелепорт", NamedTextColor.GREEN));
-            boolean enabled = config.teleport().enabled();
+            meta.displayName(Component.text("§a§lТелепорт", NamedTextColor.GREEN));
+
+            boolean tpEnabled = config.teleport().enabled();
             boolean spawnEnabled = config.playerSpawn().enabled();
-            meta.lore(List.of(
-                    Component.text("Включено: " + (enabled ? "§aДа" : "§cНет"), NamedTextColor.GRAY),
-                    Component.text("Точка спавна (застрявших): " + (spawnEnabled ? "§aДа" : "§7Нет"), NamedTextColor.GRAY),
-                    Component.empty(),
-                    Component.text("§eНажмите для редактирования", NamedTextColor.YELLOW),
-                    Component.empty(),
-                    Component.text("§7Команды:", NamedTextColor.DARK_GRAY),
-                    Component.text("§7/lm setteleport <mine>", NamedTextColor.GRAY),
-                    Component.text("§7/lm setspawn <mine>", NamedTextColor.GRAY),
-                    Component.text("§7/lm clearspawn <mine>", NamedTextColor.GRAY)
-            ));
+
+            List<Component> lore = new ArrayList<>();
+            lore.add(Component.text(SEPARATOR, NamedTextColor.DARK_GRAY));
+            lore.add(Component.text(SECTION_SETTINGS, NamedTextColor.GRAY));
+
+            // Teleport location
+            lore.add(Component.text("  §fТелепорт: " + (tpEnabled ? "§aвкл" : "§7выкл"), NamedTextColor.WHITE));
+            if (tpEnabled) {
+                config.teleport().getLocation().ifPresent(loc ->
+                        lore.add(Component.text("    " + formatLocation(loc), NamedTextColor.WHITE)));
+            }
+
+            // Spawn location (for stuck players)
+            lore.add(Component.empty());
+            lore.add(Component.text("  §fСпавн (застрявших): " + (spawnEnabled ? "§aвкл" : "§7выкл"), NamedTextColor.WHITE));
+            if (spawnEnabled) {
+                config.playerSpawn().getLocation().ifPresent(loc ->
+                        lore.add(Component.text("    " + formatLocation(loc), NamedTextColor.WHITE)));
+            }
+
+            // Command hints
+            lore.add(Component.empty());
+            lore.add(Component.text(COMMANDS_HEADER, NamedTextColor.DARK_GRAY));
+            lore.add(Component.text("  §8• §7/lm setteleport §f<mine>", NamedTextColor.GRAY));
+            lore.add(Component.text("  §8• §7/lm setspawn §f<mine>", NamedTextColor.GRAY));
+            lore.add(Component.text("  §8• §7/lm clearspawn §f<mine>", NamedTextColor.GRAY));
+
+            lore.add(Component.empty());
+            lore.add(Component.text(CLICK_EDIT, NamedTextColor.YELLOW));
+
+            meta.lore(lore);
             stack.setItemMeta(meta);
         }
         return stack;
     }
 
     private static ItemStack uiItem(MineConfig config) {
-        ItemStack stack = new ItemStack(Material.OAK_SIGN);
+        ItemStack stack = new ItemStack(Material.PAINTING);
         ItemMeta meta = stack.getItemMeta();
         if (meta != null) {
-            meta.displayName(Component.text("§aИнтерфейс", NamedTextColor.GREEN));
+            meta.displayName(Component.text("§a§lИнтерфейс", NamedTextColor.GREEN));
+
             boolean actionBarEnabled = config.ui().actionBarEnabled();
             double range = config.ui().actionBarRange();
-            meta.lore(List.of(
-                    Component.text("Action Bar: " + (actionBarEnabled ? "§aВкл" : "§cВыкл"), NamedTextColor.GRAY),
-                    Component.text("Радиус: " + range, NamedTextColor.GRAY),
-                    Component.empty(),
-                    Component.text("§eНажмите для редактирования", NamedTextColor.YELLOW)
-            ));
+            String format = config.ui().actionBarFormat();
+            String timerFmt = config.ui().timerFormat();
+
+            List<Component> lore = new ArrayList<>();
+            lore.add(Component.text(SEPARATOR, NamedTextColor.DARK_GRAY));
+            lore.add(Component.text(SECTION_SETTINGS, NamedTextColor.GRAY));
+            lore.add(Component.text("  §fAction Bar: " + (actionBarEnabled ? "§aвкл" : "§7выкл"), NamedTextColor.WHITE));
+            lore.add(Component.text("  §fРадиус: §7" + (int) range + " §8блоков", NamedTextColor.WHITE));
+
+            // Show format previews
+            lore.add(Component.empty());
+            lore.add(Component.text("§7Формат ActionBar:", NamedTextColor.GRAY));
+            lore.add(Component.text("  §8" + truncate(format, 28), NamedTextColor.DARK_GRAY));
+            lore.add(Component.empty());
+            lore.add(Component.text("§7Формат таймера: §8" + timerFmt, NamedTextColor.GRAY));
+
+            lore.add(Component.empty());
+            lore.add(Component.text(CLICK_EDIT, NamedTextColor.YELLOW));
+
+            meta.lore(lore);
             stack.setItemMeta(meta);
         }
         return stack;
     }
 
     private static ItemStack saveItem() {
-        ItemStack stack = new ItemStack(Material.LIME_CONCRETE);
+        ItemStack stack = new ItemStack(Material.LIME_DYE);
         ItemMeta meta = stack.getItemMeta();
         if (meta != null) {
-            meta.displayName(Component.text("§aСохранить изменения", NamedTextColor.GREEN));
-            meta.lore(List.of(
-                    Component.text("§7Сохраняет текущую конфигурацию", NamedTextColor.GRAY),
-                    Component.text("§7в файл шахты", NamedTextColor.GRAY)
-            ));
+            meta.displayName(Component.text("§a§lСохранить изменения", NamedTextColor.GREEN));
+            List<Component> lore = new ArrayList<>();
+            lore.add(Component.text(SEPARATOR, NamedTextColor.DARK_GRAY));
+            lore.add(Component.text("§7Сохраняет конфигурацию шахты", NamedTextColor.GRAY));
+            lore.add(Component.text("§7в файл на диске", NamedTextColor.GRAY));
+            lore.add(Component.empty());
+            lore.add(Component.text(CLICK_SAVE, NamedTextColor.GREEN));
+            meta.lore(lore);
             stack.setItemMeta(meta);
         }
         return stack;
     }
 
     private static ItemStack deleteItem(String mineName) {
-        ItemStack stack = new ItemStack(Material.RED_CONCRETE);
+        ItemStack stack = new ItemStack(Material.TNT);
         ItemMeta meta = stack.getItemMeta();
         if (meta != null) {
-            meta.displayName(Component.text("§cУдалить шахту", NamedTextColor.RED));
-            meta.lore(List.of(
-                    Component.text("§cВнимание! Это действие нельзя отменить!", NamedTextColor.RED),
-                    Component.empty(),
-                    Component.text("§7Шахта: " + mineName, NamedTextColor.GRAY)
-            ));
+            meta.displayName(Component.text("§c§lУдалить шахту", NamedTextColor.RED));
+            List<Component> lore = new ArrayList<>();
+            lore.add(Component.text(SEPARATOR, NamedTextColor.DARK_GRAY));
+            lore.add(Component.text("§c§lВнимание!", NamedTextColor.RED));
+            lore.add(Component.text("§cЭто действие нельзя отменить!", NamedTextColor.RED));
+            lore.add(Component.empty());
+            lore.add(Component.text("§7Шахта: §f" + mineName, NamedTextColor.GRAY));
+            lore.add(Component.empty());
+            lore.add(Component.text(CLICK_DELETE, NamedTextColor.RED));
+            meta.lore(lore);
             stack.setItemMeta(meta);
         }
         return stack;
     }
 
     private static ItemStack infoItem(Mine mine) {
-        ItemStack stack = new ItemStack(Material.PAPER);
+        ItemStack stack = new ItemStack(Material.BOOK);
         ItemMeta meta = stack.getItemMeta();
         if (meta != null) {
-            meta.displayName(Component.text("§bИнформация", NamedTextColor.AQUA));
+            meta.displayName(Component.text("§b§lИнформация", NamedTextColor.AQUA));
+
             int blocks = mine.getBlocks();
             int total = mine.getTotalVolume();
             double percent = mine.getPercentFilled();
-            meta.lore(List.of(
-                    Component.text("Название: " + mine.getName(), NamedTextColor.GRAY),
-                    Component.text("Мир: " + mine.getConfig().worldName(), NamedTextColor.GRAY),
-                    Component.empty(),
-                    Component.text("Заполнено: " + blocks + "/" + total, NamedTextColor.GRAY),
-                    Component.text("Процент: " + String.format("%.1f%%", percent), NamedTextColor.GRAY)
-            ));
+            String statusColor = percent > 50 ? "§a" : percent > 25 ? "§e" : "§c";
+
+            List<Component> lore = new ArrayList<>();
+            lore.add(Component.text(SEPARATOR, NamedTextColor.DARK_GRAY));
+            lore.add(Component.text("§7Базовые данные:", NamedTextColor.GRAY));
+            lore.add(Component.text("  §fНазвание: §7" + mine.getName(), NamedTextColor.WHITE));
+            lore.add(Component.text("  §fМир: §7" + mine.getConfig().worldName(), NamedTextColor.WHITE));
+
+            lore.add(Component.empty());
+            lore.add(Component.text("§7Состояние заполнения:", NamedTextColor.GRAY));
+            lore.add(Component.text("  §fБлоков: " + statusColor + blocks + "§8/§7" + total, NamedTextColor.WHITE));
+            lore.add(Component.text("  §fПроцент: " + statusColor + String.format("%.1f%%", percent), NamedTextColor.WHITE));
+
+            // Visual percentage bar
+            int barLen = 10;
+            int filled = (int) Math.round(percent / 100.0 * barLen);
+            String bar = "§a" + "█".repeat(filled) + "§8" + "░".repeat(barLen - filled);
+            lore.add(Component.text("  " + bar, NamedTextColor.WHITE));
+
+            meta.lore(lore);
             stack.setItemMeta(meta);
         }
         return stack;
