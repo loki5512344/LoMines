@@ -51,7 +51,20 @@
 - Команда `/lm edit <mine>` для открытия редактора
 - Разрешение `lomines.admin.edit`
 
-### 7. WorldGuard интеграция ✅
+### 7. Ghost blocks фикс ✅
+- `BlockUpdateUtil.java` — утилита для отправки пакетов обновления блоков
+  - `sendBlockUpdate()` — обновить один блок для всех видящих игроков
+  - `sendRegionUpdate()` — batch-обновление для кубоидного региона
+  - `sendLocationsUpdate()` — эффективное обновление для списка позиций
+  - `refreshChunks()` — полный resync чанков при необходимости
+  - `findSafeTeleportLocation()` — найти безопасную позицию без задыхания
+- `BukkitBlockSetter` — отправляет пакеты после установки блоков
+- `MineResetHandler.teleportPlayers()` — телепортирует в безопасную позицию
+
+**Проблема:** Ghost blocks (невидимые блоки) возникают при быстрой установке блоков, когда сервер не отправляет пакеты клиенту.
+**Решение:** Принудительная отправка `player.sendBlockChange()` после установки блоков.
+
+### 8. WorldGuard интеграция ✅
 - `WorldGuardConfig.java` — настройки авто-регионов
   - Шаблоны имён: `{mine_name}_{random_4}`, `{random_6}`, и т.д.
   - Настройка владельцев и членов (name или uuid:xxx)
@@ -228,6 +241,8 @@ dev.loki.lomines/
 │   ├── ValidationUtils.java
 │   ├── ErrorHandler.java
 │   ├── MessageFormatter.java
+│   ├── block/                      ← ✅ NEW: Block utilities
+│   │   └── BlockUpdateUtil.java    # Fix ghost blocks, safe teleport
 │   ├── format/
 │   │   ├── ChunkUtils.java
 │   │   └── TimeFormatter.java
@@ -323,6 +338,10 @@ dev.loki.lomines/
 
 ## 📦 Git история
 
+- `0612465` - fix: ghost blocks and safe teleport location
+- `3ba6f30` - feat: WorldGuard auto-region creation, split ConfigLoader
+- `23d527e` - docs: update TODO with WorldGuard progress
+- `75d7851` - feat: GUI editors (MineEditGui, ConfirmDeleteGui), tab completer
 - `f1060f3` - refactor(config): complete rewrite of configuration system
 - `f4e9458` - refactor: migrate package from com.loki to dev.loki
 - `41924ea` - refactor: simplify LoMinesPlugin (220→109 lines)
