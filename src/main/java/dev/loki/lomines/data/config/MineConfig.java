@@ -6,6 +6,7 @@ import dev.loki.lomines.data.config.reset.ResetConfig;
 import dev.loki.lomines.data.config.reward.RewardConfig;
 import dev.loki.lomines.data.config.teleport.TeleportConfig;
 import dev.loki.lomines.data.config.ui.UIConfig;
+import dev.loki.lomines.integration.worldguard.WorldGuardConfig;
 
 import java.util.Objects;
 
@@ -20,7 +21,8 @@ public record MineConfig(
         ResetConfig reset,
         RewardConfig rewards,
         TeleportConfig teleport,
-        UIConfig ui
+        UIConfig ui,
+        WorldGuardConfig worldGuard
 ) {
 
     public MineConfig {
@@ -36,6 +38,7 @@ public record MineConfig(
         Objects.requireNonNull(rewards, "Reward config cannot be null");
         Objects.requireNonNull(teleport, "Teleport config cannot be null");
         Objects.requireNonNull(ui, "UI config cannot be null");
+        // worldGuard can be null (disabled by default)
     }
 
     /**
@@ -70,7 +73,8 @@ public record MineConfig(
                 ResetConfig.defaults(),
                 RewardConfig.empty(),
                 TeleportConfig.disabled(),
-                UIConfig.defaults()
+                UIConfig.defaults(),
+                WorldGuardConfig.disabled()
         );
     }
 
@@ -84,6 +88,7 @@ public record MineConfig(
         private RewardConfig rewards = RewardConfig.empty();
         private TeleportConfig teleport = TeleportConfig.disabled();
         private UIConfig ui = UIConfig.defaults();
+        private WorldGuardConfig worldGuard = WorldGuardConfig.disabled();
 
         private Builder(String name) {
             this.name = name;
@@ -119,8 +124,13 @@ public record MineConfig(
             return this;
         }
 
+        public Builder worldGuard(WorldGuardConfig worldGuard) {
+            this.worldGuard = worldGuard;
+            return this;
+        }
+
         public MineConfig build() {
-            return new MineConfig(name, region, blocks, reset, rewards, teleport, ui);
+            return new MineConfig(name, region, blocks, reset, rewards, teleport, ui, worldGuard);
         }
     }
 }

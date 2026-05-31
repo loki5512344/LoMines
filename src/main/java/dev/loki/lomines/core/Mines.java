@@ -6,6 +6,7 @@ import dev.loki.lomines.core.service.MineFileManager;
 import dev.loki.lomines.core.service.MineRepository;
 import dev.loki.lomines.data.config.ConfigLoader;
 import dev.loki.lomines.data.config.MineConfig;
+import dev.loki.lomines.integration.worldguard.WorldGuardRegionService;
 import org.bukkit.Location;
 
 import java.io.IOException;
@@ -26,6 +27,7 @@ public final class Mines {
     private final MineFileManager fileManager;
     private final MineRepository repository;
     private final MaskScanService maskScanService;
+    private final WorldGuardRegionService worldGuardService;
 
     public Mines(LoMinesPlugin plugin) {
         this.plugin = plugin;
@@ -33,6 +35,7 @@ public final class Mines {
         this.fileManager = new MineFileManager(minesFolder);
         this.repository = new MineRepository(plugin, fileManager);
         this.maskScanService = new MaskScanService(repository, fileManager);
+        this.worldGuardService = new WorldGuardRegionService(plugin);
     }
 
     /**
@@ -77,6 +80,7 @@ public final class Mines {
 
     /**
      * Creates a new mine; optional corners define {@code selection.1} and {@code selection.2} (same world required).
+     * If WorldGuard integration is enabled, creates a region for the mine.
      */
     public void create(String name, Location corner1, Location corner2) throws IOException {
         if (repository.exists(name)) {
@@ -96,12 +100,19 @@ public final class Mines {
             throw new IOException("Failed to parse created mine configuration: " + e.getMessage(), e);
         }
 
+        // Create WorldGuard region if enabled
+        String regionName = worldGuardService.createRegion(name, config);
+        if (regionName != null) {
+            plugin.loLogger().info("Created WorldGuard region '" + regionName + "' for mine: " + name);
+        }
+
         repository.createAndStart(name, config);
         plugin.loLogger().info("Created mine: " + name);
     }
 
     /**
      * Deletes a mine by name.
+     * Also deletes the associated WorldGuard region if it exists.
      */
     public void delete(String name) throws IOException {
         Mine mine = repository.remove(name);
@@ -111,6 +122,14 @@ public final class Mines {
         }
 
         mine.stop();
+
+        // Delete WorldGuard region if exists
+        MineConfig config = mine.getConfig();
+        boolean wgDeleted = worldGuardService.deleteRegion(name, config);
+        if (wgDeleted) {
+            plugin.loLogger().info("Deleted WorldGuard region for mine: " + name);
+        }
+
         fileManager.deleteConfig(name);
     }
 
@@ -156,8 +175,27 @@ public final class Mines {
 
     /**
      * Reloads one mine from disk (stop, replace instance, start tasks).
+     * Updates WorldGuard region if mine regions changed.
      */
     public void reloadMine(String name) throws IOException, ConfigLoader.ConfigLoadException {
+        // Get old config before reload
+        Mine oldMine = repository.find(name).orElse(null);
+
         repository.reload(name);
+
+        // Update WorldGuard region if mine exists
+        if (oldMine != null) {
+            Mine newMine = repository.find(name).orElse(null);
+            if (newMine != null) {
+                worldGuardService.updateRegion(name, newMine.getConfig());
+            }
+        }
+    }
+
+    /**
+     * Returns the WorldGuard region service for direct access.
+     */
+    public WorldGuardRegionService getWorldGuardService() {
+        return worldGuardService;
     }
 }

@@ -62,3 +62,34 @@ rewards: []
 teleport:
   enabled: false
   location: ""
+
+# WorldGuard integration
+worldguard:
+  # Enable automatic region creation when mines are created
+  enabled: false
+
+  # Region name template. Available placeholders:
+  # {mine_name} - name of the mine
+  # {random_4} - 4 random digits (0000-9999)
+  # {random_3} - 3 random digits (000-999)
+  # {random_6} - 6 random alphanumeric characters
+  region-template: "{mine_name}_{random_4}"
+
+  # Region owners (player names or "uuid:<uuid>")
+  owners: []
+    # - "player_name"
+    # - "uuid:12345678-1234-1234-1234-123456789012"
+
+  # Region members (player names or "uuid:<uuid>")
+  members: []
+
+  # WorldGuard flags to set
+  flags:
+    - "passthrough=deny"
+    - "build=allow"
+    - "pvp=deny"
+    - "tnt=deny"
+    - "creeper-explosion=deny"
+
+  # Automatically protect the region on creation
+  protect-on-create: true

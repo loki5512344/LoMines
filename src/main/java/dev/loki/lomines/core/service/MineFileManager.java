@@ -10,6 +10,7 @@ import dev.loki.lomines.data.config.reset.ResetConfig;
 import dev.loki.lomines.data.config.reward.RewardConfig;
 import dev.loki.lomines.data.config.teleport.TeleportConfig;
 import dev.loki.lomines.data.config.ui.UIConfig;
+import dev.loki.lomines.integration.worldguard.WorldGuardConfig;
 import dev.loki.lomines.util.location.Cuboid;
 import dev.loki.lomines.util.location.LocationParser;
 import org.bukkit.Location;
@@ -44,6 +45,7 @@ public record MineFileManager(Path minesFolder, ConfigLoader configLoader) {
 
     /**
      * Creates a default mine configuration with new format.
+     * WorldGuard region settings are loaded from defaults.yml.
      */
     public void createDefaultConfig(String name, Location corner1, Location corner2) throws IOException {
         ensureFolderExists();
@@ -62,6 +64,9 @@ public record MineFileManager(Path minesFolder, ConfigLoader configLoader) {
         weights.put(new BlockKey.Vanilla(Material.STONE), 1.0);
         BlockConfig blocks = new BlockConfig(weights, FillMode.CUBOID, null);
 
+        // Load WorldGuard defaults from _defaults.yml
+        WorldGuardConfig wgConfig = loadWorldGuardDefaults();
+
         // Build mine config with defaults
         MineConfig config = MineConfig.builder(name)
                 .region(region)
@@ -70,10 +75,49 @@ public record MineFileManager(Path minesFolder, ConfigLoader configLoader) {
                 .rewards(RewardConfig.empty())
                 .teleport(TeleportConfig.disabled())
                 .ui(UIConfig.defaults())
+                .worldGuard(wgConfig)
                 .build();
 
         // Save using new loader
         configLoader.save(config);
+    }
+
+    /**
+     * Loads WorldGuard configuration from defaults.yml.
+     */
+    private WorldGuardConfig loadWorldGuardDefaults() {
+        Path defaultsPath = minesFolder.resolve("_defaults.yml");
+        if (!Files.exists(defaultsPath)) {
+            return WorldGuardConfig.disabled();
+        }
+
+        try {
+            YamlConfiguration yaml = YamlConfiguration.loadConfiguration(defaultsPath.toFile());
+            ConfigurationSection wgSection = yaml.getConfigurationSection("worldguard");
+
+            if (wgSection == null) {
+                return WorldGuardConfig.disabled();
+            }
+
+            boolean enabled = wgSection.getBoolean("enabled", false);
+            if (!enabled) {
+                return WorldGuardConfig.disabled();
+            }
+
+            String template = wgSection.getString("region-template", "{mine_name}_{random_4}");
+
+            return WorldGuardConfig.builder()
+                    .enabled(true)
+                    .template(template)
+                    .owners(wgSection.getStringList("owners"))
+                    .members(wgSection.getStringList("members"))
+                    .flags(wgSection.getStringList("flags"))
+                    .protectOnCreate(wgSection.getBoolean("protect-on-create", true))
+                    .build();
+
+        } catch (Exception e) {
+            return WorldGuardConfig.disabled();
+        }
     }
 
     public MineConfig loadConfig(String name) throws IOException, ConfigLoader.ConfigLoadException {
@@ -115,6 +159,7 @@ public record MineFileManager(Path minesFolder, ConfigLoader configLoader) {
                 .rewards(config.rewards())
                 .teleport(config.teleport())
                 .ui(config.ui())
+                .worldGuard(config.worldGuard())
                 .build();
 
         configLoader.save(updated);
