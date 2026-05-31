@@ -44,8 +44,8 @@ dependencies {
     compileOnly("net.kyori:adventure-text-minimessage:4.17.0")
 
     // Optional plugin integrations (soft dependencies)
-    compileOnly("com.github.oraxen:oraxen:1.180.0")
-    compileOnly("com.github.LoneDev6:api-itemsadder:3.6.4")
+    // compileOnly("com.github.oraxen:oraxen:1.180.0")
+    // compileOnly("com.github.LoneDev6:api-itemsadder:3.6.4")
 
     // Test dependencies
     testImplementation("org.junit.jupiter:junit-jupiter:5.11.4")
@@ -63,7 +63,7 @@ tasks {
         archiveClassifier.set("")
         
         // Relocate LoAPI to avoid conflicts
-        relocate("dev.lolib", "com.loki.lomines.libs.lolib")
+        relocate("dev.loki.lomines.libs.lolib", "com.loki.lomines.libs.lolib")
         
         // Don't minimize - causes issues with Java 21
         // minimize()

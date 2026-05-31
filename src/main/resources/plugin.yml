@@ -1,11 +1,11 @@
 name: LoMines
 version: ${version}
 description: ${description}
-main: com.loki.lomines.LoMinesPlugin
+main: dev.loki.lomines.LoMinesPlugin
 author: loki
 api-version: "1.21"
 website: https://github.com/loki/lomines
-softdepend: [PlaceholderAPI, WorldGuard, Oraxen, ItemsAdder]
+softdepend: [ PlaceholderAPI, WorldGuard, Oraxen, ItemsAdder ]
 
 # LoAPI will handle dependency loading via DependencyManager
 # Dependencies: commons-math3 and commons-io will be loaded at runtime
@@ -13,7 +13,7 @@ softdepend: [PlaceholderAPI, WorldGuard, Oraxen, ItemsAdder]
 commands:
   lm:
     description: Main LoMines command
-    aliases: [lomines, mine, mines]
+    aliases: [ lomines, mine, mines ]
     permission: lomines.use
     usage: /<command> <subcommand>
 
