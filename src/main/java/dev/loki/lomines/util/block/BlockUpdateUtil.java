@@ -130,11 +130,13 @@ public final class BlockUpdateUtil {
     /**
      * Finds a safe teleport location near the given destination.
      * Checks for suffocation hazards (blocks at head/body level).
+     * <p>Will not teleport too high - limited to maxUpOffset blocks above original.</p>
      *
      * @param destination the desired destination
+     * @param maxUpOffset maximum blocks to search upward (to avoid teleporting too high)
      * @return a safe location (may be the same as destination if safe)
      */
-    public static Location findSafeTeleportLocation(Location destination) {
+    public static Location findSafeTeleportLocation(Location destination, int maxUpOffset) {
         if (destination == null || destination.getWorld() == null) {
             return destination;
         }
@@ -146,29 +148,40 @@ public final class BlockUpdateUtil {
         float yaw = destination.getYaw();
         float pitch = destination.getPitch();
 
+        // Clamp maxUpOffset to reasonable range (2-10)
+        maxUpOffset = Math.max(2, Math.min(maxUpOffset, 10));
+
         // Check if original location is safe
         if (isSafeLocation(world, x, y, z)) {
             return destination;
         }
 
-        // Search upward for a safe spot (priority: don't drop player down)
-        for (int offset = 1; offset <= 5; offset++) {
+        // Search nearby blocks first (same Y level, closer distance)
+        int[][] nearby = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+        for (int[] offset : nearby) {
+            if (isSafeLocation(world, x + offset[0], y, z + offset[1])) {
+                return new Location(world, x + offset[0] + 0.5, y, z + offset[1] + 0.5, yaw, pitch);
+            }
+        }
+
+        // Search upward (limited by maxUpOffset to avoid teleporting too high)
+        for (int offset = 1; offset <= maxUpOffset; offset++) {
             if (isSafeLocation(world, x, y + offset, z)) {
                 return new Location(world, x + 0.5, y + offset, z + 0.5, yaw, pitch);
             }
         }
 
-        // Search downward if no safe spot above
+        // Search downward
         for (int offset = 1; offset <= 5 && y - offset >= world.getMinHeight(); offset++) {
             if (isSafeLocation(world, x, y - offset, z)) {
                 return new Location(world, x + 0.5, y - offset, z + 0.5, yaw, pitch);
             }
         }
 
-        // Search nearby blocks
-        int[][] nearby = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {-1, -1}, {1, -1}, {-1, 1}};
-        for (int[] offset : nearby) {
-            for (int yOffset = 0; yOffset <= 3; yOffset++) {
+        // Search nearby with small Y offset
+        int[][] nearbyDiagonal = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {-1, -1}, {1, -1}, {-1, 1}};
+        for (int[] offset : nearbyDiagonal) {
+            for (int yOffset = -1; yOffset <= maxUpOffset; yOffset++) {
                 int newY = y + yOffset;
                 if (newY < world.getMinHeight() || newY >= world.getMaxHeight()) {
                     continue;
@@ -181,6 +194,13 @@ public final class BlockUpdateUtil {
 
         // If nothing else works, return original but at least center it
         return new Location(world, x + 0.5, y, z + 0.5, yaw, pitch);
+    }
+
+    /**
+     * Finds a safe teleport location with default max up offset of 3 blocks.
+     */
+    public static Location findSafeTeleportLocation(Location destination) {
+        return findSafeTeleportLocation(destination, 3);
     }
 
     /**

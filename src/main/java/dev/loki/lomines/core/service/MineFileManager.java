@@ -8,6 +8,7 @@ import dev.loki.lomines.data.config.block.FillMode;
 import dev.loki.lomines.data.config.region.RegionConfig;
 import dev.loki.lomines.data.config.reset.ResetConfig;
 import dev.loki.lomines.data.config.reward.RewardConfig;
+import dev.loki.lomines.data.config.spawn.PlayerSpawnConfig;
 import dev.loki.lomines.data.config.teleport.TeleportConfig;
 import dev.loki.lomines.data.config.ui.UIConfig;
 import dev.loki.lomines.integration.worldguard.WorldGuardConfig;
@@ -15,6 +16,7 @@ import dev.loki.lomines.util.location.Cuboid;
 import dev.loki.lomines.util.location.LocationParser;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.IOException;
@@ -76,6 +78,7 @@ public record MineFileManager(Path minesFolder, ConfigLoader configLoader) {
                 .teleport(TeleportConfig.disabled())
                 .ui(UIConfig.defaults())
                 .worldGuard(wgConfig)
+                .playerSpawn(PlayerSpawnConfig.disabled())
                 .build();
 
         // Save using new loader
@@ -160,6 +163,7 @@ public record MineFileManager(Path minesFolder, ConfigLoader configLoader) {
                 .teleport(config.teleport())
                 .ui(config.ui())
                 .worldGuard(config.worldGuard())
+                .playerSpawn(config.playerSpawn())
                 .build();
 
         configLoader.save(updated);

@@ -63,6 +63,14 @@ teleport:
   enabled: false
   location: ""
 
+# Player spawn location for stuck players
+# Used when a player gets stuck in blocks after mine reset
+# If not set, falls back to 'teleport.location'
+player-spawn:
+  enabled: false
+  location: ""
+  # Example: "world;100.5;64;200.5;90;0"
+
 # WorldGuard integration
 worldguard:
   # Enable automatic region creation when mines are created

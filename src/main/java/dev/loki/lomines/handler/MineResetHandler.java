@@ -171,11 +171,13 @@ public final class MineResetHandler {
     }
 
     /**
-     * Teleports players standing inside the mine to a safe location near the configured destination.
+     * Teleports players standing inside the mine to a safe location.
+     * Uses player-spawn location if configured, otherwise uses teleport location.
      * Prevents players from suffocating in blocks by finding a safe teleport spot.
      */
     private void teleportPlayers() {
-        var destOpt = mine.getConfig().teleport().getLocation();
+        // Get spawn location for stuck players (player-spawn config) or fall back to teleport location
+        var destOpt = mine.getConfig().getSpawnForStuckPlayer();
         if (destOpt.isEmpty()) {
             return;
         }
@@ -184,8 +186,8 @@ public final class MineResetHandler {
             return;
         }
 
-        // Find a safe teleport location to prevent suffocation
-        Location safeDest = BlockUpdateUtil.findSafeTeleportLocation(dest);
+        // Find a safe teleport location (max 3 blocks up to avoid teleporting too high)
+        Location safeDest = BlockUpdateUtil.findSafeTeleportLocation(dest, 3);
 
         for (Player p : dest.getWorld().getPlayers()) {
             if (mine.contains(p.getLocation())) {

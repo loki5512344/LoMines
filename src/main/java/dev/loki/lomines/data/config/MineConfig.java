@@ -4,11 +4,15 @@ import dev.loki.lomines.data.config.block.BlockConfig;
 import dev.loki.lomines.data.config.region.RegionConfig;
 import dev.loki.lomines.data.config.reset.ResetConfig;
 import dev.loki.lomines.data.config.reward.RewardConfig;
+import dev.loki.lomines.data.config.spawn.PlayerSpawnConfig;
 import dev.loki.lomines.data.config.teleport.TeleportConfig;
 import dev.loki.lomines.data.config.ui.UIConfig;
 import dev.loki.lomines.integration.worldguard.WorldGuardConfig;
 
+import org.bukkit.Location;
+
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Clean, type-safe, section-based mine configuration.
@@ -22,7 +26,8 @@ public record MineConfig(
         RewardConfig rewards,
         TeleportConfig teleport,
         UIConfig ui,
-        WorldGuardConfig worldGuard
+        WorldGuardConfig worldGuard,
+        PlayerSpawnConfig playerSpawn
 ) {
 
     public MineConfig {
@@ -38,7 +43,10 @@ public record MineConfig(
         Objects.requireNonNull(rewards, "Reward config cannot be null");
         Objects.requireNonNull(teleport, "Teleport config cannot be null");
         Objects.requireNonNull(ui, "UI config cannot be null");
-        // worldGuard can be null (disabled by default)
+        // worldGuard and playerSpawn can be null (disabled by default)
+        if (playerSpawn == null) {
+            playerSpawn = PlayerSpawnConfig.disabled();
+        }
     }
 
     /**
@@ -74,8 +82,19 @@ public record MineConfig(
                 RewardConfig.empty(),
                 TeleportConfig.disabled(),
                 UIConfig.defaults(),
-                WorldGuardConfig.disabled()
+                WorldGuardConfig.disabled(),
+                PlayerSpawnConfig.disabled()
         );
+    }
+
+    /**
+     * Returns the spawn location for stuck players.
+     * If playerSpawn is not set, falls back to teleport location.
+     */
+    public Optional<Location> getSpawnForStuckPlayer() {
+        return playerSpawn.enabled()
+                ? playerSpawn.getLocation()
+                : teleport.getLocation();
     }
 
     // --- Builder ---
@@ -89,6 +108,7 @@ public record MineConfig(
         private TeleportConfig teleport = TeleportConfig.disabled();
         private UIConfig ui = UIConfig.defaults();
         private WorldGuardConfig worldGuard = WorldGuardConfig.disabled();
+        private PlayerSpawnConfig playerSpawn = PlayerSpawnConfig.disabled();
 
         private Builder(String name) {
             this.name = name;
@@ -129,8 +149,13 @@ public record MineConfig(
             return this;
         }
 
+        public Builder playerSpawn(PlayerSpawnConfig playerSpawn) {
+            this.playerSpawn = playerSpawn;
+            return this;
+        }
+
         public MineConfig build() {
-            return new MineConfig(name, region, blocks, reset, rewards, teleport, ui, worldGuard);
+            return new MineConfig(name, region, blocks, reset, rewards, teleport, ui, worldGuard, playerSpawn);
         }
     }
 }

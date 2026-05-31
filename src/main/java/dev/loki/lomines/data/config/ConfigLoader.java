@@ -26,6 +26,7 @@ public final class ConfigLoader {
     private TeleportConfigLoader teleportLoader;
     private UIConfigLoader uiLoader;
     private WorldGuardConfigLoader worldGuardLoader;
+    private PlayerSpawnConfigLoader playerSpawnLoader;
 
     public ConfigLoader(Path dataFolder) {
         this.dataFolder = dataFolder;
@@ -66,6 +67,7 @@ public final class ConfigLoader {
         yaml.set("rewards", List.of());
 
         worldGuardLoader.setDefaults(yaml);
+        playerSpawnLoader.setDefaults(yaml);
     }
 
     private void initLoaders() {
@@ -76,6 +78,7 @@ public final class ConfigLoader {
         teleportLoader = new TeleportConfigLoader();
         uiLoader = new UIConfigLoader(defaults);
         worldGuardLoader = new WorldGuardConfigLoader(defaults);
+        playerSpawnLoader = new PlayerSpawnConfigLoader();
     }
 
     /**
@@ -100,6 +103,7 @@ public final class ConfigLoader {
                     .teleport(teleportLoader.parse(yaml))
                     .ui(uiLoader.parse(yaml))
                     .worldGuard(worldGuardLoader.parse(yaml))
+                    .playerSpawn(playerSpawnLoader.parse(yaml))
                     .build();
         } catch (Exception e) {
             throw new ConfigLoadException("Failed to load mine '" + mineName + "': " + e.getMessage(), e);
@@ -120,6 +124,7 @@ public final class ConfigLoader {
         teleportLoader.save(yaml, config.teleport());
         uiLoader.save(yaml, config.ui());
         worldGuardLoader.save(yaml, config.worldGuard());
+        playerSpawnLoader.save(yaml, config.playerSpawn());
 
         try {
             Files.createDirectories(configPath.getParent());
