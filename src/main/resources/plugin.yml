@@ -27,6 +27,7 @@ permissions:
       lomines.stats.others: true
       lomines.admin.wand: true
       lomines.admin.maskscan: true
+      lomines.admin.edit: true
   lomines.stats:
     description: View mining stats and leaderboards (/lm stats, /lm top)
     default: true
@@ -38,6 +39,9 @@ permissions:
     default: op
   lomines.admin.wand:
     description: Group wand and /lm group prefix for batch mine creation
+    default: op
+  lomines.admin.edit:
+    description: Open GUI editor for mines (/lm edit <mine>)
     default: op
   lomines.use:
     description: Basic LoMines usage

@@ -8,6 +8,7 @@ import dev.loki.lomines.command.StatsCommands;
 import dev.loki.lomines.integration.IntegrationManager;
 import dev.loki.lomines.listener.BlockBreakListener;
 import dev.loki.lomines.listener.GroupGuiListener;
+import dev.loki.lomines.listener.MineEditGuiListener;
 import dev.loki.lomines.listener.PlayerInteractListener;
 import dev.loki.lomines.listener.PlayerJoinListener;
 import dev.lolib.commands.CommandManager;
@@ -46,6 +47,7 @@ final class RegistrationManager {
         plugin.getServer().getPluginManager().registerEvents(new BlockBreakListener(plugin), plugin);
         plugin.getServer().getPluginManager().registerEvents(new PlayerInteractListener(plugin), plugin);
         plugin.getServer().getPluginManager().registerEvents(new GroupGuiListener(plugin), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new MineEditGuiListener(plugin), plugin);
 
         if (plugin.getConfig().getBoolean("statistics-enabled", true)) {
             plugin.getServer().getPluginManager().registerEvents(new PlayerJoinListener(plugin), plugin);

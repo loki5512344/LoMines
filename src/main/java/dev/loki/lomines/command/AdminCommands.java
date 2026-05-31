@@ -3,20 +3,23 @@ package dev.loki.lomines.command;
 import dev.loki.lomines.LoMinesPlugin;
 import dev.loki.lomines.core.Mine;
 import dev.loki.lomines.core.Mines;
+import dev.loki.lomines.gui.MineEditGui;
 import dev.loki.lomines.util.ErrorHandler;
 import dev.loki.lomines.util.MessageFormatter;
 import dev.lolib.commands.annotation.Arg;
 import dev.lolib.commands.annotation.Command;
 import dev.lolib.commands.annotation.Subcommand;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.io.IOException;
 import java.util.Collection;
 
 /**
  * Admin commands for mine management.
- * Provides commands for creating, deleting, resetting, reloading, and listing mines.
+ * Provides commands for creating, deleting, resetting, reloading, listing, and editing mines.
  */
 @Command(value = "lm", permission = "lomines.use")
 public class AdminCommands {
@@ -43,6 +46,10 @@ public class AdminCommands {
             sender.sendMessage(Component.text(
                     "Edit selection & contents in plugins/LoMines/mines/" + name + ".yml — "
                             + "for shape-based ore (not full cuboid), paint mask.marker blocks, then: /lm maskscan " + name));
+            if (sender instanceof Player player) {
+                sender.sendMessage(Component.text(
+                        "Or use: /lm edit " + name + " to open GUI editor", NamedTextColor.YELLOW));
+            }
         } catch (IllegalArgumentException e) {
             errorHandler.handleNotFound(sender, "Mine already exists", name);
         } catch (IOException e) {
@@ -66,6 +73,26 @@ public class AdminCommands {
             errorHandler.handleError(sender, "Failed to delete mine: " + e.getMessage(),
                     "Failed to delete mine " + name, e);
         }
+    }
+
+    /**
+     * Opens the GUI editor for a mine.
+     * Usage: /lm edit <mine>
+     */
+    @Subcommand(value = "edit", permission = "lomines.admin.edit")
+    public void edit(CommandSender sender, @Arg("mine") String mineName) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(Component.text("This command can only be used by players!", NamedTextColor.RED));
+            return;
+        }
+
+        Mine mine = mines.find(mineName).orElse(null);
+        if (mine == null) {
+            errorHandler.handleNotFound(sender, "Mine", mineName);
+            return;
+        }
+
+        MineEditGui.open(plugin, player, mineName);
     }
 
     /**
