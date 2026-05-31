@@ -1,189 +1,126 @@
 package dev.loki.lomines.data.config;
 
-import dev.loki.lomines.data.reward.Reward;
-import org.bukkit.Location;
+import dev.loki.lomines.data.config.block.BlockConfig;
+import dev.loki.lomines.data.config.region.RegionConfig;
+import dev.loki.lomines.data.config.reset.ResetConfig;
+import dev.loki.lomines.data.config.reward.RewardConfig;
+import dev.loki.lomines.data.config.teleport.TeleportConfig;
+import dev.loki.lomines.data.config.ui.UIConfig;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
- * Immutable configuration data model for a mine.
- * All fields are final to ensure immutability.
- * Use the Builder pattern to create instances.
+ * Clean, type-safe, section-based mine configuration.
+ * Proper separation of concerns: each section handles one aspect.
  */
-public final class MineConfig {
+public record MineConfig(
+        String name,
+        RegionConfig region,
+        BlockConfig blocks,
+        ResetConfig reset,
+        RewardConfig rewards,
+        TeleportConfig teleport,
+        UIConfig ui
+) {
 
-    // Regions
-    private final List<Location> selections;
+    public MineConfig {
+        Objects.requireNonNull(name, "Mine name cannot be null");
+        if (name.isBlank()) {
+            throw new IllegalArgumentException("Mine name cannot be blank");
+        }
+        name = name.toLowerCase().trim();
 
-    // Blocks
-    private final Map<String, Double> blocks;
-
-    /**
-     * How blocks are placed on reset.
-     */
-    private final FillMode fillMode;
-    /**
-     * Vanilla material name for {@link FillMode#MASK} scan (e.g. pink_concrete).
-     */
-    private final String maskMarkerMaterial;
-    /**
-     * Block centers for mask mode; ignored when {@link #fillMode} is {@link FillMode#CUBOID}.
-     */
-    private final List<Location> maskPositions;
-
-    // Rewards
-    private final List<Reward> rewards;
-
-    // Reset
-    private final int resetTicks;
-    private final double resetPercent;
-    private final boolean resetOnPercentEnabled;
-    private final List<String> resetCommands;
-    private final String broadcastReset;
-
-    // Teleportation
-    private final boolean teleportOnReset;
-    private final Location teleportLocation;
-
-    // Action Bar
-    private final boolean actionBarEnabled;
-    private final String actionBarMessage;
-    private final double actionBarRange;
-
-    // Timer
-    private final String timerFormat;
-
-    MineConfig(List<Location> selections, Map<String, Double> blocks, FillMode fillMode,
-               String maskMarkerMaterial, List<Location> maskPositions, List<Reward> rewards,
-               int resetTicks, double resetPercent, boolean resetOnPercentEnabled,
-               List<String> resetCommands, String broadcastReset, boolean teleportOnReset,
-               Location teleportLocation, boolean actionBarEnabled, String actionBarMessage,
-               double actionBarRange, String timerFormat) {
-        this.selections = List.copyOf(selections);
-        this.blocks = Map.copyOf(blocks);
-        this.fillMode = fillMode;
-        this.maskMarkerMaterial = maskMarkerMaterial;
-        this.maskPositions = List.copyOf(maskPositions);
-        this.rewards = List.copyOf(rewards);
-        this.resetTicks = resetTicks;
-        this.resetPercent = resetPercent;
-        this.resetOnPercentEnabled = resetOnPercentEnabled;
-        this.resetCommands = List.copyOf(resetCommands);
-        this.broadcastReset = broadcastReset;
-        this.teleportOnReset = teleportOnReset;
-        this.teleportLocation = teleportLocation;
-        this.actionBarEnabled = actionBarEnabled;
-        this.actionBarMessage = actionBarMessage;
-        this.actionBarRange = actionBarRange;
-        this.timerFormat = timerFormat;
-    }
-
-    public static MineConfigBuilder builder() {
-        return new MineConfigBuilder();
-    }
-
-    // Getters
-    public List<Location> getSelections() {
-        return selections;
-    }
-
-    public Map<String, Double> getBlocks() {
-        return blocks;
-    }
-
-    public FillMode getFillMode() {
-        return fillMode;
+        Objects.requireNonNull(region, "Region config cannot be null");
+        Objects.requireNonNull(blocks, "Block config cannot be null");
+        Objects.requireNonNull(reset, "Reset config cannot be null");
+        Objects.requireNonNull(rewards, "Reward config cannot be null");
+        Objects.requireNonNull(teleport, "Teleport config cannot be null");
+        Objects.requireNonNull(ui, "UI config cannot be null");
     }
 
     /**
-     * Material name for scanning marker blocks (vanilla), e.g. {@code pink_concrete}.
+     * Total volume of the mine (for progress calculation).
      */
-    public String getMaskMarkerMaterial() {
-        return maskMarkerMaterial;
+    public int volume() {
+        return region.totalVolume();
     }
 
-    public List<Location> getMaskPositions() {
-        return maskPositions;
+    /**
+     * World name where the mine is located.
+     */
+    public String worldName() {
+        return region.worldName();
     }
 
-    public List<Reward> getRewards() {
-        return rewards;
+    /**
+     * Creates builder for fluent construction.
+     */
+    public static Builder builder(String name) {
+        return new Builder(name);
     }
 
-    public int getResetTicks() {
-        return resetTicks;
+    /**
+     * Creates config with sensible defaults.
+     */
+    public static MineConfig defaults(String name, RegionConfig region, BlockConfig blocks) {
+        return new MineConfig(
+                name,
+                region,
+                blocks,
+                ResetConfig.defaults(),
+                RewardConfig.empty(),
+                TeleportConfig.disabled(),
+                UIConfig.defaults()
+        );
     }
 
-    public double getResetPercent() {
-        return resetPercent;
-    }
+    // --- Builder ---
 
-    public boolean isResetOnPercentEnabled() {
-        return resetOnPercentEnabled;
-    }
+    public static class Builder {
+        private final String name;
+        private RegionConfig region;
+        private BlockConfig blocks;
+        private ResetConfig reset = ResetConfig.defaults();
+        private RewardConfig rewards = RewardConfig.empty();
+        private TeleportConfig teleport = TeleportConfig.disabled();
+        private UIConfig ui = UIConfig.defaults();
 
-    public List<String> getResetCommands() {
-        return resetCommands;
-    }
+        private Builder(String name) {
+            this.name = name;
+        }
 
-    public String getBroadcastReset() {
-        return broadcastReset;
-    }
+        public Builder region(RegionConfig region) {
+            this.region = region;
+            return this;
+        }
 
-    public boolean isTeleportOnReset() {
-        return teleportOnReset;
-    }
+        public Builder blocks(BlockConfig blocks) {
+            this.blocks = blocks;
+            return this;
+        }
 
-    public Location getTeleportLocation() {
-        return teleportLocation;
-    }
+        public Builder reset(ResetConfig reset) {
+            this.reset = reset;
+            return this;
+        }
 
-    public boolean isActionBarEnabled() {
-        return actionBarEnabled;
-    }
+        public Builder rewards(RewardConfig rewards) {
+            this.rewards = rewards;
+            return this;
+        }
 
-    public String getActionBarMessage() {
-        return actionBarMessage;
-    }
+        public Builder teleport(TeleportConfig teleport) {
+            this.teleport = teleport;
+            return this;
+        }
 
-    public double getActionBarRange() {
-        return actionBarRange;
-    }
+        public Builder ui(UIConfig ui) {
+            this.ui = ui;
+            return this;
+        }
 
-    public String getTimerFormat() {
-        return timerFormat;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        MineConfig that = (MineConfig) o;
-        return resetTicks == that.resetTicks &&
-                Double.compare(that.resetPercent, resetPercent) == 0 &&
-                resetOnPercentEnabled == that.resetOnPercentEnabled &&
-                teleportOnReset == that.teleportOnReset &&
-                actionBarEnabled == that.actionBarEnabled &&
-                Double.compare(that.actionBarRange, actionBarRange) == 0 &&
-                Objects.equals(selections, that.selections) &&
-                Objects.equals(blocks, that.blocks) &&
-                fillMode == that.fillMode &&
-                Objects.equals(maskMarkerMaterial, that.maskMarkerMaterial) &&
-                Objects.equals(maskPositions, that.maskPositions) &&
-                Objects.equals(rewards, that.rewards) &&
-                Objects.equals(resetCommands, that.resetCommands) &&
-                Objects.equals(broadcastReset, that.broadcastReset) &&
-                Objects.equals(teleportLocation, that.teleportLocation) &&
-                Objects.equals(actionBarMessage, that.actionBarMessage) &&
-                Objects.equals(timerFormat, that.timerFormat);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(selections, blocks, fillMode, maskMarkerMaterial, maskPositions, rewards, resetTicks, resetPercent,
-                resetOnPercentEnabled, resetCommands, broadcastReset, teleportOnReset,
-                teleportLocation, actionBarEnabled, actionBarMessage, actionBarRange, timerFormat);
+        public MineConfig build() {
+            return new MineConfig(name, region, blocks, reset, rewards, teleport, ui);
+        }
     }
 }

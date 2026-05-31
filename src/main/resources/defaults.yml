@@ -1,0 +1,64 @@
+# LoMines Default Configuration
+# This file defines defaults for all mines.
+# Individual mines can override any of these values.
+
+# Reset behavior
+reset:
+  # Interval between automatic resets
+  # Format: "5m" (minutes), "30s" (seconds), "1h" (hours), "1d" (days)
+  interval: "5m"
+
+  # Trigger reset when X% of blocks are mined
+  percent-trigger: 10.0
+  percent-enabled: false
+
+  # Commands to run on reset (%mine%, %player%, %blocks% placeholders)
+  commands: []
+    # - "broadcast Mine %mine% has been reset!"
+    # - "eco give %player% 10"
+
+  # Broadcast message on reset (empty = no broadcast)
+  broadcast: ""
+
+# Block filling behavior
+blocks:
+  # Fill mode: CUBOID (fill entire region) or MASK (fill marked positions only)
+  fill-mode: CUBOID
+
+  # For MASK mode: which block marks fill positions
+  mask:
+    marker: "pink_concrete"
+    positions: []
+
+# UI settings
+ui:
+  actionbar:
+    enabled: true
+    # MiniMessage format. Placeholders: {mine}, {percent}, {time}, {blocks}, {total}
+    format: "<green>{mine}</green> <gray>{percent}%</gray> <dark_gray>({time})"
+    range: 50.0
+
+  # Timer format for {time} placeholder
+  # mm:ss = 05:30, HH:mm:ss = 00:05:30
+  timer-format: "mm:ss"
+
+# Rewards for mining specific blocks
+rewards: []
+  # Example:
+  # - chance: 5.0
+  #   blocks:
+  #     - "diamond_ore"
+  #   items:
+  #     - type: "diamond"
+  #       amount: 1
+  #       name: "<yellow>Lucky Diamond"
+  #       lore:
+  #         - "<gray>Mined from the depths"
+  #   commands:
+  #     - "eco give %player% 100"
+  #   prevent-drops: true
+
+# Teleport players on reset
+teleport:
+  enabled: false
+  location: ""
