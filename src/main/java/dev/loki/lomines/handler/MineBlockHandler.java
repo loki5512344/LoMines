@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 /**
  * Handles block break events within a mine.
  * Coordinates reward checking, statistics updates, and reset condition checks.
+ * Updated for new configuration system (v2).
  */
 public final class MineBlockHandler {
 
@@ -51,7 +52,7 @@ public final class MineBlockHandler {
         }
         double percent = (double) remaining / total * 100.0;
 
-        if (config.isResetOnPercentEnabled() && percent <= config.getResetPercent()) {
+        if (config.reset().isPercentTriggerEnabled() && percent <= config.reset().percentTrigger()) {
             mine.reset(false);
         }
     }

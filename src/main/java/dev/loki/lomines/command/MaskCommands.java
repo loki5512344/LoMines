@@ -2,7 +2,7 @@ package dev.loki.lomines.command;
 
 import dev.loki.lomines.LoMinesPlugin;
 import dev.loki.lomines.core.Mines;
-import dev.loki.lomines.data.config.parser.ConfigParseException;
+import dev.loki.lomines.data.config.ConfigLoader;
 import dev.loki.lomines.util.ErrorHandler;
 import dev.loki.lomines.util.MessageFormatter;
 import dev.lolib.commands.annotation.Arg;
@@ -40,7 +40,7 @@ public class MaskCommands {
                                 + "'. Reset will spawn ore only at those positions."));
             } catch (IllegalArgumentException e) {
                 errorHandler.handleNotFound(sender, "Mine", name);
-            } catch (IOException | ConfigParseException e) {
+            } catch (IOException | ConfigLoader.ConfigLoadException e) {
                 errorHandler.handleError(sender, "Mask scan failed: " + e.getMessage(),
                         "maskscan failed for " + name, e);
             }

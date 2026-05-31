@@ -2,8 +2,9 @@ package dev.loki.lomines.core;
 
 import dev.loki.lomines.LoMinesPlugin;
 import dev.loki.lomines.block.BlockSetter;
-import dev.loki.lomines.data.config.FillMode;
 import dev.loki.lomines.data.config.MineConfig;
+import dev.loki.lomines.data.config.block.BlockKey;
+import dev.loki.lomines.data.config.block.FillMode;
 import dev.loki.lomines.handler.ActionBarHandler;
 import dev.loki.lomines.handler.MineBlockHandler;
 import dev.loki.lomines.handler.MineResetHandler;
@@ -21,6 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Represents a single mine with its configuration and state.
  * Thread-safe implementation using AtomicInteger for mutable state.
+ * Updated for new section-based configuration (v2).
  */
 public final class Mine {
 
@@ -49,24 +51,29 @@ public final class Mine {
     private ScheduledTask actionBarTask;
 
     /**
-     * Creates a new mine instance.
+     * Creates a new mine instance with new configuration system.
      */
     public Mine(String name, MineConfig config, LoMinesPlugin plugin) {
         this.name = name;
         this.config = config;
         this.plugin = plugin;
-        this.regions = parseRegions(config);
+        this.regions = config.region().regions();
         this.blockSetter = createBlockSetter(config, plugin);
 
-        if (config.getFillMode() == FillMode.MASK) {
+        if (config.blocks().fillMode() == FillMode.MASK) {
             this.maskBlockKeys = new HashSet<>();
-            for (Location loc : config.getMaskPositions()) {
-                maskBlockKeys.add(BlockKeys.key(loc));
+            if (config.blocks().mask() != null) {
+                for (String pos : config.blocks().mask().positions().keySet()) {
+                    Location loc = parseLocation(pos);
+                    if (loc != null) {
+                        maskBlockKeys.add(BlockKeys.key(loc));
+                    }
+                }
             }
-            this.totalVolume = config.getMaskPositions().size();
+            this.totalVolume = maskBlockKeys.size();
         } else {
             this.maskBlockKeys = Set.of();
-            this.totalVolume = regions.stream().mapToInt(Cuboid::getVolume).sum();
+            this.totalVolume = config.region().totalVolume();
         }
         this.blocks = new AtomicInteger(Math.max(0, totalVolume));
         this.ticks = new AtomicInteger(0);
@@ -111,7 +118,7 @@ public final class Mine {
      * Checks if the given location is within any region of this mine.
      */
     public boolean contains(Location location) {
-        return regions.stream().anyMatch(region -> region.contains(location));
+        return config.region().contains(location);
     }
 
     /**
@@ -121,7 +128,7 @@ public final class Mine {
         if (!contains(location)) {
             return false;
         }
-        if (config.getFillMode() != FillMode.MASK) {
+        if (config.blocks().fillMode() != FillMode.MASK) {
             return true;
         }
         return maskBlockKeys.contains(BlockKeys.key(location));
@@ -145,59 +152,37 @@ public final class Mine {
     }
 
     /**
-     * Parses cuboid regions from selection points in the config.
-     * Selections are paired: 1-2, 3-4, 5-6, 7-8, 9-10.
-     */
-    private List<Cuboid> parseRegions(MineConfig config) {
-        List<Location> selections = config.getSelections();
-
-        if (selections.isEmpty()) {
-            throw new IllegalArgumentException("Mine must have at least one region (2 selection points)");
-        }
-
-        if (selections.size() % 2 != 0) {
-            throw new IllegalArgumentException("Selections must be in pairs (even number of points)");
-        }
-
-        List<Cuboid> cuboids = new ArrayList<>();
-        for (int i = 0; i < selections.size(); i += 2) {
-            Location loc1 = selections.get(i);
-            Location loc2 = selections.get(i + 1);
-            cuboids.add(new Cuboid(loc1, loc2));
-        }
-
-        return Collections.unmodifiableList(cuboids);
-    }
-
-    /**
      * Creates the appropriate BlockSetter based on block configuration.
      */
     private BlockSetter createBlockSetter(MineConfig config, LoMinesPlugin plugin) {
-        Map<String, Double> blocks = config.getBlocks();
+        var weights = config.blocks().weights();
 
-        if (blocks.isEmpty()) {
+        if (weights.isEmpty()) {
             throw new IllegalArgumentException("Mine must have at least one block type");
         }
 
         // Get the first block key to determine the setter type
-        String firstKey = blocks.keySet().iterator().next();
+        BlockKey firstKey = weights.keySet().iterator().next();
 
-        if (firstKey.startsWith("oraxen:")) {
-            // return new dev.loki.lomines.block.OraxenBlockSetter(blocks, plugin);
-            throw new IllegalArgumentException("Oraxen integration is currently disabled");
-        } else if (firstKey.startsWith("itemsadder:")) {
-            // return new dev.loki.lomines.block.ItemsAdderBlockSetter(blocks, plugin);
-            throw new IllegalArgumentException("ItemsAdder integration is currently disabled");
-        } else {
-            return new dev.loki.lomines.block.BukkitBlockSetter(blocks, plugin);
-        }
+        return switch (firstKey) {
+            case BlockKey.Oraxen oraxen -> {
+                // TODO: Enable when OraxenBlockSetter is ready
+                throw new IllegalArgumentException("Oraxen integration is currently disabled");
+            }
+            case BlockKey.ItemsAdder itemsAdder -> {
+                // TODO: Enable when ItemsAdderBlockSetter is ready
+                throw new IllegalArgumentException("ItemsAdder integration is currently disabled");
+            }
+            case BlockKey.Vanilla vanilla ->
+                new dev.loki.lomines.block.BukkitBlockSetter(weights, plugin);
+        };
     }
 
     /**
      * Starts the action bar update task.
      */
     private void startActionBarTask() {
-        if (!config.isActionBarEnabled()) {
+        if (!config.ui().actionBarEnabled()) {
             return;
         }
 
@@ -205,6 +190,25 @@ public final class Mine {
             actionBarHandler.sendToNearbyPlayers();
         }, 10L, 10L);
     }
+
+    private Location parseLocation(String str) {
+        String[] parts = str.split(";");
+        if (parts.length < 4) return null;
+
+        var world = org.bukkit.Bukkit.getWorld(parts[0]);
+        if (world == null) return null;
+
+        try {
+            double x = Double.parseDouble(parts[1]);
+            double y = Double.parseDouble(parts[2]);
+            double z = Double.parseDouble(parts[3]);
+            return new Location(world, x, y, z);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    // Getters
 
     public String getName() {
         return name;

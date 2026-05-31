@@ -4,8 +4,8 @@ import dev.loki.lomines.LoMinesPlugin;
 import dev.loki.lomines.core.service.MaskScanService;
 import dev.loki.lomines.core.service.MineFileManager;
 import dev.loki.lomines.core.service.MineRepository;
+import dev.loki.lomines.data.config.ConfigLoader;
 import dev.loki.lomines.data.config.MineConfig;
-import dev.loki.lomines.data.config.parser.ConfigParseException;
 import org.bukkit.Location;
 
 import java.io.IOException;
@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 /**
  * Registry for all active mines.
  * Manages the lifecycle of mines including loading, creating, and deleting.
+ * Updated for new configuration system (v2).
  */
 public final class Mines {
 
@@ -48,6 +49,7 @@ public final class Mines {
 
         try (Stream<Path> paths = Files.list(minesFolder)) {
             paths.filter(path -> path.toString().endsWith(".yml"))
+                    .filter(path -> !path.getFileName().toString().startsWith("_")) // Skip defaults
                     .forEach(configFile -> loadMineFromFile(configFile));
         }
     }
@@ -61,7 +63,7 @@ public final class Mines {
             repository.createAndStart(mineName, config);
 
             plugin.loLogger().info("Loaded mine: " + mineName);
-        } catch (IOException | ConfigParseException e) {
+        } catch (IOException | ConfigLoader.ConfigLoadException e) {
             plugin.loLogger().error("Failed to load mine from " + configFile.getFileName() + ": " + e.getMessage());
         }
     }
@@ -90,7 +92,7 @@ public final class Mines {
         MineConfig config;
         try {
             config = fileManager.loadConfig(name);
-        } catch (ConfigParseException e) {
+        } catch (ConfigLoader.ConfigLoadException e) {
             throw new IOException("Failed to parse created mine configuration: " + e.getMessage(), e);
         }
 
@@ -146,7 +148,7 @@ public final class Mines {
      * Scans cuboid regions for {@code mask.marker} blocks, writes {@code fill-mode: mask} and positions to disk, then reloads the mine.
      * Must run on the main thread (world access).
      */
-    public int scanAndSaveMask(String mineName) throws IOException, ConfigParseException {
+    public int scanAndSaveMask(String mineName) throws IOException, ConfigLoader.ConfigLoadException {
         int count = maskScanService.scanAndSave(mineName);
         plugin.loLogger().info("Mask scan for '" + mineName + "': " + count + " marker block(s)");
         return count;
@@ -155,7 +157,7 @@ public final class Mines {
     /**
      * Reloads one mine from disk (stop, replace instance, start tasks).
      */
-    public void reloadMine(String name) throws IOException, ConfigParseException {
+    public void reloadMine(String name) throws IOException, ConfigLoader.ConfigLoadException {
         repository.reload(name);
     }
 }

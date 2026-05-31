@@ -1,7 +1,7 @@
 package dev.loki.lomines.block;
 
 import dev.loki.lomines.LoMinesPlugin;
-import dev.loki.lomines.util.ValidationUtils;
+import dev.loki.lomines.data.config.block.BlockKey;
 import dev.loki.lomines.util.location.Cuboid;
 import dev.lolib.scheduler.Scheduler;
 import org.bukkit.Bukkit;
@@ -17,13 +17,14 @@ import java.util.function.IntConsumer;
 /**
  * BlockSetter implementation for vanilla Minecraft blocks.
  * Uses Bukkit API to set blocks with optimal performance settings.
+ * Updated for BlockKey type-safe configuration.
  */
 public final class BukkitBlockSetter extends BlockSetter {
 
-    private final Map<String, Double> weights;
+    private final Map<BlockKey, Double> weights;
     private final LoMinesPlugin plugin;
 
-    public BukkitBlockSetter(Map<String, Double> weights, LoMinesPlugin plugin) {
+    public BukkitBlockSetter(Map<BlockKey, Double> weights, LoMinesPlugin plugin) {
         this.weights = weights;
         this.plugin = plugin;
     }
@@ -83,22 +84,26 @@ public final class BukkitBlockSetter extends BlockSetter {
 
     private BlockData sampleBlockData() {
         // Simple weighted random selection
-        double totalWeight = weights.values().stream().mapToDouble(Double::doubleValue).sum();
-        double random = Math.random() * totalWeight;
+        double random = Math.random();
 
         double currentWeight = 0;
-        for (Map.Entry<String, Double> entry : weights.entrySet()) {
+        for (Map.Entry<BlockKey, Double> entry : weights.entrySet()) {
             currentWeight += entry.getValue();
             if (random <= currentWeight) {
-                // Convert string key to BlockData
-                Material material = ValidationUtils.parseMaterialOrDefault(entry.getKey(), Material.STONE);
-                return Bukkit.createBlockData(material);
+                // BlockKey is already validated to be a block
+                if (entry.getKey() instanceof BlockKey.Vanilla vanilla) {
+                    return Bukkit.createBlockData(vanilla.material());
+                }
+                // Fallback for non-vanilla keys in vanilla setter (shouldn't happen)
+                return Bukkit.createBlockData(Material.STONE);
             }
         }
 
         // Fallback to first entry
-        String firstKey = weights.keySet().iterator().next();
-        Material material = ValidationUtils.parseMaterialOrDefault(firstKey, Material.STONE);
-        return Bukkit.createBlockData(material);
+        BlockKey firstKey = weights.keySet().iterator().next();
+        if (firstKey instanceof BlockKey.Vanilla vanilla) {
+            return Bukkit.createBlockData(vanilla.material());
+        }
+        return Bukkit.createBlockData(Material.STONE);
     }
 }

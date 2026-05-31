@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 /**
  * Handles action bar message display for mines.
  * Sends formatted messages to players within range of the mine.
+ * Updated for new configuration system (v2) with MiniMessage support.
  */
 public final class ActionBarHandler {
 
@@ -23,7 +24,7 @@ public final class ActionBarHandler {
      * Sends action bar messages to all players within range of the mine.
      */
     public void sendToNearbyPlayers() {
-        if (!mine.getConfig().isActionBarEnabled()) {
+        if (!mine.getConfig().ui().actionBarEnabled()) {
             return;
         }
 
@@ -32,8 +33,14 @@ public final class ActionBarHandler {
             return;
         }
 
-        double range = mine.getConfig().getActionBarRange();
-        String message = formatMessage();
+        double range = mine.getConfig().ui().actionBarRange();
+        var message = mine.getConfig().ui().formatActionBar(
+                mine.getName(),
+                mine.getPercentFilled(),
+                formatTime(),
+                mine.getBlocks(),
+                mine.getTotalVolume()
+        );
 
         center.getWorld().getNearbyEntities(center, range, range, range).stream()
                 .filter(entity -> entity instanceof Player)
@@ -61,31 +68,13 @@ public final class ActionBarHandler {
     }
 
     /**
-     * Formats the action bar message with placeholders.
-     *
-     * @return The formatted message
-     */
-    private String formatMessage() {
-        String template = mine.getConfig().getActionBarMessage();
-
-        String formatted = template
-                .replace("%mine%", mine.getName())
-                .replace("%percent%", String.format("%.1f", mine.getPercentFilled()))
-                .replace("%blocks%", String.valueOf(mine.getBlocks()))
-                .replace("%total%", String.valueOf(mine.getTotalVolume()))
-                .replace("%time%", formatTime());
-
-        return formatted;
-    }
-
-    /**
      * Formats the time remaining until reset.
      *
      * @return Formatted time string
      */
     private String formatTime() {
-        int remainingTicks = mine.getConfig().getResetTicks() - mine.getTicks();
-        String format = mine.getConfig().getTimerFormat();
-        return TimeFormatter.format(remainingTicks, format);
+        int remainingTicks = (int) (mine.getConfig().reset().intervalTicks() - mine.getTicks());
+        if (remainingTicks < 0) remainingTicks = 0;
+        return mine.getConfig().ui().formatTimer(remainingTicks / 20);
     }
 }

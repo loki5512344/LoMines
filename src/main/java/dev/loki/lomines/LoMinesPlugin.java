@@ -42,6 +42,7 @@ public final class LoMinesPlugin extends LoPlugin {
 
             RegistrationManager registrationManager = new RegistrationManager(this);
             registrationManager.registerCommands(commandManager);
+            registrationManager.registerTabCompleter();
             registrationManager.registerListeners();
             registrationManager.initializeIntegrations(integrationManager);
 

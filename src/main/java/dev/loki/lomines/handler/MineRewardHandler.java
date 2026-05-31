@@ -2,27 +2,27 @@ package dev.loki.lomines.handler;
 
 import dev.loki.lomines.LoMinesPlugin;
 import dev.loki.lomines.data.config.MineConfig;
-import dev.loki.lomines.data.reward.Reward;
+import dev.loki.lomines.data.config.block.BlockKey;
+import dev.loki.lomines.data.config.reward.RewardConfig;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
-import java.util.List;
 import java.util.Random;
 
 /**
  * Handles reward distribution for block breaks in mines.
  * Checks configured rewards and gives items/executes commands based on chance.
+ * Updated for new configuration system (v2).
  */
 public final class MineRewardHandler {
 
-    private final List<Reward> rewards;
+    private final RewardConfig rewards;
     private final LoMinesPlugin plugin;
     private final Random random = new Random();
 
     public MineRewardHandler(MineConfig config, LoMinesPlugin plugin) {
-        this.rewards = config.getRewards();
+        this.rewards = config.rewards();
         this.plugin = plugin;
     }
 
@@ -34,38 +34,39 @@ public final class MineRewardHandler {
      */
     public void checkRewards(Player player, Block block) {
         Material material = block.getType();
+        BlockKey key = new BlockKey.Vanilla(material);
 
-        for (Reward reward : rewards) {
-            if (reward.matches(material) && rollChance(reward.chance())) {
-                giveReward(player, reward);
+        for (var entry : rewards.forBlock(key)) {
+            if (entry.roll(random)) {
+                giveReward(player, entry);
             }
         }
-    }
-
-    /**
-     * Rolls a random chance check.
-     *
-     * @param chance The chance percentage (0-100)
-     * @return true if the roll succeeds
-     */
-    private boolean rollChance(double chance) {
-        return random.nextDouble() * 100.0 < chance;
     }
 
     /**
      * Gives a reward to the player.
      *
      * @param player The player to give the reward to
-     * @param reward The reward to give
+     * @param reward The reward entry to give
      */
-    private void giveReward(Player player, Reward reward) {
-        for (ItemStack item : reward.items()) {
-            player.getInventory().addItem(item.clone());
+    private void giveReward(Player player, RewardConfig.RewardEntry reward) {
+        // Give items
+        for (var item : reward.items()) {
+            player.getInventory().addItem(item.toItemStack());
         }
 
+        // Execute commands
         for (String command : reward.commands()) {
-            String parsed = command.replace("%player%", player.getName());
+            String parsed = command
+                    .replace("%player%", player.getName())
+                    .replace("%uuid%", player.getUniqueId().toString());
             plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), parsed);
+        }
+
+        // Handle vanilla drops prevention if configured
+        if (reward.preventVanillaDrops()) {
+            // Note: This would need to be handled in the block break event
+            // by setting dropItems to false in the event
         }
     }
 }

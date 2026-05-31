@@ -2,8 +2,8 @@ package dev.loki.lomines.core.service;
 
 import dev.loki.lomines.LoMinesPlugin;
 import dev.loki.lomines.core.Mine;
+import dev.loki.lomines.data.config.ConfigLoader;
 import dev.loki.lomines.data.config.MineConfig;
-import dev.loki.lomines.data.config.parser.ConfigParseException;
 import org.bukkit.Location;
 
 import java.io.IOException;
@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Repository for managing mine instances.
+ * Updated for new configuration system (v2).
  */
 public final class MineRepository {
 
@@ -79,7 +80,7 @@ public final class MineRepository {
         }
     }
 
-    public void reload(String name) throws IOException, ConfigParseException {
+    public void reload(String name) throws IOException, ConfigLoader.ConfigLoadException {
         stopAndRemove(name);
         MineConfig config = fileManager.loadConfig(name);
         Mine mine = createAndStart(name, config);

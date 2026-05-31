@@ -1,6 +1,7 @@
 package dev.loki.lomines;
 
 import dev.loki.lomines.command.AdminCommands;
+import dev.loki.lomines.command.LoMinesTabCompleter;
 import dev.loki.lomines.command.MaskCommands;
 import dev.loki.lomines.command.PlayerCommands;
 import dev.loki.lomines.command.StatsCommands;
@@ -29,6 +30,16 @@ final class RegistrationManager {
         commandManager.register(new MaskCommands(plugin));
 
         plugin.loLogger().info("Commands registered");
+    }
+
+    void registerTabCompleter() {
+        LoMinesTabCompleter tabCompleter = new LoMinesTabCompleter(plugin);
+        plugin.getCommand("lm").setTabCompleter(tabCompleter);
+        plugin.getCommand("lomines").setTabCompleter(tabCompleter);
+        plugin.getCommand("mine").setTabCompleter(tabCompleter);
+        plugin.getCommand("mines").setTabCompleter(tabCompleter);
+
+        plugin.loLogger().info("Tab completer registered");
     }
 
     void registerListeners() {

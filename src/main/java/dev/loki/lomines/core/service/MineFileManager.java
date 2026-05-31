@@ -2,22 +2,35 @@ package dev.loki.lomines.core.service;
 
 import dev.loki.lomines.data.config.ConfigLoader;
 import dev.loki.lomines.data.config.MineConfig;
-import dev.loki.lomines.data.config.parser.ConfigParseException;
+import dev.loki.lomines.data.config.block.BlockConfig;
+import dev.loki.lomines.data.config.block.BlockKey;
+import dev.loki.lomines.data.config.block.FillMode;
+import dev.loki.lomines.data.config.region.RegionConfig;
+import dev.loki.lomines.data.config.reset.ResetConfig;
+import dev.loki.lomines.data.config.reward.RewardConfig;
+import dev.loki.lomines.data.config.teleport.TeleportConfig;
+import dev.loki.lomines.data.config.ui.UIConfig;
+import dev.loki.lomines.util.location.Cuboid;
 import dev.loki.lomines.util.location.LocationParser;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Handles file operations for mine configurations.
+ * Updated for new section-based configuration (v2).
  */
-public record MineFileManager(Path minesFolder) {
+public record MineFileManager(Path minesFolder, ConfigLoader configLoader) {
+
+    public MineFileManager(Path minesFolder) {
+        this(minesFolder, new ConfigLoader(minesFolder.getParent()));
+    }
 
     public Path getMinesFolder() {
         return minesFolder;
@@ -29,44 +42,42 @@ public record MineFileManager(Path minesFolder) {
         }
     }
 
+    /**
+     * Creates a default mine configuration with new format.
+     */
     public void createDefaultConfig(String name, Location corner1, Location corner2) throws IOException {
-        Path configFile = minesFolder.resolve(name + ".yml");
-        YamlConfiguration yaml = new YamlConfiguration();
+        ensureFolderExists();
 
-        if (corner1 != null && corner2 != null) {
-            yaml.set("selection.1", LocationParser.format(corner1));
-            yaml.set("selection.2", LocationParser.format(corner2));
-        } else {
-            yaml.set("selection.1", "world;0;64;0;0;0");
-            yaml.set("selection.2", "world;10;74;10;0;0");
-        }
+        // Create default region
+        Location loc1 = corner1 != null ? corner1 : new Location(
+                org.bukkit.Bukkit.getWorlds().get(0), 0, 64, 0);
+        Location loc2 = corner2 != null ? corner2 : new Location(
+                org.bukkit.Bukkit.getWorlds().get(0), 10, 74, 10);
 
-        yaml.set("contents.stone", 100.0);
-        yaml.set("reset.ticks", 6000);
-        yaml.set("reset.percent", 10.0);
-        yaml.set("reset-on-percent", false);
-        yaml.set("actionbar.enabled", true);
-        yaml.set("actionbar.message", "&aMine: %mine% | Blocks: %blocks%/%total% (%percent%%)");
-        yaml.set("actionbar.range", 50.0);
-        yaml.set("timer-format", "mm:ss");
-        yaml.set("teleport-on-reset", false);
-        yaml.set("broadcast-reset", "");
-        yaml.set("reset-commands", new ArrayList<String>());
-        yaml.set("random-rewards", new ArrayList<Map<String, Object>>());
-        yaml.set("fill-mode", "cuboid");
-        yaml.set("mask.marker", "pink_concrete");
-        yaml.set("mask.positions", new ArrayList<String>());
+        Cuboid cuboid = new Cuboid(loc1, loc2);
+        RegionConfig region = RegionConfig.single(cuboid);
 
-        yaml.save(configFile.toFile());
+        // Create default blocks (stone only)
+        Map<BlockKey, Double> weights = new HashMap<>();
+        weights.put(new BlockKey.Vanilla(Material.STONE), 1.0);
+        BlockConfig blocks = new BlockConfig(weights, FillMode.CUBOID, null);
+
+        // Build mine config with defaults
+        MineConfig config = MineConfig.builder(name)
+                .region(region)
+                .blocks(blocks)
+                .reset(ResetConfig.defaults())
+                .rewards(RewardConfig.empty())
+                .teleport(TeleportConfig.disabled())
+                .ui(UIConfig.defaults())
+                .build();
+
+        // Save using new loader
+        configLoader.save(config);
     }
 
-    public MineConfig loadConfig(String name) throws IOException, ConfigParseException {
-        Path configFile = minesFolder.resolve(name + ".yml");
-        if (!Files.exists(configFile)) {
-            throw new IOException("Mine config not found: " + configFile);
-        }
-        ConfigLoader loader = new ConfigLoader();
-        return loader.load(configFile);
+    public MineConfig loadConfig(String name) throws IOException, ConfigLoader.ConfigLoadException {
+        return configLoader.load(name);
     }
 
     public void deleteConfig(String name) throws IOException {
@@ -76,19 +87,36 @@ public record MineFileManager(Path minesFolder) {
         }
     }
 
-    public void saveMaskPositions(String name, String markerMaterial, List<Location> positions) throws IOException {
-        Path configFile = minesFolder.resolve(name + ".yml");
-        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(configFile.toFile());
+    /**
+     * Saves mask positions for mask fill mode.
+     */
+    public void saveMaskPositions(String name, BlockKey markerMaterial, java.util.List<Location> positions) throws IOException, ConfigLoader.ConfigLoadException {
+        MineConfig config = loadConfig(name);
 
-        yaml.set("fill-mode", "mask");
-        yaml.set("mask.marker", markerMaterial);
-
-        List<String> lines = new ArrayList<>();
+        // Build new mask config
+        Map<String, Boolean> posMap = new HashMap<>();
         for (Location loc : positions) {
-            lines.add(LocationParser.format(loc));
+            posMap.put(LocationParser.format(loc), true);
         }
-        yaml.set("mask.positions", lines);
+        BlockConfig.MaskConfig mask = new BlockConfig.MaskConfig(markerMaterial, posMap);
 
-        yaml.save(configFile.toFile());
+        // Create new block config with mask
+        BlockConfig newBlocks = new BlockConfig(
+                config.blocks().weights(),
+                FillMode.MASK,
+                mask
+        );
+
+        // Build updated config
+        MineConfig updated = MineConfig.builder(name)
+                .region(config.region())
+                .blocks(newBlocks)
+                .reset(config.reset())
+                .rewards(config.rewards())
+                .teleport(config.teleport())
+                .ui(config.ui())
+                .build();
+
+        configLoader.save(updated);
     }
 }
