@@ -51,7 +51,20 @@
 - Команда `/lm edit <mine>` для открытия редактора
 - Разрешение `lomines.admin.edit`
 
-### 7. Player-spawn для застрявших игроков ✅
+### 7. Команды для установки точек телепортации и спавна ✅
+- `/lm setteleport <mine>` — установить точку телепорта при сбросе
+  - Берёт текущую позицию игрока (X, Y, Z, yaw, pitch, world)
+  - Право: `lomines.admin.setteleport`
+- `/lm setspawn <mine>` — установить точку спавна для застрявших
+  - Отдельная точка для игроков, застрявших в блоках
+  - Право: `lomines.admin.setspawn`
+- `/lm clearspawn <mine>` — удалить точку спавна
+  - Используется fallback на `teleport` точку
+  - Право: `lomines.admin.setspawn`
+- Auto-completion для всех команд
+- `MineEditGui` показывает статус спавна и подсказки команд
+
+### 8. Player-spawn для застрявших игроков ✅
 - `PlayerSpawnConfig.java` — настройка точки спавна для застрявших игроков
 - `PlayerSpawnConfigLoader.java` — загрузка из YAML
 - Обновлен `MineConfig`:
@@ -64,7 +77,7 @@
   - Максимум 3 блока вверх (не телепортирует слишком высоко)
   - Приоритет: соседние блоки (тот же Y) → вверх (max 3) → вниз → диагональ
 
-### 8. Ghost blocks фикс ✅
+### 9. Ghost blocks фикс ✅
 - `BlockUpdateUtil.java` — утилита для отправки пакетов обновления блоков
   - `sendBlockUpdate()` — обновить один блок для всех видящих игроков
   - `sendRegionUpdate()` — batch-обновление для кубоидного региона
@@ -77,7 +90,7 @@
 **Проблема:** Ghost blocks (невидимые блоки) возникают при быстрой установке блоков, когда сервер не отправляет пакеты клиенту.
 **Решение:** Принудительная отправка `player.sendBlockChange()` после установки блоков.
 
-### 9. WorldGuard интеграция ✅
+### 10. WorldGuard интеграция ✅
 - `WorldGuardConfig.java` — настройки авто-регионов
   - Шаблоны имён: `{mine_name}_{random_4}`, `{random_6}`, и т.д.
   - Настройка владельцев и членов (name или uuid:xxx)
@@ -90,7 +103,7 @@
 - Автоматическое удаление при удалении шахты
 - Обновление при перезагрузке шахты
 
-### 8. Рефакторинг больших файлов ✅
+### 11. Рефакторинг больших файлов ✅
 - `ConfigLoader.java`: 427 → 151 строк (split на 6 лоадеров)
 - `WorldGuardRegionService.java`: split флаг-парсер
 - Новые лоадеры: BlockConfigLoader, RegionConfigLoader, ResetConfigLoader, RewardConfigLoader, TeleportConfigLoader, UIConfigLoader
@@ -354,6 +367,7 @@ dev.loki.lomines/
 
 ## 📦 Git история
 
+- `cfaf638` - feat: commands to set teleport and spawn locations from player position
 - `bb2e47a` - feat: player-spawn config for stuck players, limit teleport height
 - `0612465` - fix: ghost blocks and safe teleport location
 - `3ba6f30` - feat: WorldGuard auto-region creation, split ConfigLoader
