@@ -41,7 +41,33 @@
 - Подсказки для имён шахт, игроков, субкоманд
 - Permission-based фильтрация
 
-### 6. GUI редакторы ✅ (1/5 основных)
+### 6. GUI редакторы ✅ (1/6 основных)
+- `MineEditGui.java` — главный редактор шахты
+  - Просмотр всех секций конфигурации
+  - Навигация к под-редакторам (заглушки)
+  - Сохранение и удаление с подтверждением
+- `ConfirmDeleteGui.java` — подтверждение удаления
+- `MineEditGuiListener.java` — обработка кликов в GUI
+- Команда `/lm edit <mine>` для открытия редактора
+- Разрешение `lomines.admin.edit`
+
+### 7. WorldGuard интеграция ✅
+- `WorldGuardConfig.java` — настройки авто-регионов
+  - Шаблоны имён: `{mine_name}_{random_4}`, `{random_6}`, и т.д.
+  - Настройка владельцев и членов (name или uuid:xxx)
+  - Настройка флагов (passthrough, build, pvp, tnt, и т.д.)
+  - Включение/выключение авто-создания
+- `WorldGuardRegionService.java` — создание/обновление/удаление регионов
+- `WorldGuardFlagParser.java` — парсинг флагов из строк
+- `WorldGuardConfigLoader.java` — загрузка из YAML
+- Автоматическое создание региона при создании шахты
+- Автоматическое удаление при удалении шахты
+- Обновление при перезагрузке шахты
+
+### 8. Рефакторинг больших файлов ✅
+- `ConfigLoader.java`: 427 → 151 строк (split на 6 лоадеров)
+- `WorldGuardRegionService.java`: split флаг-парсер
+- Новые лоадеры: BlockConfigLoader, RegionConfigLoader, ResetConfigLoader, RewardConfigLoader, TeleportConfigLoader, UIConfigLoader
 - `MineEditGui.java` — главный редактор шахты
   - Просмотр всех секций конфигурации
   - Навигация к под-редакторам (заглушки)
@@ -105,7 +131,8 @@ data/config/
 - [x] **Phase 11:** Обновление handlers для новой конфигурации ✅
 - [x] **Phase 12:** Автодополнение команд (tab completer) ✅
 - [x] **Phase 13:** GUI редакторы - главное меню ✅ (под-редакторы 0/5)
-- [ ] **Phase 14:** Интеграции PlaceholderAPI, Oraxen, ItemsAdder
+- [x] **Phase 14:** WorldGuard авто-создание регионов ✅
+- [ ] **Phase 15:** Интеграции PlaceholderAPI, Oraxen, ItemsAdder
 
 ---
 
@@ -172,8 +199,16 @@ dev.loki.lomines/
 │       │   └── TeleportConfig.java
 │       ├── ui/
 │       │   └── UIConfig.java
+│       ├── loader/                ← ✅ SPLIT FROM ConfigLoader
+│       │   ├── BlockConfigLoader.java
+│       │   ├── RegionConfigLoader.java
+│       │   ├── ResetConfigLoader.java
+│       │   ├── RewardConfigLoader.java
+│       │   ├── TeleportConfigLoader.java
+│       │   ├── UIConfigLoader.java
+│       │   └── WorldGuardConfigLoader.java
 │       ├── MineConfig.java
-│       └── ConfigLoader.java
+│       └── ConfigLoader.java      # 427 → 151 lines
 ├── handler/
 │   ├── ActionBarHandler.java
 │   ├── MineBlockHandler.java
@@ -213,6 +248,10 @@ dev.loki.lomines/
 │   └── GroupCreateGuiHolder.java
 ├── integration/
 │   ├── IntegrationManager.java
+│   ├── worldguard/
+│   │   ├── WorldGuardConfig.java          # Шаблоны имён регионов, флаги
+│   │   ├── WorldGuardFlagParser.java      # Парсинг флагов WG
+│   │   └── WorldGuardRegionService.java   # Создание/удаление регионов
 │   └── PlaceholderAPIIntegration.java.disabled
 └── data/stats/
     ├── StatsManager.java
@@ -248,26 +287,37 @@ dev.loki.lomines/
 - Типобезопасность: **Sealed interfaces + Records** ✅
 
 ### Текущие (весь проект)
-- Средний размер класса: **~150 строк** ✅
-- Классов >200 строк: **~5%** ✅
+- Средний размер класса: **~120 строк** ✅
+- Классов >200 строк: **~3%** (GUI классы — допустимо) ✅
 - Дублирование кода: **<5%** ✅
+
+### Новые лоадеры конфигурации
+- `BlockConfigLoader` — парсинг блоков и весов
+- `RegionConfigLoader` — парсинг регионов из локаций
+- `ResetConfigLoader` — парсинг настроек сброса
+- `RewardConfigLoader` — парсинг наград
+- `TeleportConfigLoader` — парсинг телепорта
+- `UIConfigLoader` — парсинг UI настроек
+- `WorldGuardConfigLoader` — парсинг WG интеграции
 
 ---
 
 ## 🐛 Технический долг
 
 ### 🔴 Критический (нужно сделать)
-- [ ] Обновить Mine.java для использования новой конфигурации
-- [ ] Обновить MineFileManager.java для нового ConfigLoader
+- [x] Обновить Mine.java для использования новой конфигурации ✅
+- [x] Обновить MineFileManager.java для нового ConfigLoader ✅
 
 ### 🟡 Средний
 - [ ] Включить интеграции с Oraxen и ItemsAdder
-- [ ] GUI редакторы для шахт
+- [ ] GUI под-редакторы (BlockEditGui, RewardEditGui, и т.д.)
+- [ ] PlaceholderAPI интеграция
 
 ### 🟢 Низкий
 - [ ] Добавить `/lm info <mine>` — детальная информация
 - [ ] Добавить `/lm tp <mine>` — телепортация
 - [ ] Добавить `/lm copy <from> <to>` — копирование
+- [ ] Разбить большие GUI файлы (>200 строк)
 
 ---
 
