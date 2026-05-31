@@ -1,15 +1,17 @@
 package dev.loki.lomines.integration;
 
 import dev.loki.lomines.LoMinesPlugin;
+import dev.loki.lomines.integration.placeholder.LoMinesPlaceholderExpansion;
 import org.bukkit.Bukkit;
 
 /**
  * Manages integrations with external plugins.
+ * Currently supports: WorldGuard (regions), PlaceholderAPI (placeholders)
  */
 public final class IntegrationManager {
 
     private final LoMinesPlugin plugin;
-    // private PlaceholderAPIIntegration placeholderAPI;
+    private LoMinesPlaceholderExpansion placeholderExpansion;
 
     public IntegrationManager(LoMinesPlugin plugin) {
         this.plugin = plugin;
@@ -19,39 +21,33 @@ public final class IntegrationManager {
      * Initializes all available integrations.
      */
     public void initAll() {
-        // initPlaceholderAPI();
+        initPlaceholderAPI();
         checkWorldGuard();
-        checkOraxen();
-        checkItemsAdder();
     }
 
-    // private void initPlaceholderAPI() {
-    //     if (isPluginEnabled("PlaceholderAPI")) {
-    //         try {
-    //             placeholderAPI = new PlaceholderAPIIntegration(plugin);
-    //             placeholderAPI.register();
-    //             plugin.loLogger().info("PlaceholderAPI integration enabled");
-    //         } catch (Exception e) {
-    //             plugin.loLogger().warn("Failed to enable PlaceholderAPI integration: " + e.getMessage());
-    //         }
-    //     }
-    // }
+    /**
+     * Registers PlaceholderAPI expansion if available.
+     */
+    private void initPlaceholderAPI() {
+        if (isPluginEnabled("PlaceholderAPI")) {
+            try {
+                placeholderExpansion = new LoMinesPlaceholderExpansion(plugin);
+                if (placeholderExpansion.register()) {
+                    plugin.loLogger().info("PlaceholderAPI integration enabled");
+                    plugin.loLogger().info("Available placeholders: %lomines_mine_<name>_percent%, %lomines_player_blocksmined%, etc.");
+                } else {
+                    plugin.loLogger().warn("Failed to register PlaceholderAPI expansion");
+                }
+            } catch (Exception e) {
+                plugin.loLogger().warn("Failed to enable PlaceholderAPI integration: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
 
     private void checkWorldGuard() {
         if (isPluginEnabled("WorldGuard")) {
-            plugin.loLogger().info("WorldGuard detected (integration not yet implemented)");
-        }
-    }
-
-    private void checkOraxen() {
-        if (isPluginEnabled("Oraxen")) {
-            plugin.loLogger().info("Oraxen integration available");
-        }
-    }
-
-    private void checkItemsAdder() {
-        if (isPluginEnabled("ItemsAdder")) {
-            plugin.loLogger().info("ItemsAdder integration available");
+            plugin.loLogger().info("WorldGuard detected - auto-region creation enabled");
         }
     }
 
@@ -67,8 +63,12 @@ public final class IntegrationManager {
      * Unregisters all integrations.
      */
     public void shutdown() {
-        // if (placeholderAPI != null) {
-        //     placeholderAPI.unregister();
-        // }
+        if (placeholderExpansion != null) {
+            try {
+                placeholderExpansion.unregister();
+            } catch (Exception e) {
+                plugin.loLogger().warn("Failed to unregister PlaceholderAPI expansion: " + e.getMessage());
+            }
+        }
     }
 }
