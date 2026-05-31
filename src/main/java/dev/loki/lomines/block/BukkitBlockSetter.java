@@ -2,6 +2,7 @@ package dev.loki.lomines.block;
 
 import dev.loki.lomines.LoMinesPlugin;
 import dev.loki.lomines.data.config.block.BlockKey;
+import dev.loki.lomines.util.block.BlockUpdateUtil;
 import dev.loki.lomines.util.location.Cuboid;
 import dev.lolib.scheduler.Scheduler;
 import org.bukkit.Bukkit;
@@ -18,6 +19,9 @@ import java.util.function.IntConsumer;
  * BlockSetter implementation for vanilla Minecraft blocks.
  * Uses Bukkit API to set blocks with optimal performance settings.
  * Updated for BlockKey type-safe configuration.
+ *
+ * <p>Prevents ghost blocks by sending block update packets to clients
+ * after bulk block placement.</p>
  */
 public final class BukkitBlockSetter extends BlockSetter {
 
@@ -34,7 +38,13 @@ public final class BukkitBlockSetter extends BlockSetter {
         Scheduler.get(plugin).runAsync(() -> {
             int count = fillSync(region);
 
+            // Send block updates on main thread to prevent ghost blocks
             Scheduler.get(plugin).run(() -> {
+                BlockUpdateUtil.sendRegionUpdate(
+                        region.getWorld(),
+                        region.getMinX(), region.getMinY(), region.getMinZ(),
+                        region.getMaxX(), region.getMaxY(), region.getMaxZ()
+                );
                 callback.accept(count);
             });
         });
@@ -48,7 +58,12 @@ public final class BukkitBlockSetter extends BlockSetter {
         }
         Scheduler.get(plugin).runAsync(() -> {
             int count = fillAtLocationsSync(locations);
-            Scheduler.get(plugin).run(() -> callback.accept(count));
+
+            // Send block updates on main thread to prevent ghost blocks
+            Scheduler.get(plugin).run(() -> {
+                BlockUpdateUtil.sendLocationsUpdate(locations);
+                callback.accept(count);
+            });
         });
     }
 

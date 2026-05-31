@@ -3,6 +3,7 @@ package dev.loki.lomines.handler;
 import dev.loki.lomines.LoMinesPlugin;
 import dev.loki.lomines.core.Mine;
 import dev.loki.lomines.data.config.block.FillMode;
+import dev.loki.lomines.util.block.BlockUpdateUtil;
 import dev.loki.lomines.util.location.Cuboid;
 import dev.loki.lomines.util.location.LocationParser;
 import dev.lolib.scheduler.Scheduler;
@@ -170,7 +171,8 @@ public final class MineResetHandler {
     }
 
     /**
-     * Teleports players standing inside the mine to the configured location.
+     * Teleports players standing inside the mine to a safe location near the configured destination.
+     * Prevents players from suffocating in blocks by finding a safe teleport spot.
      */
     private void teleportPlayers() {
         var destOpt = mine.getConfig().teleport().getLocation();
@@ -181,9 +183,13 @@ public final class MineResetHandler {
         if (dest.getWorld() == null) {
             return;
         }
+
+        // Find a safe teleport location to prevent suffocation
+        Location safeDest = BlockUpdateUtil.findSafeTeleportLocation(dest);
+
         for (Player p : dest.getWorld().getPlayers()) {
             if (mine.contains(p.getLocation())) {
-                p.teleport(dest);
+                p.teleport(safeDest);
             }
         }
     }
