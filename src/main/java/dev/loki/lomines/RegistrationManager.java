@@ -1,10 +1,10 @@
 package dev.loki.lomines;
 
-import dev.loki.lomines.command.AdminCommands;
-import dev.loki.lomines.command.LoMinesTabCompleter;
-import dev.loki.lomines.command.MaskCommands;
-import dev.loki.lomines.command.PlayerCommands;
-import dev.loki.lomines.command.StatsCommands;
+import dev.loki.lomines.command.admin.AdminCommands;
+import dev.loki.lomines.command.admin.MaskCommands;
+import dev.loki.lomines.command.admin.StatsCommands;
+import dev.loki.lomines.command.common.LoMinesTabCompleter;
+import dev.loki.lomines.command.player.PlayerCommands;
 import dev.loki.lomines.integration.IntegrationManager;
 import dev.loki.lomines.listener.BlockBreakListener;
 import dev.loki.lomines.listener.GroupGuiListener;

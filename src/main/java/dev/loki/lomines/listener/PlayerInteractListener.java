@@ -1,7 +1,7 @@
 package dev.loki.lomines.listener;
 
 import dev.loki.lomines.LoMinesPlugin;
-import dev.loki.lomines.gui.GroupCreateGui;
+import dev.loki.lomines.gui.group.GroupCreateGui;
 import dev.loki.lomines.wand.GroupWandItem;
 import dev.loki.lomines.wand.GroupWandSession;
 import net.kyori.adventure.text.Component;

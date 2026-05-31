@@ -1,6 +1,6 @@
 package dev.loki.lomines.core.service;
 
-import dev.loki.lomines.data.config.ConfigLoader;
+import dev.loki.lomines.data.config.loader.common.ConfigLoader;
 import dev.loki.lomines.data.config.MineConfig;
 import dev.loki.lomines.data.config.block.BlockConfig;
 import dev.loki.lomines.data.config.block.BlockKey;

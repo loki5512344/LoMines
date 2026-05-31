@@ -1,7 +1,7 @@
 package dev.loki.lomines.integration.placeholder;
 
 import dev.loki.lomines.LoMinesPlugin;
-import dev.loki.lomines.core.Mine;
+import dev.loki.lomines.core.mine.Mine;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;

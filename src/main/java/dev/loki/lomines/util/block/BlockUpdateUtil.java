@@ -17,8 +17,7 @@ import java.util.Collection;
  */
 public final class BlockUpdateUtil {
 
-    private BlockUpdateUtil() {
-    }
+    private BlockUpdateUtil() {}
 
     /**
      * Sends a block update to all players who can see the specified chunk.
@@ -27,15 +26,11 @@ public final class BlockUpdateUtil {
      * @param block the block to update
      */
     public static void sendBlockUpdate(Block block) {
-        if (block == null) {
-            return;
-        }
+        if (block == null) return;
 
-        // Get chunk and players in it
         Chunk chunk = block.getChunk();
         World world = block.getWorld();
 
-        // Send block change to all players in the world who can see this chunk
         for (Player player : world.getPlayers()) {
             if (isChunkVisibleToPlayer(player, chunk)) {
                 player.sendBlockChange(block.getLocation(), block.getBlockData());
@@ -63,7 +58,6 @@ public final class BlockUpdateUtil {
             for (int y = minY; y <= maxY; y++) {
                 for (int z = minZ; z <= maxZ; z++) {
                     Block block = world.getBlockAt(x, y, z);
-
                     for (Player player : players) {
                         if (isLocationVisibleToPlayer(player, block.getLocation())) {
                             player.sendBlockChange(block.getLocation(), block.getBlockData());
@@ -81,16 +75,11 @@ public final class BlockUpdateUtil {
      * @param locations the locations to update
      */
     public static void sendLocationsUpdate(java.util.List<Location> locations) {
-        if (locations == null || locations.isEmpty()) {
-            return;
-        }
+        if (locations == null || locations.isEmpty()) return;
 
         for (Location loc : locations) {
-            if (loc.getWorld() == null) {
-                continue;
-            }
+            if (loc.getWorld() == null) continue;
             Block block = loc.getBlock();
-
             for (Player player : loc.getWorld().getPlayers()) {
                 if (isLocationVisibleToPlayer(player, loc)) {
                     player.sendBlockChange(loc, block.getBlockData());
@@ -127,109 +116,8 @@ public final class BlockUpdateUtil {
         }
     }
 
-    /**
-     * Finds a safe teleport location near the given destination.
-     * Checks for suffocation hazards (blocks at head/body level).
-     * <p>Will not teleport too high - limited to maxUpOffset blocks above original.</p>
-     *
-     * @param destination the desired destination
-     * @param maxUpOffset maximum blocks to search upward (to avoid teleporting too high)
-     * @return a safe location (may be the same as destination if safe)
-     */
-    public static Location findSafeTeleportLocation(Location destination, int maxUpOffset) {
-        if (destination == null || destination.getWorld() == null) {
-            return destination;
-        }
-
-        World world = destination.getWorld();
-        int x = destination.getBlockX();
-        int y = destination.getBlockY();
-        int z = destination.getBlockZ();
-        float yaw = destination.getYaw();
-        float pitch = destination.getPitch();
-
-        // Clamp maxUpOffset to reasonable range (2-10)
-        maxUpOffset = Math.max(2, Math.min(maxUpOffset, 10));
-
-        // Check if original location is safe
-        if (isSafeLocation(world, x, y, z)) {
-            return destination;
-        }
-
-        // Search nearby blocks first (same Y level, closer distance)
-        int[][] nearby = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
-        for (int[] offset : nearby) {
-            if (isSafeLocation(world, x + offset[0], y, z + offset[1])) {
-                return new Location(world, x + offset[0] + 0.5, y, z + offset[1] + 0.5, yaw, pitch);
-            }
-        }
-
-        // Search upward (limited by maxUpOffset to avoid teleporting too high)
-        for (int offset = 1; offset <= maxUpOffset; offset++) {
-            if (isSafeLocation(world, x, y + offset, z)) {
-                return new Location(world, x + 0.5, y + offset, z + 0.5, yaw, pitch);
-            }
-        }
-
-        // Search downward
-        for (int offset = 1; offset <= 5 && y - offset >= world.getMinHeight(); offset++) {
-            if (isSafeLocation(world, x, y - offset, z)) {
-                return new Location(world, x + 0.5, y - offset, z + 0.5, yaw, pitch);
-            }
-        }
-
-        // Search nearby with small Y offset
-        int[][] nearbyDiagonal = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {-1, -1}, {1, -1}, {-1, 1}};
-        for (int[] offset : nearbyDiagonal) {
-            for (int yOffset = -1; yOffset <= maxUpOffset; yOffset++) {
-                int newY = y + yOffset;
-                if (newY < world.getMinHeight() || newY >= world.getMaxHeight()) {
-                    continue;
-                }
-                if (isSafeLocation(world, x + offset[0], newY, z + offset[1])) {
-                    return new Location(world, x + offset[0] + 0.5, newY, z + offset[1] + 0.5, yaw, pitch);
-                }
-            }
-        }
-
-        // If nothing else works, return original but at least center it
-        return new Location(world, x + 0.5, y, z + 0.5, yaw, pitch);
-    }
-
-    /**
-     * Finds a safe teleport location with default max up offset of 3 blocks.
-     */
-    public static Location findSafeTeleportLocation(Location destination) {
-        return findSafeTeleportLocation(destination, 3);
-    }
-
-    /**
-     * Checks if a location is safe for teleport (no suffocation).
-     */
-    private static boolean isSafeLocation(World world, int x, int y, int z) {
-        // Check feet position (can be passable)
-        Block feetBlock = world.getBlockAt(x, y, z);
-        // Check head position (must be passable)
-        Block headBlock = world.getBlockAt(x, y + 1, z);
-
-        // Safe if feet is passable and head is passable
-        return isPassable(feetBlock) && isPassable(headBlock);
-    }
-
-    /**
-     * Checks if a block is passable (not solid).
-     */
-    private static boolean isPassable(Block block) {
-        return !block.getType().isSolid() || block.getType().isAir();
-    }
-
-    /**
-     * Checks if a player can see a chunk (is within render distance).
-     */
     private static boolean isChunkVisibleToPlayer(Player player, Chunk chunk) {
-        if (!player.getWorld().equals(chunk.getWorld())) {
-            return false;
-        }
+        if (!player.getWorld().equals(chunk.getWorld())) return false;
 
         int renderDistance = player.getClientViewDistance();
         int playerChunkX = player.getLocation().getBlockX() >> 4;
@@ -238,19 +126,13 @@ public final class BlockUpdateUtil {
         int dx = Math.abs(playerChunkX - chunk.getX());
         int dz = Math.abs(playerChunkZ - chunk.getZ());
 
-        // Check if chunk is within player's view distance
         return dx <= renderDistance && dz <= renderDistance;
     }
 
-    /**
-     * Checks if a location is visible to a player (within render distance).
-     */
     private static boolean isLocationVisibleToPlayer(Player player, Location loc) {
-        if (!player.getWorld().equals(loc.getWorld())) {
-            return false;
-        }
+        if (!player.getWorld().equals(loc.getWorld())) return false;
 
-        double renderDistance = player.getClientViewDistance() * 16; // blocks
+        double renderDistance = player.getClientViewDistance() * 16;
         return player.getLocation().distanceSquared(loc) <= renderDistance * renderDistance;
     }
 }

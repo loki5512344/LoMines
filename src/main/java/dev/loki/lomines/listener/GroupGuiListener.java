@@ -1,8 +1,8 @@
 package dev.loki.lomines.listener;
 
 import dev.loki.lomines.LoMinesPlugin;
-import dev.loki.lomines.gui.GroupCreateGui;
-import dev.loki.lomines.gui.GroupCreateGuiHolder;
+import dev.loki.lomines.gui.group.GroupCreateGui;
+import dev.loki.lomines.gui.group.GroupCreateGuiHolder;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

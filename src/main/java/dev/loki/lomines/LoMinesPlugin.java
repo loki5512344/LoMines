@@ -1,7 +1,7 @@
 package dev.loki.lomines;
 
-import dev.loki.lomines.core.MineTicker;
-import dev.loki.lomines.core.Mines;
+import dev.loki.lomines.core.mine.MineTicker;
+import dev.loki.lomines.core.mine.Mines;
 import dev.loki.lomines.data.stats.StatsManager;
 import dev.loki.lomines.integration.IntegrationManager;
 import dev.loki.lomines.wand.GroupWandManager;

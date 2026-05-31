@@ -1,7 +1,7 @@
 package dev.loki.lomines.command;
 
 import dev.loki.lomines.LoMinesPlugin;
-import dev.loki.lomines.core.Mine;
+import dev.loki.lomines.core.mine.Mine;
 import dev.loki.lomines.core.Mines;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;

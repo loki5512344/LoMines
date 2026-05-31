@@ -1,9 +1,6 @@
 package dev.loki.lomines.data.reward;
 
 import dev.loki.lomines.data.config.parser.ConfigParseException;
-import dev.loki.lomines.util.ValidationUtils;
-
-import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 
@@ -18,18 +15,15 @@ import java.util.Map;
 public final class RewardParser {
 
     private final RewardItemParser itemParser;
+    private final RewardMaterialParser materialParser;
+    private final RewardCommandParser commandParser;
 
     public RewardParser() {
         this.itemParser = new RewardItemParser();
+        this.materialParser = new RewardMaterialParser();
+        this.commandParser = new RewardCommandParser();
     }
 
-    /**
-     * Parses all rewards from the YAML configuration.
-     *
-     * @param yaml the YAML configuration
-     * @return list of parsed Reward objects
-     * @throws ConfigParseException if reward configuration is invalid
-     */
     public List<Reward> parseRewards(YamlConfiguration yaml) throws ConfigParseException {
         List<Reward> rewards = new ArrayList<>();
 
@@ -69,20 +63,13 @@ public final class RewardParser {
         return rewards;
     }
 
-    /**
-     * Parses a single reward from a map configuration.
-     *
-     * @param rewardMap the reward configuration map
-     * @return the parsed Reward object
-     * @throws ConfigParseException if the reward configuration is invalid
-     */
     private Reward parseReward(Map<String, Object> rewardMap) throws ConfigParseException {
         double chance = parseRewardField(rewardMap, "chance", Double.class);
         boolean preventDrops = parseRewardField(rewardMap, "prevent-drops", Boolean.class, false);
 
-        List<Material> materials = parseRewardMaterials(rewardMap);
+        var materials = materialParser.parseMaterials(rewardMap);
         List<ItemStack> items = parseRewardItems(rewardMap);
-        List<String> commands = parseRewardCommands(rewardMap);
+        List<String> commands = commandParser.parseCommands(rewardMap);
 
         return new Reward(materials, chance, items, commands, preventDrops);
     }
@@ -137,38 +124,6 @@ public final class RewardParser {
         }
     }
 
-    private List<Material> parseRewardMaterials(Map<String, Object> rewardMap)
-            throws ConfigParseException {
-        if (!rewardMap.containsKey("blocks")) {
-            throw new ConfigParseException("Missing required 'blocks' field in reward");
-        }
-        Object blocksObj = rewardMap.get("blocks");
-        if (!(blocksObj instanceof List)) {
-            throw new ConfigParseException(
-                    "Invalid 'blocks' type: expected list, got " +
-                            (blocksObj != null ? blocksObj.getClass().getSimpleName() : "null")
-            );
-        }
-        @SuppressWarnings("unchecked")
-        List<String> blocksList = (List<String>) blocksObj;
-        List<Material> materials = new ArrayList<>();
-        for (String blockName : blocksList) {
-            if (blockName == null || blockName.trim().isEmpty()) {
-                throw new ConfigParseException("Block name cannot be null or empty");
-            }
-            try {
-                Material material = ValidationUtils.validateMaterial(blockName);
-                materials.add(material);
-            } catch (IllegalArgumentException e) {
-                throw new ConfigParseException(
-                        "Unknown material in reward blocks: '" + blockName + "'",
-                        e
-                );
-            }
-        }
-        return materials;
-    }
-
     private List<ItemStack> parseRewardItems(Map<String, Object> rewardMap)
             throws ConfigParseException {
         List<ItemStack> items = new ArrayList<>();
@@ -196,29 +151,5 @@ public final class RewardParser {
             items.add(item);
         }
         return items;
-    }
-
-    private List<String> parseRewardCommands(Map<String, Object> rewardMap)
-            throws ConfigParseException {
-        List<String> commands = new ArrayList<>();
-        if (!rewardMap.containsKey("commands")) {
-            return commands;
-        }
-        Object commandsObj = rewardMap.get("commands");
-        if (!(commandsObj instanceof List)) {
-            throw new ConfigParseException(
-                    "Invalid 'commands' type: expected list, got " +
-                            (commandsObj != null ? commandsObj.getClass().getSimpleName() : "null")
-            );
-        }
-        @SuppressWarnings("unchecked")
-        List<String> commandsList = (List<String>) commandsObj;
-        for (String command : commandsList) {
-            if (command == null || command.trim().isEmpty()) {
-                throw new ConfigParseException("Command cannot be null or empty");
-            }
-            commands.add(command);
-        }
-        return commands;
     }
 }

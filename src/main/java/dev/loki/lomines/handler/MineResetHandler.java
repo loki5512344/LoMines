@@ -1,7 +1,7 @@
 package dev.loki.lomines.handler;
 
 import dev.loki.lomines.LoMinesPlugin;
-import dev.loki.lomines.core.Mine;
+import dev.loki.lomines.core.mine.Mine;
 import dev.loki.lomines.data.config.block.FillMode;
 import dev.loki.lomines.util.block.BlockUpdateUtil;
 import dev.loki.lomines.util.location.Cuboid;

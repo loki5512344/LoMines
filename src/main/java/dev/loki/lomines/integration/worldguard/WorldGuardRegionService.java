@@ -11,21 +11,21 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Service for managing WorldGuard regions for mines.
- * Creates, updates, and deletes WorldGuard regions when mines are managed.
  */
 public final class WorldGuardRegionService {
 
     private final LoMinesPlugin plugin;
     private final WorldGuardFlagParser flagParser;
+    private final WorldGuardMemberHandler memberHandler;
     private boolean worldGuardEnabled;
 
     public WorldGuardRegionService(LoMinesPlugin plugin) {
         this.plugin = plugin;
         this.flagParser = new WorldGuardFlagParser(plugin);
+        this.memberHandler = new WorldGuardMemberHandler(plugin);
         checkWorldGuard();
     }
 
@@ -34,30 +34,21 @@ public final class WorldGuardRegionService {
                 && Bukkit.getPluginManager().isPluginEnabled("WorldGuard");
 
         if (worldGuardEnabled) {
-            plugin.loLogger().info("WorldGuard integration enabled - auto-region creation active");
+            plugin.loLogger().info("WorldGuard integration enabled");
         }
     }
 
-    /**
-     * Creates a WorldGuard region for a mine if enabled in config.
-     */
     public String createRegion(String mineName, MineConfig config) {
-        if (!worldGuardEnabled) {
-            return null;
-        }
+        if (!worldGuardEnabled) return null;
 
         WorldGuardConfig wgConfig = config.worldGuard();
-        if (wgConfig == null || !wgConfig.enabled()) {
-            return null;
-        }
+        if (wgConfig == null || !wgConfig.enabled()) return null;
 
         String regionName = wgConfig.generateRegionName(mineName);
 
         try {
             RegionManager regionManager = getRegionManager(config.worldName());
-            if (regionManager == null) {
-                return null;
-            }
+            if (regionManager == null) return null;
 
             if (regionManager.hasRegion(regionName)) {
                 plugin.loLogger().info("WorldGuard region already exists: " + regionName);
@@ -70,7 +61,7 @@ public final class WorldGuardRegionService {
                 return null;
             }
 
-            applyOwnersAndMembers(region, wgConfig);
+            memberHandler.applyOwnersAndMembers(region, wgConfig);
             applyFlags(region, wgConfig.flags());
 
             regionManager.addRegion(region);
@@ -79,31 +70,21 @@ public final class WorldGuardRegionService {
 
         } catch (Exception e) {
             plugin.loLogger().error("Failed to create WorldGuard region for mine " + mineName + ": " + e.getMessage());
-            e.printStackTrace();
             return null;
         }
     }
 
-    /**
-     * Updates an existing WorldGuard region when mine regions change.
-     */
     public boolean updateRegion(String mineName, MineConfig config) {
-        if (!worldGuardEnabled) {
-            return false;
-        }
+        if (!worldGuardEnabled) return false;
 
         WorldGuardConfig wgConfig = config.worldGuard();
-        if (wgConfig == null || !wgConfig.enabled()) {
-            return false;
-        }
+        if (wgConfig == null || !wgConfig.enabled()) return false;
 
         String regionName = wgConfig.generateRegionName(mineName);
 
         try {
             RegionManager regionManager = getRegionManager(config.worldName());
-            if (regionManager == null) {
-                return false;
-            }
+            if (regionManager == null) return false;
 
             if (regionManager.hasRegion(regionName)) {
                 regionManager.removeRegion(regionName);
@@ -117,26 +98,17 @@ public final class WorldGuardRegionService {
         }
     }
 
-    /**
-     * Deletes a WorldGuard region for a mine.
-     */
     public boolean deleteRegion(String mineName, MineConfig config) {
-        if (!worldGuardEnabled) {
-            return false;
-        }
+        if (!worldGuardEnabled) return false;
 
         WorldGuardConfig wgConfig = config.worldGuard();
-        if (wgConfig == null) {
-            return false;
-        }
+        if (wgConfig == null) return false;
 
         String regionName = wgConfig.generateRegionName(mineName);
 
         try {
             RegionManager regionManager = getRegionManager(config.worldName());
-            if (regionManager == null) {
-                return false;
-            }
+            if (regionManager == null) return false;
 
             if (regionManager.hasRegion(regionName)) {
                 regionManager.removeRegion(regionName);
@@ -153,9 +125,7 @@ public final class WorldGuardRegionService {
 
     private RegionManager getRegionManager(String worldName) {
         World world = Bukkit.getWorld(worldName);
-        if (world == null) {
-            return null;
-        }
+        if (world == null) return null;
 
         return WorldGuard.getInstance()
                 .getPlatform()
@@ -165,9 +135,7 @@ public final class WorldGuardRegionService {
 
     private ProtectedCuboidRegion createRegionFromCuboids(String regionName, MineConfig config) {
         List<Cuboid> regions = config.region().regions();
-        if (regions.isEmpty()) {
-            return null;
-        }
+        if (regions.isEmpty()) return null;
 
         Cuboid first = regions.get(0);
         BlockVector3 min = BlockVector3.at(first.getMinX(), first.getMinY(), first.getMinZ());
@@ -181,36 +149,6 @@ public final class WorldGuardRegionService {
         }
 
         return mainRegion;
-    }
-
-    private void applyOwnersAndMembers(ProtectedCuboidRegion region, WorldGuardConfig wgConfig) {
-        // Set owners
-        for (String owner : wgConfig.owners()) {
-            if (owner.startsWith("uuid:")) {
-                try {
-                    UUID uuid = UUID.fromString(owner.substring(5));
-                    region.getOwners().addPlayer(uuid);
-                } catch (IllegalArgumentException e) {
-                    plugin.loLogger().warn("Invalid owner UUID: " + owner);
-                }
-            } else {
-                region.getOwners().addPlayer(owner);
-            }
-        }
-
-        // Set members
-        for (String member : wgConfig.members()) {
-            if (member.startsWith("uuid:")) {
-                try {
-                    UUID uuid = UUID.fromString(member.substring(5));
-                    region.getMembers().addPlayer(uuid);
-                } catch (IllegalArgumentException e) {
-                    plugin.loLogger().warn("Invalid member UUID: " + member);
-                }
-            } else {
-                region.getMembers().addPlayer(member);
-            }
-        }
     }
 
     private void applyFlags(ProtectedCuboidRegion region, List<String> flags) {

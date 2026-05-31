@@ -1,6 +1,13 @@
 package dev.loki.lomines.data.config;
 
-import dev.loki.lomines.data.config.loader.*;
+import dev.loki.lomines.data.config.loader.block.BlockConfigLoader;
+import dev.loki.lomines.data.config.loader.entity.PlayerSpawnConfigLoader;
+import dev.loki.lomines.data.config.loader.entity.TeleportConfigLoader;
+import dev.loki.lomines.data.config.loader.region.RegionConfigLoader;
+import dev.loki.lomines.data.config.loader.region.WorldGuardConfigLoader;
+import dev.loki.lomines.data.config.loader.reset.ResetConfigLoader;
+import dev.loki.lomines.data.config.loader.reward.RewardConfigLoader;
+import dev.loki.lomines.data.config.loader.system.UIConfigLoader;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.IOException;

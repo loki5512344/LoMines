@@ -68,6 +68,33 @@ public final class LocationParser {
     }
 
     /**
+     * Parses a simple location string in the format "world;x;y;z" without yaw/pitch.
+     * Returns null if parsing fails.
+     *
+     * @param locationString the location string to parse
+     * @return the parsed Location object, or null if parsing fails
+     */
+    public static Location parseSimple(String locationString) {
+        if (locationString == null || locationString.isEmpty()) {
+            return null;
+        }
+        String[] parts = locationString.split(";");
+        if (parts.length < 4) return null;
+
+        World world = Bukkit.getWorld(parts[0]);
+        if (world == null) return null;
+
+        try {
+            double x = Double.parseDouble(parts[1]);
+            double y = Double.parseDouble(parts[2]);
+            double z = Double.parseDouble(parts[3]);
+            return new Location(world, x, y, z);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    /**
      * Formats a Location object to a string in the format "world;x;y;z;yaw;pitch".
      *
      * @param location the location to format

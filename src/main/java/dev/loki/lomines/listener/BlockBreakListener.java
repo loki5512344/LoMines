@@ -1,7 +1,7 @@
 package dev.loki.lomines.listener;
 
 import dev.loki.lomines.LoMinesPlugin;
-import dev.loki.lomines.core.Mine;
+import dev.loki.lomines.core.mine.Mine;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;

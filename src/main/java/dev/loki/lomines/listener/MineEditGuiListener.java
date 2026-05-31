@@ -1,10 +1,10 @@
 package dev.loki.lomines.listener;
 
 import dev.loki.lomines.LoMinesPlugin;
-import dev.loki.lomines.gui.ConfirmDeleteGui;
-import dev.loki.lomines.gui.ConfirmDeleteGuiHolder;
-import dev.loki.lomines.gui.MineEditGui;
-import dev.loki.lomines.gui.MineEditGuiHolder;
+import dev.loki.lomines.gui.confirm.ConfirmDeleteGui;
+import dev.loki.lomines.gui.confirm.ConfirmDeleteGuiHolder;
+import dev.loki.lomines.gui.mine.MineEditGui;
+import dev.loki.lomines.gui.mine.MineEditGuiHolder;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
