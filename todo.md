@@ -41,6 +41,16 @@
 - Подсказки для имён шахт, игроков, субкоманд
 - Permission-based фильтрация
 
+### 6. GUI редакторы ✅ (1/5 основных)
+- `MineEditGui.java` — главный редактор шахты
+  - Просмотр всех секций конфигурации
+  - Навигация к под-редакторам (заглушки)
+  - Сохранение и удаление с подтверждением
+- `ConfirmDeleteGui.java` — подтверждение удаления
+- `MineEditGuiListener.java` — обработка кликов в GUI
+- Команда `/lm edit <mine>` для открытия редактора
+- Разрешение `lomines.admin.edit`
+
 #### Новая архитектура (Section-based):
 ```
 data/config/
@@ -94,7 +104,7 @@ data/config/
 - [x] **Phase 10:** Обновление core классов для новой системы ✅
 - [x] **Phase 11:** Обновление handlers для новой конфигурации ✅
 - [x] **Phase 12:** Автодополнение команд (tab completer) ✅
-- [ ] **Phase 13:** GUI редакторы (0/5)
+- [x] **Phase 13:** GUI редакторы - главное меню ✅ (под-редакторы 0/5)
 - [ ] **Phase 14:** Интеграции PlaceholderAPI, Oraxen, ItemsAdder
 
 ---
@@ -116,12 +126,13 @@ data/config/
 2. [ ] Включить `ItemsAdderBlockSetter.java` — использовать `BlockKey.ItemsAdder`
 3. [ ] PlaceholderAPI интеграция
 
-### Приоритет 3: GUI редакторы
-1. [ ] `MineEditGui` — редактирование шахты
-2. [ ] `BlockConfigGui` — настройка блоков
-3. [ ] `RewardConfigGui` — настройка наград
-4. [ ] `ResetConfigGui` — настройка таймеров
-5. [ ] `TeleportConfigGui` — настройка телепорта
+### Приоритет 3: GUI редакторы (Частично ✅)
+- [x] `MineEditGui` — главное меню редактора (просмотр + навигация)
+- [ ] `BlockEditGui` — редактирование блоков и весов
+- [ ] `ResetEditGui` — настройка таймеров и триггеров
+- [ ] `RewardEditGui` — настройка наград
+- [ ] `TeleportEditGui` — настройка телепорта
+- [ ] `UIEditGui` — настройка action bar
 
 ---
 
