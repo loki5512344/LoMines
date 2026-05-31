@@ -1,4 +1,4 @@
-package dev.loki.lomines.wand;
+package dev.loki.lomines.wand.group;
 
 import dev.loki.lomines.LoMinesPlugin;
 import net.kyori.adventure.text.Component;

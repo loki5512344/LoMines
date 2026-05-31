@@ -1,4 +1,4 @@
-package dev.loki.lomines.util;
+package dev.loki.lomines.util.selection;
 
 import org.bukkit.Location;
 import org.bukkit.World;

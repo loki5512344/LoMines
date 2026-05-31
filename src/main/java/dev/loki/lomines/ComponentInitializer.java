@@ -4,7 +4,7 @@ import dev.loki.lomines.core.mine.MineTicker;
 import dev.loki.lomines.core.mine.Mines;
 import dev.loki.lomines.data.stats.StatsManager;
 import dev.loki.lomines.integration.IntegrationManager;
-import dev.loki.lomines.wand.GroupWandManager;
+import dev.loki.lomines.wand.group.GroupWandManager;
 import dev.lolib.commands.CommandManager;
 
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package dev.loki.lomines.wand;
+package dev.loki.lomines.wand.group;
 
 import java.util.Map;
 import java.util.UUID;

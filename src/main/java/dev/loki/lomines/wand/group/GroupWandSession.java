@@ -1,4 +1,4 @@
-package dev.loki.lomines.wand;
+package dev.loki.lomines.wand.group;
 
 import org.bukkit.Location;
 

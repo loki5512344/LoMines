@@ -1,6 +1,6 @@
 package dev.loki.lomines.gui.group;
 
-import dev.loki.lomines.wand.GroupWandSession;
+import dev.loki.lomines.wand.group.GroupWandSession;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;

@@ -2,8 +2,8 @@ package dev.loki.lomines.gui.group;
 
 import dev.loki.lomines.LoMinesPlugin;
 import dev.loki.lomines.core.mine.Mines;
-import dev.loki.lomines.wand.GroupWandManager;
-import dev.loki.lomines.wand.GroupWandSession;
+import dev.loki.lomines.wand.group.GroupWandManager;
+import dev.loki.lomines.wand.group.GroupWandSession;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;

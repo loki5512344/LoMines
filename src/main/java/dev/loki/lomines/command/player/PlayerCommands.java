@@ -2,7 +2,7 @@ package dev.loki.lomines.command.player;
 
 import dev.loki.lomines.LoMinesPlugin;
 import dev.loki.lomines.util.ErrorHandler;
-import dev.loki.lomines.wand.GroupWandItem;
+import dev.loki.lomines.wand.group.GroupWandItem;
 import dev.lolib.commands.annotation.Arg;
 import dev.lolib.commands.annotation.Command;
 import dev.lolib.commands.annotation.Subcommand;
