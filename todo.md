@@ -90,7 +90,26 @@
 **Проблема:** Ghost blocks (невидимые блоки) возникают при быстрой установке блоков, когда сервер не отправляет пакеты клиенту.
 **Решение:** Принудительная отправка `player.sendBlockChange()` после установки блоков.
 
-### 10. WorldGuard интеграция ✅
+### 10. PlaceholderAPI интеграция ✅
+- `LoMinesPlaceholderExpansion.java` — расширение PlaceholderAPI
+  - `%lomines_mine_<name>_name%` — название шахты
+  - `%lomines_mine_<name>_blocks%` — текущее количество блоков
+  - `%lomines_mine_<name>_total%` — общий объём
+  - `%lomines_mine_<name>_percent%` — процент заполнения (1 знак)
+  - `%lomines_mine_<name>_percentint%` — процент (целое)
+  - `%lomines_mine_<name>_world%` — мир шахты
+  - `%lomines_mine_<name>_remaining%` — оставшиеся блоки
+  - `%lomines_mine_<name>_resettime%` — время с последнего сброса (mm:ss)
+  - `%lomines_mine_<name>_resetseconds%` — секунды с сброса
+  - `%lomines_player_blocksmined%` — всего добыто блоков
+  - `%lomines_player_minesreset%` — сброшено шахт
+  - `%lomines_player_playtime%` — время игры (форматированное)
+  - `%lomines_player_rank%` — позиция в топе
+  - `%lomines_count%` — количество шахт
+- `IntegrationManager` — регистрация/отключение расширения
+- Oraxen и ItemsAdder интеграции отключены (не реализованы)
+
+### 11. WorldGuard интеграция ✅
 - `WorldGuardConfig.java` — настройки авто-регионов
   - Шаблоны имён: `{mine_name}_{random_4}`, `{random_6}`, и т.д.
   - Настройка владельцев и членов (name или uuid:xxx)
@@ -292,6 +311,8 @@ dev.loki.lomines/
 │   └── GroupCreateGuiHolder.java
 ├── integration/
 │   ├── IntegrationManager.java
+│   ├── placeholder/                   # ✅ NEW: PlaceholderAPI
+│   │   └── LoMinesPlaceholderExpansion.java
 │   ├── worldguard/
 │   │   ├── WorldGuardConfig.java          # Шаблоны имён регионов, флаги
 │   │   ├── WorldGuardFlagParser.java      # Парсинг флагов WG
@@ -367,6 +388,7 @@ dev.loki.lomines/
 
 ## 📦 Git история
 
+- `1daff28` - feat: PlaceholderAPI integration with mine and player placeholders
 - `cfaf638` - feat: commands to set teleport and spawn locations from player position
 - `bb2e47a` - feat: player-spawn config for stuck players, limit teleport height
 - `0612465` - fix: ghost blocks and safe teleport location
