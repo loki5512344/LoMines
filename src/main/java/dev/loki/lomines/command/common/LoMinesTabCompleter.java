@@ -21,7 +21,7 @@ public class LoMinesTabCompleter implements TabCompleter {
     private static final List<String> ALL_COMMANDS = List.of(
             "create", "delete", "reset", "reload", "list", "wand", "group",
             "stats", "top", "maskscan", "edit", "setteleport", "setspawn",
-            "clearspawn", "info", "tp", "copy", "help"
+            "clearspawn", "info", "tp", "copy", "regions", "addregion", "removeregion", "help"
     );
 
     private static final List<String> BOOLEAN_VALUES = List.of("true", "false");
@@ -67,13 +67,15 @@ public class LoMinesTabCompleter implements TabCompleter {
     private List<String> completeSecondArg(CommandSender sender, String subcommand, String partial) {
         return switch (subcommand) {
             case "create" -> completeCreate(partial);
-            case "delete", "maskscan", "edit", "setteleport", "setspawn", "clearspawn", "info" ->
+            case "delete", "maskscan", "edit", "setteleport", "setspawn", "clearspawn", "info",
+                 "regions", "addregion" ->
                     filterStartsWith(getMineNames(), partial);
             case "reset" -> completeReset(partial);
             case "stats" -> completeStats(sender, partial);
             case "top" -> completeTopFirstArg(partial);
             case "tp" -> completeTeleport(sender, partial);
             case "copy" -> completeCopyFirstArg(partial);
+            case "removeregion" -> completeRemoveRegion(sender, partial);
             default -> new ArrayList<>();
         };
     }
@@ -83,8 +85,22 @@ public class LoMinesTabCompleter implements TabCompleter {
             case "reset" -> filterStartsWith(BOOLEAN_VALUES, partial);
             case "top" -> completeTopSecondArg(arg2, partial);
             case "copy" -> filterStartsWith(getMineNames(), partial);
+            case "removeregion" -> completeRegionIndex(arg2, partial);
             default -> new ArrayList<>();
         };
+    }
+
+    private List<String> completeRegionIndex(String mineName, String partial) {
+        var mine = plugin.getMines().find(mineName);
+        if (mine.isEmpty()) {
+            return new ArrayList<>();
+        }
+        int regionCount = mine.get().getRegions().size();
+        List<String> indices = new ArrayList<>();
+        for (int i = 1; i <= regionCount; i++) {
+            indices.add(String.valueOf(i));
+        }
+        return filterStartsWith(indices, partial);
     }
 
     private List<String> completeCreate(String partial) {
@@ -146,6 +162,13 @@ public class LoMinesTabCompleter implements TabCompleter {
         return filterStartsWith(getMineNames(), partial);
     }
 
+    private List<String> completeRemoveRegion(CommandSender sender, String partial) {
+        if (!sender.hasPermission("lomines.admin.regions")) {
+            return new ArrayList<>();
+        }
+        return filterStartsWith(getMineNames(), partial);
+    }
+
     private boolean isNumericPartial(String partial) {
         return partial.isEmpty() || partial.matches("\\d*");
     }
@@ -179,6 +202,7 @@ public class LoMinesTabCompleter implements TabCompleter {
             case "stats", "top" -> sender.hasPermission("lomines.stats");
             case "tp" -> sender.hasPermission("lomines.teleport");
             case "copy" -> sender.hasPermission("lomines.admin.copy");
+            case "regions", "addregion", "removeregion" -> sender.hasPermission("lomines.admin.regions");
             case "help" -> sender.hasPermission("lomines.use");
             default -> true;
         };

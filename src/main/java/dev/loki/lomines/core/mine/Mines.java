@@ -112,6 +112,34 @@ public final class Mines {
         }
     }
 
+    /**
+     * Updates mine configuration and saves to disk.
+     * Used for modifying regions, blocks, etc.
+     */
+    public void updateMineConfig(String name, MineConfig newConfig) throws IOException {
+        if (!repository.exists(name)) {
+            throw new IllegalArgumentException("Mine not found: " + name);
+        }
+
+        // Save new config to file
+        fileManager.saveConfig(name, newConfig);
+
+        // Reload to apply changes
+        try {
+            Mine oldMine = repository.find(name).orElse(null);
+            repository.reload(name);
+
+            if (oldMine != null) {
+                Mine newMine = repository.find(name).orElse(null);
+                if (newMine != null) {
+                    worldGuardService.updateRegion(name, newMine.getConfig());
+                }
+            }
+        } catch (ConfigLoader.ConfigLoadException e) {
+            throw new IOException("Failed to reload mine after config update: " + e.getMessage(), e);
+        }
+    }
+
     public WorldGuardRegionService getWorldGuardService() {
         return worldGuardService;
     }

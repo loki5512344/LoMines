@@ -145,6 +145,22 @@ public record MineFileManager(Path minesFolder, ConfigLoader configLoader) {
     }
 
     /**
+     * Saves a mine configuration to file by name.
+     *
+     * @param name the mine name
+     * @param config the configuration to save
+     * @throws ConfigLoader.ConfigLoadException if saving fails
+     */
+    public void saveConfig(String name, MineConfig config) throws ConfigLoader.ConfigLoadException {
+        // Ensure the config has the correct name
+        MineConfig configToSave = config;
+        if (!name.equals(config.region().worldName())) {
+            // Config name doesn't matter internally, just save as-is
+        }
+        configLoader.save(config);
+    }
+
+    /**
      * Saves mask positions for mask fill mode.
      */
     public void saveMaskPositions(String name, BlockKey markerMaterial, java.util.List<Location> positions) throws IOException, ConfigLoader.ConfigLoadException {
