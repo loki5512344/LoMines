@@ -171,9 +171,9 @@ public final class MineResetHandler {
     }
 
     /**
-     * Teleports players standing inside the mine to a safe location.
+     * Teleports ONLY stuck players (those inside solid blocks) to a safe location.
      * Uses player-spawn location if configured, otherwise uses teleport location.
-     * Prevents players from suffocating in blocks by finding a safe teleport spot.
+     * Only teleports if player is suffocating in a block, not all players in mine!
      */
     private void teleportPlayers() {
         // Get spawn location for stuck players (player-spawn config) or fall back to teleport location
@@ -190,9 +190,20 @@ public final class MineResetHandler {
         Location safeDest = BlockUpdateUtil.findSafeTeleportLocation(dest, 3);
 
         for (Player p : dest.getWorld().getPlayers()) {
-            if (mine.contains(p.getLocation())) {
+            // Only teleport if player is INSIDE the mine AND is suffocating in a solid block
+            if (mine.contains(p.getLocation()) && isPlayerStuckInBlock(p)) {
                 p.teleport(safeDest);
             }
         }
+    }
+
+    /**
+     * Checks if player is stuck inside a solid block (suffocating).
+     */
+    private boolean isPlayerStuckInBlock(Player player) {
+        Location loc = player.getLocation();
+        var block = loc.getBlock();
+        // Check if block at player position is solid (not air/liquid)
+        return block.getType().isSolid() && !block.isLiquid();
     }
 }

@@ -1,13 +1,42 @@
-# LoMines Configuration
+# ============================================
+# LoMines - Основная конфигурация
+# ============================================
 
-# Enable statistics tracking for players
+# Включить статистику игроков
 statistics-enabled: true
 
-# Enable debug logging
+# Включить отладочный лог
 debug: false
 
-# WorldGuard Integration Settings
-worldguard:
+# ============================================
+# УВЕДОМЛЕНИЯ О СБРОСЕ ШАХТ
+# ============================================
+# Здесь можно настроить глобальные уведомления
+# Детальная настройка в messages.yml
+
+reset-notifications:
+  # Уведомлять о сбросе шахты
   enabled: true
-  auto-create-regions: false
+  # Тип уведомления: CHAT, ACTIONBAR, TITLE, BOSSBAR, NONE
+  type: CHAT
+  # Всем игрокам на сервере (true) или только рядом с шахтой (false)
+  broadcast-global: false
+  # Дистанция от шахты если broadcast-global: false
+  range: 100
+  # Предупреждать перед сбросом
+  warnings:
+    enabled: true
+    # За сколько секунд до сброса предупреждать
+    seconds-before:
+      - 60
+      - 30
+      - 10
+
+# ============================================
+# WORLDGUARD ИНТЕГРАЦИЯ
+# ============================================
+worldguard:
+  # Автоматически создавать регионы для шахт
+  enabled: false
+  # Приоритет региона (выше = приоритетнее)
   region-priority: 10

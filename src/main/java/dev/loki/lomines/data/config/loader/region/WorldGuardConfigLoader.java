@@ -23,6 +23,7 @@ public final class WorldGuardConfigLoader {
 
     /**
      * Parses WorldGuard configuration from YAML.
+     * Simplified: only block-break flag.
      */
     public WorldGuardConfig parse(YamlConfiguration yaml) {
         ConfigurationSection wgSection = yaml.getConfigurationSection("worldguard");
@@ -54,13 +55,10 @@ public final class WorldGuardConfigLoader {
             members = defaults.getStringList("worldguard.members");
         }
 
-        List<String> flags = yaml.getStringList("worldguard.flags");
-        if (flags.isEmpty()) {
-            flags = defaults.getStringList("worldguard.flags");
-        }
-        if (flags.isEmpty()) {
-            flags = List.of("passthrough=deny", "build=allow");
-        }
+        // Simplified: only block-break flag
+        // allow = все могут ломать, deny = никто не может, -g non_members = только владельцы
+        String blockBreak = yaml.getString("worldguard.block-break",
+                defaults.getString("worldguard.block-break", "allow"));
 
         boolean protect = yaml.getBoolean("worldguard.protect-on-create",
                 defaults.getBoolean("worldguard.protect-on-create", true));
@@ -70,7 +68,7 @@ public final class WorldGuardConfigLoader {
                 .template(template)
                 .owners(owners)
                 .members(members)
-                .flags(flags)
+                .blockBreak(blockBreak)
                 .protectOnCreate(protect)
                 .build();
     }
@@ -85,20 +83,21 @@ public final class WorldGuardConfigLoader {
             yaml.set("worldguard.region-template", config.regionNameTemplate());
             yaml.set("worldguard.owners", config.owners());
             yaml.set("worldguard.members", config.members());
-            yaml.set("worldguard.flags", config.flags());
+            yaml.set("worldguard.block-break", config.blockBreak());
             yaml.set("worldguard.protect-on-create", config.protectOnCreate());
         }
     }
 
     /**
      * Sets default values for WorldGuard configuration.
+     * Simplified: only block-break flag.
      */
     public void setDefaults(YamlConfiguration yaml) {
         yaml.set("worldguard.enabled", false);
         yaml.set("worldguard.region-template", "{mine_name}_{random_4}");
         yaml.set("worldguard.owners", List.of());
         yaml.set("worldguard.members", List.of());
-        yaml.set("worldguard.flags", List.of("passthrough=deny", "build=allow"));
+        yaml.set("worldguard.block-break", "allow"); // allow = все могут ломать
         yaml.set("worldguard.protect-on-create", true);
     }
 }
