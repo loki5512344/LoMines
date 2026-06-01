@@ -5,13 +5,12 @@ import dev.loki.lomines.core.mine.Mine;
 import dev.loki.lomines.data.config.block.BlockConfig;
 import dev.loki.lomines.data.config.block.BlockKey;
 import dev.loki.lomines.gui.common.ItemStackFactory;
+import dev.loki.lomines.gui.mine.holder.BlocksGuiHolder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +18,6 @@ import java.util.Map;
 
 /**
  * GUI for editing block weights in a mine.
- * Shows current blocks with their weights and allows adjustment.
  */
 public final class BlocksGui {
 
@@ -57,107 +55,22 @@ public final class BlocksGui {
         BlockConfig config = mine.getConfig().blocks();
         Map<BlockKey, Double> weights = config.weights();
 
-        // Fill background
         for (int i = 0; i < SIZE; i++) {
-            inv.setItem(i, filler());
+            inv.setItem(i, ItemStackFactory.filler());
         }
 
-        // Display blocks in rows 1-4 (slots 0-35)
         List<Map.Entry<BlockKey, Double>> sortedEntries = new ArrayList<>(weights.entrySet());
         sortedEntries.sort((a, b) -> Double.compare(b.getValue(), a.getValue()));
 
         int slot = 0;
         for (Map.Entry<BlockKey, Double> entry : sortedEntries) {
-            if (slot >= 36) break; // Max 36 blocks displayed
-            inv.setItem(slot, blockItem(entry.getKey(), entry.getValue()));
+            if (slot >= 36) break;
+            inv.setItem(slot, BlocksGuiItems.blockItem(entry.getKey(), entry.getValue()));
             slot++;
         }
 
-        // Add block button
-        inv.setItem(SLOT_ADD_BLOCK, addBlockItem());
-
-        // Back button
-        inv.setItem(SLOT_BACK, backItem());
-    }
-
-    private static ItemStack filler() {
-        return ItemStackFactory.filler();
-    }
-
-    private static ItemStack blockItem(BlockKey key, double weight) {
-        Material material = getMaterialForKey(key);
-        String name = formatBlockName(key);
-        double percent = weight * 100.0;
-
-        return ItemStackFactory.create(material, "§a§l" + name,
-            "§8───────────────",
-            "§7Вес: §f" + String.format("%.1f%%", percent),
-            "",
-            "§e▸ ЛКМ §7+5%",
-            "§e▸ ПКМ §7-5%",
-            "§e▸ Shift+ЛКМ §7+1%",
-            "§e▸ Shift+ПКМ §7-1% §8(удалить если 0%)",
-            "",
-            "§8ID: §7" + key.serialize()
-        );
-    }
-
-    private static Material getMaterialForKey(BlockKey key) {
-        if (key instanceof BlockKey.Vanilla vanilla) {
-            return vanilla.material();
-        }
-        // Custom blocks show a special icon
-        if (key instanceof BlockKey.Oraxen) {
-            return Material.NETHER_STAR;
-        }
-        if (key instanceof BlockKey.ItemsAdder) {
-            return Material.EMERALD;
-        }
-        return Material.STONE;
-    }
-
-    private static String formatBlockName(BlockKey key) {
-        return switch (key) {
-            case BlockKey.Vanilla vanilla -> formatMaterialName(vanilla.material());
-            case BlockKey.Oraxen oraxen -> "Oraxen:" + oraxen.id();
-            case BlockKey.ItemsAdder itemsAdder -> "IA:" + itemsAdder.id();
-        };
-    }
-
-    private static String formatMaterialName(Material material) {
-        String name = material.name().toLowerCase().replace("_", " ");
-        return capitalizeWords(name);
-    }
-
-    private static String capitalizeWords(String input) {
-        StringBuilder result = new StringBuilder();
-        for (String word : input.split(" ")) {
-            if (!word.isEmpty()) {
-                result.append(Character.toUpperCase(word.charAt(0)))
-                      .append(word.substring(1))
-                      .append(" ");
-            }
-        }
-        return result.toString().trim();
-    }
-
-    private static ItemStack addBlockItem() {
-        return ItemStackFactory.create(Material.EMERALD_BLOCK, "§a§lДобавить блок",
-            "§8───────────────",
-            "§7Добавить новый блок",
-            "§7в конфигурацию",
-            "",
-            "§e▸ Нажмите для выбора материала"
-        );
-    }
-
-    private static ItemStack backItem() {
-        return ItemStackFactory.create(Material.ARROW, "§c§lНазад",
-            "§8───────────────",
-            "§7Вернуться в редактор шахты",
-            "",
-            "§e▸ Нажмите для возврата"
-        );
+        inv.setItem(SLOT_ADD_BLOCK, BlocksGuiItems.addBlockItem());
+        inv.setItem(SLOT_BACK, BlocksGuiItems.backItem());
     }
 
     public static boolean handleClick(LoMinesPlugin plugin, Player player, int rawSlot,
@@ -175,7 +88,6 @@ public final class BlocksGui {
             return true;
         }
 
-        // Block weight adjustment (slots 0-35)
         if (rawSlot < 36 && clickedBlock != null) {
             adjustBlockWeight(plugin, player, mineName, clickedBlock, leftClick, shiftClick, rightClick);
             return true;
@@ -192,23 +104,22 @@ public final class BlocksGui {
 
         BlockConfig config = mine.getConfig().blocks();
         Map<BlockKey, Double> weights = new java.util.HashMap<>(config.weights());
-        double currentWeight = weights.getOrDefault(blockKey, 0.0) * 100.0; // Convert to percentage
+        double currentWeight = weights.getOrDefault(blockKey, 0.0) * 100.0;
 
         double delta = 0;
         if (leftClick && shiftClick) {
-            delta = 1.0; // +1%
+            delta = 1.0;
         } else if (rightClick && shiftClick) {
-            delta = -1.0; // -1%
+            delta = -1.0;
         } else if (leftClick) {
-            delta = 5.0; // +5%
+            delta = 5.0;
         } else if (rightClick) {
-            delta = -5.0; // -5%
+            delta = -5.0;
         }
 
         double newWeight = Math.max(0, Math.min(100, currentWeight + delta));
 
         if (rightClick && shiftClick && newWeight <= 0.1) {
-            // Remove block
             weights.remove(blockKey);
             player.sendMessage(Component.text("§cБлок §f" + blockKey.serialize() + " §cудален!"));
         } else {
@@ -217,8 +128,6 @@ public final class BlocksGui {
                 String.format("%.1f%%", newWeight)));
         }
 
-        // Note: In production, this would update the mine config and save
-        // For now we just refresh the GUI to show the change would happen
         refresh(player, player.getOpenInventory().getTopInventory(), mineName, plugin);
     }
 

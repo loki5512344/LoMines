@@ -442,14 +442,14 @@ dev.loki.lomines/
 
 ### 🟡 Средний
 - [ ] Включить интеграции с Oraxen и ItemsAdder
-- [ ] GUI под-редакторы (BlockEditGui, RewardEditGui, и т.д.)
-- [ ] PlaceholderAPI интеграция
+- [x] GUI под-редакторы (BlocksGui, ResetGui, RewardsGui) ✅
+- [x] PlaceholderAPI интеграция ✅
 
 ### 🟢 Низкий
 - [ ] Добавить `/lm info <mine>` — детальная информация
 - [ ] Добавить `/lm tp <mine>` — телепортация
 - [ ] Добавить `/lm copy <from> <to>` — копирование
-- [ ] Разбить большие GUI файлы (>200 строк)
+- [x] Разбить большие GUI файлы (>200 строк) ✅
 
 ---
 
