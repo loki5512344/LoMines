@@ -1,11 +1,14 @@
 package dev.loki.lomines;
 
 import dev.loki.lomines.command.admin.AdminCommands;
+import dev.loki.lomines.command.admin.CopyCommand;
 import dev.loki.lomines.command.admin.HologramCommands;
+import dev.loki.lomines.command.admin.InfoCommand;
 import dev.loki.lomines.command.admin.MaskCommands;
 import dev.loki.lomines.command.admin.StatsCommands;
 import dev.loki.lomines.command.common.LoMinesTabCompleter;
 import dev.loki.lomines.command.player.PlayerCommands;
+import dev.loki.lomines.command.player.TeleportCommand;
 import dev.loki.lomines.integration.IntegrationManager;
 import dev.loki.lomines.listener.BlockBreakListener;
 import dev.loki.lomines.listener.GroupGuiListener;
@@ -31,6 +34,9 @@ final class RegistrationManager {
         commandManager.register(new StatsCommands(plugin));
         commandManager.register(new MaskCommands(plugin));
         commandManager.register(new HologramCommands(plugin));
+        commandManager.register(new InfoCommand(plugin));
+        commandManager.register(new TeleportCommand(plugin));
+        commandManager.register(new CopyCommand(plugin));
 
         plugin.loLogger().info("Commands registered");
     }

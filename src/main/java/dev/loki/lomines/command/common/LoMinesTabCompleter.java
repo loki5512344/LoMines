@@ -21,7 +21,7 @@ public class LoMinesTabCompleter implements TabCompleter {
     private static final List<String> ALL_COMMANDS = List.of(
             "create", "delete", "reset", "reload", "list", "wand", "group",
             "stats", "top", "maskscan", "edit", "setteleport", "setspawn",
-            "clearspawn", "help"
+            "clearspawn", "info", "tp", "copy", "help"
     );
 
     private static final List<String> BOOLEAN_VALUES = List.of("true", "false");
@@ -67,11 +67,13 @@ public class LoMinesTabCompleter implements TabCompleter {
     private List<String> completeSecondArg(CommandSender sender, String subcommand, String partial) {
         return switch (subcommand) {
             case "create" -> completeCreate(partial);
-            case "delete", "maskscan", "edit", "setteleport", "setspawn", "clearspawn" ->
+            case "delete", "maskscan", "edit", "setteleport", "setspawn", "clearspawn", "info" ->
                     filterStartsWith(getMineNames(), partial);
             case "reset" -> completeReset(partial);
             case "stats" -> completeStats(sender, partial);
             case "top" -> completeTopFirstArg(partial);
+            case "tp" -> completeTeleport(sender, partial);
+            case "copy" -> completeCopyFirstArg(partial);
             default -> new ArrayList<>();
         };
     }
@@ -80,6 +82,7 @@ public class LoMinesTabCompleter implements TabCompleter {
         return switch (subcommand) {
             case "reset" -> filterStartsWith(BOOLEAN_VALUES, partial);
             case "top" -> completeTopSecondArg(arg2, partial);
+            case "copy" -> filterStartsWith(getMineNames(), partial);
             default -> new ArrayList<>();
         };
     }
@@ -132,6 +135,17 @@ public class LoMinesTabCompleter implements TabCompleter {
         return new ArrayList<>();
     }
 
+    private List<String> completeTeleport(CommandSender sender, String partial) {
+        if (!sender.hasPermission("lomines.teleport")) {
+            return new ArrayList<>();
+        }
+        return filterStartsWith(getMineNames(), partial);
+    }
+
+    private List<String> completeCopyFirstArg(String partial) {
+        return filterStartsWith(getMineNames(), partial);
+    }
+
     private boolean isNumericPartial(String partial) {
         return partial.isEmpty() || partial.matches("\\d*");
     }
@@ -156,13 +170,15 @@ public class LoMinesTabCompleter implements TabCompleter {
 
     private boolean hasPermission(CommandSender sender, String cmd) {
         return switch (cmd) {
-            case "create", "delete", "reload", "list", "maskscan", "edit" ->
+            case "create", "delete", "reload", "list", "maskscan", "edit", "info" ->
                     sender.hasPermission("lomines.admin");
             case "reset" -> sender.hasPermission("lomines.admin.reset");
             case "setteleport" -> sender.hasPermission("lomines.admin.setteleport");
             case "setspawn", "clearspawn" -> sender.hasPermission("lomines.admin.setspawn");
             case "wand", "group" -> sender.hasPermission("lomines.admin.wand");
             case "stats", "top" -> sender.hasPermission("lomines.stats");
+            case "tp" -> sender.hasPermission("lomines.teleport");
+            case "copy" -> sender.hasPermission("lomines.admin.copy");
             case "help" -> sender.hasPermission("lomines.use");
             default -> true;
         };
