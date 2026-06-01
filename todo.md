@@ -253,38 +253,38 @@ data/config/
 2. [ ] Включить `ItemsAdderBlockSetter.java` — использовать `BlockKey.ItemsAdder`
 3. [ ] PlaceholderAPI интеграция
 
-### Приоритет 3: Sub-GUI редакторы (0/3)
-- [x] `MineEditGui` — главное меню редактора (просмотр + навигация) ✅
-- [ ] **BlocksGui** — редактор блоков и весов
+### Приоритет 3: Sub-GUI редакторы ✅ (3/3)
+- [x] `MineEditGui` — главное меню редактора (просмотр + навигация)
+- [x] **BlocksGui** — редактор блоков и весов
   - Список блоков с весами (MATERIAL + шанс)
   - Добавление нового блока (меню выбора материала)
   - Изменение веса блока (ЛКМ/ПКМ для +/-)
   - Удаление блока (Shift+ПКМ)
   - Поддержка Oraxen/ItemsAdder
-- [ ] **ResetGui** — настройка сброса шахты
+- [x] **ResetGui** — настройка сброса шахты
   - Интервал (формат: 5m, 30s, 2h)
   - Процентный триггер (on/off + значение)
   - Сообщение при сбросе (MiniMessage)
   - Список команд
-- [ ] **RewardsGui** — настройка наград
+- [x] **RewardsGui** — настройка наград
   - Список записей наград (chance + типы блоков)
   - Редактор шанса и типов блоков
   - Редактор предметов (drag & drop)
   - Редактор команд
   - Флаг prevent-vanilla-drops
 
-### Приоритет 4: Holograms (голограммы над шахтами)
-- [ ] `HologramManager.java` — управление всеми голограммами
-- [ ] `Hologram.java` — сущность голограммы
-- [ ] Поддержка провайдеров:
+### Приоритет 4: Holograms (голограммы над шахтами) ✅
+- [x] `HologramManager.java` — управление всеми голограммами
+- [x] `HologramProvider.java` — интерфейс провайдеров
+- [x] Поддержка провайдеров:
   - HolographicDisplays (основной)
   - DecentHolograms (альтернатива)
-- [ ] Формат строк:
+- [x] Формат строк:
   - Название шахты
   - % заполнения (прогресс-бар)
   - Таймер до сброса (mm:ss)
-- [ ] Конфигурация: `ui.hologram.enabled`, `ui.hologram.format`, `ui.hologram.height`
-- [ ] Команда `/lm hologram <mine> [on|off]`
+- [x] Конфигурация: `ui.hologram.enabled`, `ui.hologram.format`, `ui.hologram.height`
+- [x] Команда `/lm hologram <mine> [on|off]`
 
 ---
 
