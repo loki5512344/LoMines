@@ -1,4 +1,4 @@
-package dev.loki.lomines.gui.mine.edit;
+package dev.loki.lomines.gui.mine.edit.blocks;
 
 import dev.loki.lomines.LoMinesPlugin;
 import dev.loki.lomines.core.mine.Mine;

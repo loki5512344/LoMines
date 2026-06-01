@@ -1,4 +1,4 @@
-package dev.loki.lomines.gui.mine.edit;
+package dev.loki.lomines.gui.mine.edit.reset;
 
 import dev.loki.lomines.data.config.reset.ResetConfig;
 import dev.loki.lomines.gui.common.ItemStackFactory;

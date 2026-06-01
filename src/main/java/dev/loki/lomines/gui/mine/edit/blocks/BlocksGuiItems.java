@@ -1,4 +1,4 @@
-package dev.loki.lomines.gui.mine.edit;
+package dev.loki.lomines.gui.mine.edit.blocks;
 
 import dev.loki.lomines.data.config.block.BlockKey;
 import dev.loki.lomines.gui.common.ItemStackFactory;
