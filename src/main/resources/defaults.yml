@@ -92,12 +92,9 @@ worldguard:
   members: []
 
   # WorldGuard flags to set
+  # Можно добавить любые другие флаги: pvp, tnt, build, и т.д.
   flags:
-    - "passthrough=deny"
-    - "build=allow"
-    - "pvp=deny"
-    - "tnt=deny"
-    - "creeper-explosion=deny"
+    - "block-break=allow"
 
   # Automatically protect the region on creation
   protect-on-create: true

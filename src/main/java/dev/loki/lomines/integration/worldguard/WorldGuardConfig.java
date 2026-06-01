@@ -6,14 +6,14 @@ import java.util.Random;
 
 /**
  * Configuration for WorldGuard auto-region creation.
- * Simplified: only controls who can break blocks in the mine.
+ * Supports any WorldGuard flags, default is only block-break=allow.
  */
 public record WorldGuardConfig(
         boolean enabled,
         String regionNameTemplate,
         List<String> owners,
         List<String> members,
-        String blockBreak,
+        List<String> flags,
         boolean protectOnCreate
 ) {
 
@@ -27,8 +27,8 @@ public record WorldGuardConfig(
                 : DEFAULT_TEMPLATE;
         owners = owners != null ? List.copyOf(owners) : List.of();
         members = members != null ? List.copyOf(members) : List.of();
-        // block-break: allow = все могут ломать, deny = никто не может, -g non_members = только владельцы
-        blockBreak = blockBreak != null && !blockBreak.isBlank() ? blockBreak : "allow";
+        // Default: only block-break=allow. User can add any flags they want.
+        flags = flags != null && !flags.isEmpty() ? List.copyOf(flags) : List.of("block-break=allow");
         protectOnCreate = protectOnCreate;
     }
 
@@ -76,7 +76,8 @@ public record WorldGuardConfig(
 
     /**
      * Default configuration with auto-region enabled.
-     * Everyone can break blocks (allow).
+     * Default flag: block-break=allow (everyone can mine).
+     * User can add any other flags.
      */
     public static WorldGuardConfig defaults() {
         return new WorldGuardConfig(
@@ -84,7 +85,7 @@ public record WorldGuardConfig(
                 DEFAULT_TEMPLATE,
                 List.of(),
                 List.of(),
-                "allow", // allow = все могут ломать
+                List.of("block-break=allow"),
                 true
         );
     }
@@ -98,7 +99,7 @@ public record WorldGuardConfig(
                 DEFAULT_TEMPLATE,
                 List.of(),
                 List.of(),
-                "allow",
+                List.of(),
                 false
         );
     }
@@ -115,7 +116,7 @@ public record WorldGuardConfig(
         private String template = DEFAULT_TEMPLATE;
         private List<String> owners = List.of();
         private List<String> members = List.of();
-        private String blockBreak = "allow";
+        private List<String> flags = List.of("block-break=allow");
         private boolean protectOnCreate = true;
 
         public Builder enabled(boolean enabled) {
@@ -138,8 +139,8 @@ public record WorldGuardConfig(
             return this;
         }
 
-        public Builder blockBreak(String blockBreak) {
-            this.blockBreak = blockBreak;
+        public Builder flags(List<String> flags) {
+            this.flags = flags;
             return this;
         }
 
@@ -149,6 +150,6 @@ public record WorldGuardConfig(
         }
 
         public WorldGuardConfig build() {
-            return new WorldGuardConfig(enabled, template, owners, members, blockBreak, protectOnCreate);
+            return new WorldGuardConfig(enabled, template, owners, members, flags, protectOnCreate);
         }
     }
