@@ -17,32 +17,17 @@ public final class RegionConfigLoader {
 
     /**
      * Parses region configuration from YAML.
+     * Supports up to 100 selection points (50 regions).
      */
     public RegionConfig parse(YamlConfiguration yaml) {
         List<Location> selections = new ArrayList<>();
 
-        // Try new format first
-        for (int i = 1; i <= 10; i++) {
-            String key = "region.selection." + i;
-            if (yaml.contains(key)) {
-                String locStr = yaml.getString(key);
-                if (locStr != null && !locStr.isBlank()) {
-                    selections.add(parseLocation(locStr));
-                }
-            }
-        }
+        // Try new format first (region.selection.X)
+        selections.addAll(parseSelections(yaml, "region.selection.", 100));
 
-        // Legacy fallback
+        // Legacy fallback (selection.X)
         if (selections.isEmpty()) {
-            for (int i = 1; i <= 10; i++) {
-                String key = "selection." + i;
-                if (yaml.contains(key)) {
-                    String locStr = yaml.getString(key);
-                    if (locStr != null && !locStr.isBlank()) {
-                        selections.add(parseLocation(locStr));
-                    }
-                }
-            }
+            selections.addAll(parseSelections(yaml, "selection.", 100));
         }
 
         if (selections.size() < 2) {
@@ -50,6 +35,43 @@ public final class RegionConfigLoader {
         }
 
         return RegionConfig.fromSelections(selections);
+    }
+
+    /**
+     * Parses selection points from YAML with given prefix.
+     * Supports indexed format: prefix.1, prefix.2, etc.
+     */
+    private List<Location> parseSelections(YamlConfiguration yaml, String prefix, int maxPoints) {
+        List<Location> selections = new ArrayList<>();
+
+        for (int i = 1; i <= maxPoints; i++) {
+            String key = prefix + i;
+            if (yaml.contains(key)) {
+                String locStr = yaml.getString(key);
+                if (locStr != null && !locStr.isBlank()) {
+                    try {
+                        selections.add(parseLocation(locStr));
+                    } catch (IllegalArgumentException e) {
+                        // Skip invalid locations but continue parsing
+                    }
+                }
+            } else {
+                // Stop at first missing index (assuming sequential)
+                // But check at least a few more for gaps
+                if (i > 20) {
+                    boolean hasMore = false;
+                    for (int j = i + 1; j <= Math.min(i + 5, maxPoints); j++) {
+                        if (yaml.contains(prefix + j)) {
+                            hasMore = true;
+                            break;
+                        }
+                    }
+                    if (!hasMore) break;
+                }
+            }
+        }
+
+        return selections;
     }
 
     /**

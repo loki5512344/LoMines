@@ -1,6 +1,6 @@
 package dev.loki.lomines.data.config.ui;
 
-import net.kyori.adventure.text.minimessage.MiniMessage;
+import dev.loki.lomines.util.format.ColorUtils;
 import net.kyori.adventure.text.Component;
 
 import java.util.Objects;
@@ -36,6 +36,7 @@ public record UIConfig(
     /**
      * Parses the action bar format with placeholders.
      * Placeholders: {mine}, {percent}, {time}, {blocks}, {total}
+     * Supports colors: &#RRGGBB, &a..&f, <color>
      */
     public Component formatActionBar(String mineName, double percent, String timeStr, int blocks, int total) {
         String parsed = actionBarFormat
@@ -45,7 +46,7 @@ public record UIConfig(
                 .replace("{blocks}", String.valueOf(blocks))
                 .replace("{total}", String.valueOf(total));
 
-        return MiniMessage.miniMessage().deserialize(parsed);
+        return ColorUtils.format(parsed);
     }
 
     /**

@@ -5,7 +5,7 @@ import dev.loki.lomines.core.mine.Mine;
 import dev.loki.lomines.data.config.ui.HologramConfig;
 import dev.loki.lomines.integration.hologram.provider.DecentHologramsProvider;
 import dev.loki.lomines.integration.hologram.provider.HolographicDisplaysProvider;
-import net.kyori.adventure.text.minimessage.MiniMessage;
+import dev.loki.lomines.util.format.ColorUtils;
 import org.bukkit.Location;
 
 import java.util.*;
@@ -144,7 +144,6 @@ public final class HologramManager {
 
     private List<String> formatLines(List<String> format, Mine mine) {
         List<String> result = new ArrayList<>();
-        MiniMessage miniMessage = MiniMessage.miniMessage();
 
         for (String line : format) {
             String formatted = line
@@ -153,7 +152,8 @@ public final class HologramManager {
                 .replace("{bar}", createProgressBar(mine.getPercentFilled()))
                 .replace("{time}", formatResetTime(mine));
 
-            result.add(formatted);
+            // Convert &#RRGGBB and &codes to legacy for hologram plugins
+            result.add(ColorUtils.toLegacy(formatted));
         }
 
         return result;
@@ -163,12 +163,12 @@ public final class HologramManager {
         int filled = (int) Math.round(percent / 10.0);
         int empty = 10 - filled;
 
+        // Use &#RRGGBB format which works with most hologram plugins
         StringBuilder bar = new StringBuilder();
-        bar.append("<green>");
+        bar.append("&#00FF00"); // Green for filled
         bar.append("█".repeat(Math.max(0, filled)));
-        bar.append("<gray>");
+        bar.append("&#808080"); // Gray for empty
         bar.append("░".repeat(Math.max(0, empty)));
-        bar.append("</gray></green>");
 
         return bar.toString();
     }
