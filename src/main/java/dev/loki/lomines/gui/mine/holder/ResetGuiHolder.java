@@ -1,4 +1,4 @@
-package dev.loki.lomines.gui.mine;
+package dev.loki.lomines.gui.mine.holder;
 
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -6,15 +6,15 @@ import org.bukkit.inventory.InventoryHolder;
 import java.util.UUID;
 
 /**
- * Inventory holder for MineEditGui.
+ * Inventory holder for ResetGui.
  */
-public class MineEditGuiHolder implements InventoryHolder {
+public final class ResetGuiHolder implements InventoryHolder {
 
     private final UUID playerId;
     private final String mineName;
     private Inventory inventory;
 
-    public MineEditGuiHolder(UUID playerId, String mineName) {
+    public ResetGuiHolder(UUID playerId, String mineName) {
         this.playerId = playerId;
         this.mineName = mineName;
     }

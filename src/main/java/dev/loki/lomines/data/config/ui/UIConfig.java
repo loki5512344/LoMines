@@ -12,8 +12,13 @@ public record UIConfig(
         boolean actionBarEnabled,
         String actionBarFormat,
         double actionBarRange,
-        String timerFormat
+        String timerFormat,
+        HologramConfig hologram
 ) {
+
+    public UIConfig {
+        hologram = hologram != null ? hologram : HologramConfig.disabled();
+    }
 
     public static final String DEFAULT_ACTIONBAR_FORMAT = "<green>{mine}</green> <gray>{percent}%</gray> <dark_gray>({time})";
     public static final String DEFAULT_TIMER_FORMAT = "mm:ss";
@@ -70,13 +75,13 @@ public record UIConfig(
      * Default configuration.
      */
     public static UIConfig defaults() {
-        return new UIConfig(true, DEFAULT_ACTIONBAR_FORMAT, 50.0, DEFAULT_TIMER_FORMAT);
+        return new UIConfig(true, DEFAULT_ACTIONBAR_FORMAT, 50.0, DEFAULT_TIMER_FORMAT, HologramConfig.defaults());
     }
 
     /**
      * Disabled configuration (no UI).
      */
     public static UIConfig disabled() {
-        return new UIConfig(false, "", 0, DEFAULT_TIMER_FORMAT);
+        return new UIConfig(false, "", 0, DEFAULT_TIMER_FORMAT, HologramConfig.disabled());
     }
 }

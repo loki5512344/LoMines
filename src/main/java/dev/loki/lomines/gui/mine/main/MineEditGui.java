@@ -1,4 +1,4 @@
-package dev.loki.lomines.gui.mine;
+package dev.loki.lomines.gui.mine.main;
 
 import dev.loki.lomines.LoMinesPlugin;
 import dev.loki.lomines.core.mine.Mine;
@@ -81,23 +81,23 @@ public final class MineEditGui {
                 return true;
             }
             case SLOT_BLOCKS -> {
-                player.sendMessage(Component.text("Открытие редактора блоков... (в разработке)", NamedTextColor.YELLOW));
+                BlocksGui.open(plugin, player, mineName);
                 return true;
             }
             case SLOT_RESET -> {
-                player.sendMessage(Component.text("Открытие редактора сброса... (в разработке)", NamedTextColor.YELLOW));
+                ResetGui.open(plugin, player, mineName);
                 return true;
             }
             case SLOT_REWARDS -> {
-                player.sendMessage(Component.text("Открытие редактора наград... (в разработке)", NamedTextColor.YELLOW));
+                RewardsGui.open(plugin, player, mineName);
                 return true;
             }
             case SLOT_TELEPORT -> {
-                player.sendMessage(Component.text("Открытие редактора телепорта... (в разработке)", NamedTextColor.YELLOW));
+                player.sendMessage(Component.text("Используйте команды /lm setteleport и /lm setspawn", NamedTextColor.YELLOW));
                 return true;
             }
             case SLOT_UI -> {
-                player.sendMessage(Component.text("Открытие редактора интерфейса... (в разработке)", NamedTextColor.YELLOW));
+                player.sendMessage(Component.text("Настройки UI редактируются в конфиге", NamedTextColor.YELLOW));
                 return true;
             }
             case SLOT_SAVE -> {
@@ -115,4 +115,3 @@ public final class MineEditGui {
         }
         return true;
     }
-}

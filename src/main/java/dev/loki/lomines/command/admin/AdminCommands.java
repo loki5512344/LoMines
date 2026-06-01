@@ -3,7 +3,7 @@ package dev.loki.lomines.command.admin;
 import dev.loki.lomines.LoMinesPlugin;
 import dev.loki.lomines.core.mine.Mine;
 import dev.loki.lomines.core.mine.Mines;
-import dev.loki.lomines.gui.mine.MineEditGui;
+import dev.loki.lomines.gui.mine.main.MineEditGui;
 import dev.loki.lomines.util.ErrorHandler;
 import dev.loki.lomines.util.MessageFormatter;
 import dev.lolib.commands.annotation.Arg;

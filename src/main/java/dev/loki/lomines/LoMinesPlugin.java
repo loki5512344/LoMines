@@ -4,6 +4,7 @@ import dev.loki.lomines.core.mine.MineTicker;
 import dev.loki.lomines.core.mine.Mines;
 import dev.loki.lomines.data.stats.StatsManager;
 import dev.loki.lomines.integration.IntegrationManager;
+import dev.loki.lomines.integration.hologram.HologramManager;
 import dev.loki.lomines.wand.WandParticleService;
 import dev.loki.lomines.wand.group.GroupWandManager;
 import dev.lolib.commands.CommandManager;
@@ -23,6 +24,7 @@ public final class LoMinesPlugin extends LoPlugin {
     private CommandManager commandManager;
     private IntegrationManager integrationManager;
     private WandParticleService wandParticleService;
+    private HologramManager hologramManager;
 
     @Override
     protected void enable() {
@@ -39,6 +41,7 @@ public final class LoMinesPlugin extends LoPlugin {
             this.commandManager = components.commandManager();
             this.integrationManager = components.integrationManager();
             this.wandParticleService = new WandParticleService(this);
+            this.hologramManager = new HologramManager(this);
 
             initializer.loadMines(mines);
             this.mineTicker = initializer.startTicker(mines);
@@ -85,6 +88,10 @@ public final class LoMinesPlugin extends LoPlugin {
                 wandParticleService.stopAll();
             }
 
+            if (hologramManager != null) {
+                hologramManager.shutdown();
+            }
+
             loLogger().info("LoMines has been disabled!");
         } catch (Exception e) {
             loLogger().error("Error during plugin shutdown: " + e.getMessage());
@@ -121,5 +128,9 @@ public final class LoMinesPlugin extends LoPlugin {
 
     public WandParticleService getWandParticleService() {
         return wandParticleService;
+    }
+
+    public HologramManager getHologramManager() {
+        return hologramManager;
     }
 }

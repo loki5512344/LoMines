@@ -1,6 +1,7 @@
 package dev.loki.lomines;
 
 import dev.loki.lomines.command.admin.AdminCommands;
+import dev.loki.lomines.command.admin.HologramCommands;
 import dev.loki.lomines.command.admin.MaskCommands;
 import dev.loki.lomines.command.admin.StatsCommands;
 import dev.loki.lomines.command.common.LoMinesTabCompleter;
@@ -29,6 +30,7 @@ final class RegistrationManager {
         commandManager.register(new PlayerCommands(plugin));
         commandManager.register(new StatsCommands(plugin));
         commandManager.register(new MaskCommands(plugin));
+        commandManager.register(new HologramCommands(plugin));
 
         plugin.loLogger().info("Commands registered");
     }

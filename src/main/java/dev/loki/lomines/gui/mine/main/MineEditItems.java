@@ -1,4 +1,4 @@
-package dev.loki.lomines.gui.mine;
+package dev.loki.lomines.gui.mine.main;
 
 import dev.loki.lomines.core.mine.Mine;
 import dev.loki.lomines.data.config.MineConfig;
