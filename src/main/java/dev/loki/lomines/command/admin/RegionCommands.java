@@ -5,11 +5,10 @@ import dev.loki.lomines.core.mine.Mine;
 import dev.loki.lomines.data.config.MineConfig;
 import dev.loki.lomines.data.config.region.RegionConfig;
 import dev.loki.lomines.util.location.Cuboid;
-import dev.lolilb.commands.annotation.Arg;
-import dev.lolilb.commands.annotation.Subcommand;
+import dev.lolib.commands.annotation.Arg;
+import dev.lolib.commands.annotation.Subcommand;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -73,14 +72,15 @@ public class RegionCommands {
         }
 
         var wandManager = plugin.getGroupWandManager();
-        var session = wandManager.getSession(player);
-
-        if (!session.isComplete()) {
+        var session = wandManager.getSession(player.getUniqueId());
+        int slot = session.getActiveSlot();
+        var pos1 = session.getPos1(slot);
+        var pos2 = session.getPos2(slot);
+        if (pos1 == null || pos2 == null) {
             player.sendMessage(Component.text("§cВыделите регион палочкой! ЛКМ - 1-я точка, ПКМ - 2-я точка"));
             return;
         }
-
-        Cuboid newRegion = session.toCuboid();
+        Cuboid newRegion = new Cuboid(pos1, pos2);
         String mineWorld = mine.getConfig().region().worldName();
         String regionWorld = newRegion.getWorld().getName();
 
@@ -102,7 +102,7 @@ public class RegionCommands {
         player.sendMessage(Component.text("§7До: §f" + newRegion.getMaxX() + ", " + newRegion.getMaxY() + ", " + newRegion.getMaxZ()));
         player.sendMessage(Component.text("§7Объём: §f" + newRegion.getVolume() + " §7блоков"));
 
-        session.clear();
+        session.clearCorners(slot);
     }
 
     /**
@@ -144,18 +144,22 @@ public class RegionCommands {
     private void updateMineRegions(Mine mine, RegionConfig newConfig) {
         var oldConfig = mine.getConfig();
         var newMineConfig = new MineConfig(
+                oldConfig.name(),
                 newConfig,
                 oldConfig.blocks(),
                 oldConfig.reset(),
-                oldConfig.teleport(),
-                oldConfig.playerSpawn(),
                 oldConfig.rewards(),
+                oldConfig.teleport(),
                 oldConfig.ui(),
-                oldConfig.worldGuard()
+                oldConfig.worldGuard(),
+                oldConfig.playerSpawn()
         );
 
         // Update and save
-        plugin.getMines().updateMineConfig(mine.getName(), newMineConfig);
-        mine.save();
+        try {
+            plugin.getMines().updateMineConfig(mine.getName(), newMineConfig);
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to update mine regions", e);
+        }
     }
 }

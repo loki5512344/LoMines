@@ -4,9 +4,7 @@ import dev.loki.lomines.data.config.block.BlockKey;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -16,6 +14,20 @@ public record RewardConfig(List<RewardEntry> entries) {
 
     public RewardConfig {
         entries = entries != null ? List.copyOf(entries) : List.of();
+    }
+
+    /**
+     * Empty reward config.
+     */
+    public static RewardConfig empty() {
+        return new RewardConfig(List.of());
+    }
+
+    /**
+     * Single entry reward config builder.
+     */
+    public static Builder builder() {
+        return new Builder();
     }
 
     /**
@@ -32,20 +44,6 @@ public record RewardConfig(List<RewardEntry> entries) {
      */
     public boolean hasRewards() {
         return !entries.isEmpty();
-    }
-
-    /**
-     * Empty reward config.
-     */
-    public static RewardConfig empty() {
-        return new RewardConfig(List.of());
-    }
-
-    /**
-     * Single entry reward config builder.
-     */
-    public static Builder builder() {
-        return new Builder();
     }
 
     // --- Reward Entry ---

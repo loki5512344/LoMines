@@ -3,22 +3,21 @@ package dev.loki.lomines.command.admin;
 import dev.loki.lomines.LoMinesPlugin;
 import dev.loki.lomines.core.mine.Mine;
 import dev.loki.lomines.integration.hologram.HologramManager;
-import dev.lolilb.commands.annotation.Arg;
-import dev.lolilb.commands.annotation.Subcommand;
+import dev.lolib.commands.annotation.Arg;
+import dev.lolib.commands.annotation.Subcommand;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 /**
  * Commands for managing holograms above mines.
  */
-class HologramCommands {
+public class HologramCommands {
 
     private final LoMinesPlugin plugin;
     private final HologramManager hologramManager;
 
-    HologramCommands(LoMinesPlugin plugin) {
+    public HologramCommands(LoMinesPlugin plugin) {
         this.plugin = plugin;
         this.hologramManager = plugin.getHologramManager();
     }
@@ -55,6 +54,6 @@ class HologramCommands {
         }
 
         sender.sendMessage(Component.text(
-            "Голограмма для шахты " + mineName + " " + (enable ? "§aвключена" : "§cвыключена")));
+                "Голограмма для шахты " + mineName + " " + (enable ? "§aвключена" : "§cвыключена")));
     }
 }

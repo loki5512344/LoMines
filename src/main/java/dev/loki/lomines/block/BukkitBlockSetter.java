@@ -106,8 +106,8 @@ public final class BukkitBlockSetter extends BlockSetter {
             currentWeight += entry.getValue();
             if (random <= currentWeight) {
                 // BlockKey is already validated to be a block
-                if (entry.getKey() instanceof BlockKey.Vanilla vanilla) {
-                    return Bukkit.createBlockData(vanilla.material());
+                if (entry.getKey() instanceof BlockKey.Vanilla(Material material)) {
+                    return Bukkit.createBlockData(material);
                 }
                 // Fallback for non-vanilla keys in vanilla setter (shouldn't happen)
                 return Bukkit.createBlockData(Material.STONE);
@@ -116,8 +116,8 @@ public final class BukkitBlockSetter extends BlockSetter {
 
         // Fallback to first entry
         BlockKey firstKey = weights.keySet().iterator().next();
-        if (firstKey instanceof BlockKey.Vanilla vanilla) {
-            return Bukkit.createBlockData(vanilla.material());
+        if (firstKey instanceof BlockKey.Vanilla(Material material)) {
+            return Bukkit.createBlockData(material);
         }
         return Bukkit.createBlockData(Material.STONE);
     }

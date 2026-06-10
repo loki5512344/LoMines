@@ -159,16 +159,16 @@ public final class ChunkUtils {
     }
 
     /**
-         * Simple immutable holder for chunk coordinates.
-         */
-        private record ChunkCoordinate(int x, int z) {
+     * Simple immutable holder for chunk coordinates.
+     */
+    private record ChunkCoordinate(int x, int z) {
 
         @Override
-            public boolean equals(Object obj) {
-                if (this == obj) return true;
-                if (!(obj instanceof ChunkCoordinate other)) return false;
-                return x == other.x && z == other.z;
-            }
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (!(obj instanceof ChunkCoordinate(int x1, int z1))) return false;
+            return x == x1 && z == z1;
+        }
 
     }
 }

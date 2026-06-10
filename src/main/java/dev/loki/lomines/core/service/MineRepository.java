@@ -2,7 +2,7 @@ package dev.loki.lomines.core.service;
 
 import dev.loki.lomines.LoMinesPlugin;
 import dev.loki.lomines.core.mine.Mine;
-import dev.loki.lomines.data.config.loader.common.ConfigLoader;
+import dev.loki.lomines.data.config.ConfigLoader;
 import dev.loki.lomines.data.config.MineConfig;
 import org.bukkit.Location;
 

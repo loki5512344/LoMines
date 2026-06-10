@@ -11,12 +11,6 @@ import java.util.Objects;
 public sealed interface BlockKey permits BlockKey.Vanilla, BlockKey.Oraxen, BlockKey.ItemsAdder {
 
     /**
-     * Serializes this key to string format for YAML storage.
-     * Format: "stone" (vanilla), "oraxen:my_block", "itemsadder:custom_block"
-     */
-    String serialize();
-
-    /**
      * Deserializes a string to appropriate BlockKey type.
      *
      * @throws IllegalArgumentException if format is invalid
@@ -42,6 +36,12 @@ public sealed interface BlockKey permits BlockKey.Vanilla, BlockKey.Oraxen, Bloc
         }
         return new Vanilla(material);
     }
+
+    /**
+     * Serializes this key to string format for YAML storage.
+     * Format: "stone" (vanilla), "oraxen:my_block", "itemsadder:custom_block"
+     */
+    String serialize();
 
     // --- Implementations ---
 

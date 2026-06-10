@@ -17,7 +17,8 @@ import java.util.Collection;
  */
 public final class BlockUpdateUtil {
 
-    private BlockUpdateUtil() {}
+    private BlockUpdateUtil() {
+    }
 
     /**
      * Sends a block update to all players who can see the specified chunk.
@@ -109,8 +110,8 @@ public final class BlockUpdateUtil {
                 Chunk chunk = world.getChunkAt(chunkX, chunkZ);
                 if (chunk.isLoaded()) {
                     for (Player player : world.getPlayers()) {
-                        player.sendChunkUpdate(chunk);
-                    }
+                            player.getWorld().refreshChunk(chunk.getX(), chunk.getZ());
+                        }
                 }
             }
         }
@@ -134,5 +135,26 @@ public final class BlockUpdateUtil {
 
         double renderDistance = player.getClientViewDistance() * 16;
         return player.getLocation().distanceSquared(loc) <= renderDistance * renderDistance;
+    }
+
+    /**
+     * Finds a safe teleport location around the target by searching upward.
+     * A location is safe when feet and head blocks are non-solid.
+     */
+    public static Location findSafeTeleportLocation(Location target, int maxBlocksUp) {
+        if (target == null || target.getWorld() == null) {
+            return target;
+        }
+
+        Location base = target.clone();
+        for (int i = 0; i <= Math.max(0, maxBlocksUp); i++) {
+            Location candidate = base.clone().add(0, i, 0);
+            Block feet = candidate.getBlock();
+            Block head = candidate.clone().add(0, 1, 0).getBlock();
+            if (!feet.getType().isSolid() && !head.getType().isSolid()) {
+                return candidate;
+            }
+        }
+        return base;
     }
 }

@@ -1,6 +1,8 @@
 package dev.loki.lomines.wand;
 
 import dev.loki.lomines.LoMinesPlugin;
+import dev.loki.lomines.wand.group.GroupWandItem;
+import dev.loki.lomines.wand.group.GroupWandSession;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -16,13 +18,12 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class WandParticleService {
 
-    private final LoMinesPlugin plugin;
-    private final Map<UUID, BukkitRunnable> activeTasks = new ConcurrentHashMap<>();
-
     private static final Color COLOR_POS1 = Color.LIME;
     private static final Color COLOR_POS2 = Color.AQUA;
     private static final Color COLOR_EDGE = Color.YELLOW;
     private static final Color COLOR_READY = Color.GREEN;
+    private final LoMinesPlugin plugin;
+    private final Map<UUID, BukkitRunnable> activeTasks = new ConcurrentHashMap<>();
 
     public WandParticleService(LoMinesPlugin plugin) {
         this.plugin = plugin;

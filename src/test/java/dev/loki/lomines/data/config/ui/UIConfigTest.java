@@ -33,7 +33,8 @@ class UIConfigTest {
                 true,
                 "<red>{mine}</red>",
                 100.0,
-                "HH:mm:ss"
+                "HH:mm:ss",
+                null
         );
 
         assertTrue(config.actionBarEnabled());
@@ -44,7 +45,7 @@ class UIConfigTest {
 
     @Test
     void testNullFormatDefaults() {
-        UIConfig config = new UIConfig(true, null, 50.0, null);
+        UIConfig config = new UIConfig(true, null, 50.0, null, null);
 
         assertEquals(UIConfig.DEFAULT_ACTIONBAR_FORMAT, config.actionBarFormat());
         assertEquals(UIConfig.DEFAULT_TIMER_FORMAT, config.timerFormat());
@@ -52,7 +53,7 @@ class UIConfigTest {
 
     @Test
     void testBlankFormatDefaults() {
-        UIConfig config = new UIConfig(true, "   ", 50.0, "   ");
+        UIConfig config = new UIConfig(true, "   ", 50.0, "   ", null);
 
         assertEquals(UIConfig.DEFAULT_ACTIONBAR_FORMAT, config.actionBarFormat());
         assertEquals(UIConfig.DEFAULT_TIMER_FORMAT, config.timerFormat());
@@ -60,14 +61,14 @@ class UIConfigTest {
 
     @Test
     void testNegativeRangeClamped() {
-        UIConfig config = new UIConfig(true, "test", -10.0, "mm:ss");
+        UIConfig config = new UIConfig(true, "test", -10.0, "mm:ss", null);
 
         assertEquals(1.0, config.actionBarRange());
     }
 
     @Test
     void testRangeSquared() {
-        UIConfig config = new UIConfig(true, "test", 50.0, "mm:ss");
+        UIConfig config = new UIConfig(true, "test", 50.0, "mm:ss", null);
 
         assertEquals(2500.0, config.actionBarRangeSquared(), 0.001);
     }
@@ -85,7 +86,7 @@ class UIConfigTest {
 
     @Test
     void testFormatTimerMmSs() {
-        UIConfig config = new UIConfig(true, "", 0, "mm:ss");
+        UIConfig config = new UIConfig(true, "", 0, "mm:ss", null);
 
         assertEquals("00:30", config.formatTimer(30));
         assertEquals("05:00", config.formatTimer(300));
@@ -94,7 +95,7 @@ class UIConfigTest {
 
     @Test
     void testFormatTimerHhMmSs() {
-        UIConfig config = new UIConfig(true, "", 0, "HH:mm:ss");
+        UIConfig config = new UIConfig(true, "", 0, "HH:mm:ss", null);
 
         assertEquals("0:00:30", config.formatTimer(30));
         assertEquals("0:05:00", config.formatTimer(300));

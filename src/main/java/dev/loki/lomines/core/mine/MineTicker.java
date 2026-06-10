@@ -52,7 +52,7 @@ public final class MineTicker {
     private void tickMine(Mine mine) {
         int currentTicks = mine.getTicksAtomic().incrementAndGet();
 
-        if (currentTicks >= mine.getConfig().getResetTicks()) {
+        if (currentTicks >= mine.getConfig().reset().intervalTicks()) {
             mine.getTicksAtomic().set(0);
             mine.reset(false);
         }

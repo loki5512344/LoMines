@@ -3,8 +3,6 @@ package dev.loki.lomines.data.config.ui;
 import dev.loki.lomines.util.format.ColorUtils;
 import net.kyori.adventure.text.Component;
 
-import java.util.Objects;
-
 /**
  * Configuration for UI elements (action bar, messages).
  */
@@ -16,14 +14,10 @@ public record UIConfig(
         HologramConfig hologram
 ) {
 
-    public UIConfig {
-        hologram = hologram != null ? hologram : HologramConfig.disabled();
-    }
-
     public static final String DEFAULT_ACTIONBAR_FORMAT = "<green>{mine}</green> <gray>{percent}%</gray> <dark_gray>({time})";
     public static final String DEFAULT_TIMER_FORMAT = "mm:ss";
-
     public UIConfig {
+        hologram = hologram != null ? hologram : HologramConfig.disabled();
         actionBarFormat = actionBarFormat != null && !actionBarFormat.isBlank()
                 ? actionBarFormat
                 : DEFAULT_ACTIONBAR_FORMAT;
@@ -31,6 +25,20 @@ public record UIConfig(
                 ? timerFormat
                 : DEFAULT_TIMER_FORMAT;
         actionBarRange = Math.max(1, actionBarRange);
+    }
+
+    /**
+     * Default configuration.
+     */
+    public static UIConfig defaults() {
+        return new UIConfig(true, DEFAULT_ACTIONBAR_FORMAT, 50.0, DEFAULT_TIMER_FORMAT, HologramConfig.defaults());
+    }
+
+    /**
+     * Disabled configuration (no UI).
+     */
+    public static UIConfig disabled() {
+        return new UIConfig(false, "", 0, DEFAULT_TIMER_FORMAT, HologramConfig.disabled());
     }
 
     /**
@@ -70,19 +78,5 @@ public record UIConfig(
      */
     public double actionBarRangeSquared() {
         return actionBarRange * actionBarRange;
-    }
-
-    /**
-     * Default configuration.
-     */
-    public static UIConfig defaults() {
-        return new UIConfig(true, DEFAULT_ACTIONBAR_FORMAT, 50.0, DEFAULT_TIMER_FORMAT, HologramConfig.defaults());
-    }
-
-    /**
-     * Disabled configuration (no UI).
-     */
-    public static UIConfig disabled() {
-        return new UIConfig(false, "", 0, DEFAULT_TIMER_FORMAT, HologramConfig.disabled());
     }
 }

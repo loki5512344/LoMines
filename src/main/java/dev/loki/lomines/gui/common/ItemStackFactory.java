@@ -13,11 +13,12 @@ import java.util.List;
 /**
  * Factory for creating ItemStacks with name and lore.
  */
-final class ItemStackFactory {
+public final class ItemStackFactory {
 
-    private ItemStackFactory() {}
+    private ItemStackFactory() {
+    }
 
-    static ItemStack create(Material mat, String name, String... loreLines) {
+    public static ItemStack create(Material mat, String name, String... loreLines) {
         ItemStack stack = new ItemStack(mat);
         ItemMeta meta = stack.getItemMeta();
         if (meta != null) {
@@ -32,17 +33,17 @@ final class ItemStackFactory {
         return stack;
     }
 
-    static String loc(Location l) {
+    public static String loc(Location l) {
         if (l == null || l.getWorld() == null) return "§7не задана";
         return String.format("§7%.0f§8/§7%.0f§8/§7%.0f", l.getX(), l.getY(), l.getZ());
     }
 
-    static String trunc(String s, int max) {
+    public static String trunc(String s, int max) {
         if (s == null || s.isEmpty()) return "§7нет";
         return s.length() > max ? s.substring(0, max - 3) + "..." : s;
     }
 
-    static ItemStack filler() {
+    public static ItemStack filler() {
         ItemStack pane = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
         ItemMeta meta = pane.getItemMeta();
         if (meta != null) {

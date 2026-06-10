@@ -36,7 +36,8 @@ public final class RewardConfigLoader {
     }
 
     private RewardEntry parseRewardEntry(Map<?, ?> map) {
-        double chance = ((Number) map.getOrDefault("chance", 0)).doubleValue();
+        Object chanceObj = map.get("chance");
+        double chance = chanceObj instanceof Number n ? n.doubleValue() : 0.0;
 
         List<BlockKey> blocks = new ArrayList<>();
         List<?> blockList = (List<?>) map.get("blocks");
@@ -56,9 +57,17 @@ public final class RewardConfigLoader {
             }
         }
 
-        @SuppressWarnings("unchecked")
-        List<String> commands = (List<String>) map.getOrDefault("commands", List.of());
-        boolean preventDrops = (Boolean) map.getOrDefault("prevent-drops", false);
+        List<String> commands = new ArrayList<>();
+        Object commandsObj = map.get("commands");
+        if (commandsObj instanceof List<?> list) {
+            for (Object obj : list) {
+                if (obj != null) {
+                    commands.add(obj.toString());
+                }
+            }
+        }
+        Object preventDropsObj = map.get("prevent-drops");
+        boolean preventDrops = preventDropsObj instanceof Boolean b && b;
 
         return new RewardEntry(blocks, chance, items, commands, preventDrops);
     }

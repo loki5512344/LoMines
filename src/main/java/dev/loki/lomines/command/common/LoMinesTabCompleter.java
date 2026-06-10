@@ -16,16 +16,14 @@ import java.util.stream.Collectors;
  */
 public class LoMinesTabCompleter implements TabCompleter {
 
-    private final LoMinesPlugin plugin;
-
     private static final List<String> ALL_COMMANDS = List.of(
             "create", "delete", "reset", "reload", "list", "wand", "group",
             "stats", "top", "maskscan", "edit", "setteleport", "setspawn",
             "clearspawn", "info", "tp", "copy", "regions", "addregion", "removeregion", "help"
     );
-
     private static final List<String> BOOLEAN_VALUES = List.of("true", "false");
     private static final List<String> TOP_LIMITS = List.of("5", "10", "15", "20", "25", "50");
+    private final LoMinesPlugin plugin;
 
     public LoMinesTabCompleter(LoMinesPlugin plugin) {
         this.plugin = plugin;
@@ -49,9 +47,9 @@ public class LoMinesTabCompleter implements TabCompleter {
 
     private boolean isLoMinesCommand(String name) {
         return name.equalsIgnoreCase("lm") ||
-               name.equalsIgnoreCase("lomines") ||
-               name.equalsIgnoreCase("mine") ||
-               name.equalsIgnoreCase("mines");
+                name.equalsIgnoreCase("lomines") ||
+                name.equalsIgnoreCase("mine") ||
+                name.equalsIgnoreCase("mines");
     }
 
     private List<String> completeSubcommands(CommandSender sender, String partial) {
@@ -68,8 +66,7 @@ public class LoMinesTabCompleter implements TabCompleter {
         return switch (subcommand) {
             case "create" -> completeCreate(partial);
             case "delete", "maskscan", "edit", "setteleport", "setspawn", "clearspawn", "info",
-                 "regions", "addregion" ->
-                    filterStartsWith(getMineNames(), partial);
+                 "regions", "addregion" -> filterStartsWith(getMineNames(), partial);
             case "reset" -> completeReset(partial);
             case "stats" -> completeStats(sender, partial);
             case "top" -> completeTopFirstArg(partial);

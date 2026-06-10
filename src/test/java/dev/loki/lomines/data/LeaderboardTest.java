@@ -1,6 +1,10 @@
 package dev.loki.lomines.data;
 
 import dev.loki.lomines.LoMinesPlugin;
+import dev.loki.lomines.data.stats.Leaderboard;
+import dev.loki.lomines.data.stats.LeaderboardEntry;
+import dev.loki.lomines.data.stats.PlayerStats;
+import dev.loki.lomines.data.stats.StatsManager;
 import dev.lolib.core.LoLogger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,8 +55,8 @@ class LeaderboardTest {
 
         List<LeaderboardEntry> top = leaderboard.getTopTotal(10);
         assertEquals(1, top.size());
-        assertEquals(playerId, top.get(0).getPlayerId());
-        assertEquals(100, top.get(0).getCount());
+        assertEquals(playerId, top.get(0).playerId());
+        assertEquals(100, top.get(0).count());
     }
 
     @Test
@@ -67,9 +71,9 @@ class LeaderboardTest {
 
         List<LeaderboardEntry> top = leaderboard.getTopTotal(10);
         assertEquals(3, top.size());
-        assertEquals(player2, top.get(0).getPlayerId()); // 200 blocks
-        assertEquals(player3, top.get(1).getPlayerId()); // 100 blocks
-        assertEquals(player1, top.get(2).getPlayerId()); // 50 blocks
+        assertEquals(player2, top.get(0).playerId()); // 200 blocks
+        assertEquals(player3, top.get(1).playerId()); // 100 blocks
+        assertEquals(player1, top.get(2).playerId()); // 50 blocks
     }
 
     @Test
@@ -93,7 +97,7 @@ class LeaderboardTest {
 
         List<LeaderboardEntry> top = leaderboard.getTopTotal(10);
         assertEquals(1, top.size(), "Should filter out players with 0 blocks");
-        assertEquals(player1, top.get(0).getPlayerId());
+        assertEquals(player1, top.get(0).playerId());
     }
 
     @Test
@@ -108,7 +112,7 @@ class LeaderboardTest {
         List<LeaderboardEntry> top2 = leaderboard.getTopTotal(10);
 
         assertEquals(top1.size(), top2.size());
-        assertEquals(top1.get(0).getPlayerId(), top2.get(0).getPlayerId());
+        assertEquals(top1.get(0).playerId(), top2.get(0).playerId());
     }
 
     @Test
@@ -129,7 +133,7 @@ class LeaderboardTest {
         // Should rebuild cache with new player
         List<LeaderboardEntry> top = leaderboard.getTopTotal(10);
         assertEquals(2, top.size(), "Cache should be rebuilt after invalidation");
-        assertEquals(player2, top.get(0).getPlayerId(), "New player should be first");
+        assertEquals(player2, top.get(0).playerId(), "New player should be first");
     }
 
     @Test
@@ -144,9 +148,9 @@ class LeaderboardTest {
 
         List<LeaderboardEntry> top = leaderboard.getTopByMine("mine1", 10);
         assertEquals(3, top.size());
-        assertEquals(player2, top.get(0).getPlayerId()); // 200 blocks
-        assertEquals(player3, top.get(1).getPlayerId()); // 100 blocks
-        assertEquals(player1, top.get(2).getPlayerId()); // 50 blocks
+        assertEquals(player2, top.get(0).playerId()); // 200 blocks
+        assertEquals(player3, top.get(1).playerId()); // 100 blocks
+        assertEquals(player1, top.get(2).playerId()); // 50 blocks
     }
 
     @Test
@@ -159,7 +163,7 @@ class LeaderboardTest {
 
         List<LeaderboardEntry> top = leaderboard.getTopByMine("mine1", 10);
         assertEquals(1, top.size(), "Should filter out players with 0 blocks");
-        assertEquals(player1, top.get(0).getPlayerId());
+        assertEquals(player1, top.get(0).playerId());
     }
 
     @Test
@@ -172,7 +176,7 @@ class LeaderboardTest {
 
         List<LeaderboardEntry> top = leaderboard.getTopByMine("mine1", 10);
         assertEquals(1, top.size(), "Should only include players with blocks in specified mine");
-        assertEquals(player1, top.get(0).getPlayerId());
+        assertEquals(player1, top.get(0).playerId());
     }
 
     @Test

@@ -6,6 +6,7 @@ import dev.loki.lomines.data.config.block.BlockConfig;
 import dev.loki.lomines.data.config.block.BlockKey;
 import dev.loki.lomines.gui.common.ItemStackFactory;
 import dev.loki.lomines.gui.mine.holder.BlocksGuiHolder;
+import dev.loki.lomines.gui.mine.main.MineEditGui;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -26,7 +27,8 @@ public final class BlocksGui {
     private static final int SLOT_BACK = 49;
     private static final int SLOT_ADD_BLOCK = 52;
 
-    private BlocksGui() {}
+    private BlocksGui() {
+    }
 
     public static void open(LoMinesPlugin plugin, Player player, String mineName) {
         Mine mine = plugin.getMines().find(mineName).orElse(null);
@@ -74,8 +76,8 @@ public final class BlocksGui {
     }
 
     public static boolean handleClick(LoMinesPlugin plugin, Player player, int rawSlot,
-                                     String mineName, boolean leftClick, boolean shiftClick,
-                                     boolean rightClick, BlockKey clickedBlock) {
+                                      String mineName, boolean leftClick, boolean shiftClick,
+                                      boolean rightClick, BlockKey clickedBlock) {
         if (rawSlot < 0 || rawSlot >= SIZE) return false;
 
         if (rawSlot == SLOT_BACK) {
@@ -125,7 +127,7 @@ public final class BlocksGui {
         } else {
             weights.put(blockKey, newWeight / 100.0);
             player.sendMessage(Component.text("§aВес §f" + blockKey.serialize() + " §aизменен: §f" +
-                String.format("%.1f%%", newWeight)));
+                    String.format("%.1f%%", newWeight)));
         }
 
         refresh(player, player.getOpenInventory().getTopInventory(), mineName, plugin);

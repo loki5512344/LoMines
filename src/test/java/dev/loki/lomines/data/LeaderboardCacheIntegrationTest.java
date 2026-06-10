@@ -1,6 +1,9 @@
 package dev.loki.lomines.data;
 
 import dev.loki.lomines.LoMinesPlugin;
+import dev.loki.lomines.data.stats.Leaderboard;
+import dev.loki.lomines.data.stats.LeaderboardEntry;
+import dev.loki.lomines.data.stats.StatsManager;
 import dev.lolib.core.LoLogger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,7 +51,7 @@ class LeaderboardCacheIntegrationTest {
         // Build cache
         List<LeaderboardEntry> top1 = leaderboard.getTopTotal(10);
         assertEquals(1, top1.size(), "Should have 1 player initially");
-        assertEquals(player1, top1.get(0).getPlayerId());
+        assertEquals(player1, top1.get(0).playerId());
 
         // Increment blocks for player2 - this should invalidate cache
         statsManager.incrementBlocks(player2, "mine1");
@@ -58,8 +61,8 @@ class LeaderboardCacheIntegrationTest {
         assertEquals(2, top2.size(), "Should have 2 players after increment");
 
         // Verify order (player1 has 100, player2 has 1)
-        assertEquals(player1, top2.get(0).getPlayerId(), "Player1 should still be first");
-        assertEquals(player2, top2.get(1).getPlayerId(), "Player2 should be second");
+        assertEquals(player1, top2.get(0).playerId(), "Player1 should still be first");
+        assertEquals(player2, top2.get(1).playerId(), "Player2 should be second");
     }
 
     @Test
@@ -73,7 +76,7 @@ class LeaderboardCacheIntegrationTest {
 
         // Build cache
         List<LeaderboardEntry> top1 = leaderboard.getTopTotal(10);
-        assertEquals(player2, top1.get(0).getPlayerId(), "Player2 should be first initially");
+        assertEquals(player2, top1.get(0).playerId(), "Player2 should be first initially");
 
         // Increment player1 many times to overtake player2
         for (int i = 0; i < 60; i++) {
@@ -82,10 +85,10 @@ class LeaderboardCacheIntegrationTest {
 
         // Get top again - cache should be rebuilt with new order
         List<LeaderboardEntry> top2 = leaderboard.getTopTotal(10);
-        assertEquals(player1, top2.get(0).getPlayerId(), "Player1 should be first after increments");
-        assertEquals(110, top2.get(0).getCount(), "Player1 should have 110 blocks");
-        assertEquals(player2, top2.get(1).getPlayerId(), "Player2 should be second");
-        assertEquals(100, top2.get(1).getCount(), "Player2 should still have 100 blocks");
+        assertEquals(player1, top2.get(0).playerId(), "Player1 should be first after increments");
+        assertEquals(110, top2.get(0).count(), "Player1 should have 110 blocks");
+        assertEquals(player2, top2.get(1).playerId(), "Player2 should be second");
+        assertEquals(100, top2.get(1).count(), "Player2 should still have 100 blocks");
     }
 
     @Test
@@ -104,7 +107,7 @@ class LeaderboardCacheIntegrationTest {
         // Get top - should show updated count
         List<LeaderboardEntry> top2 = leaderboard.getTopTotal(10);
         assertEquals(1, top2.size());
-        assertEquals(5, top2.get(0).getCount(), "Should have 5 blocks after 5 increments");
+        assertEquals(5, top2.get(0).count(), "Should have 5 blocks after 5 increments");
     }
 
     @Test
@@ -150,7 +153,7 @@ class LeaderboardCacheIntegrationTest {
         // Get with limit 2 - should use same cache
         List<LeaderboardEntry> top2 = leaderboard.getTopTotal(2);
         assertEquals(2, top2.size());
-        assertEquals(player3, top2.get(0).getPlayerId(), "Should have highest player");
-        assertEquals(player2, top2.get(1).getPlayerId(), "Should have second highest player");
+        assertEquals(player3, top2.get(0).playerId(), "Should have highest player");
+        assertEquals(player2, top2.get(1).playerId(), "Should have second highest player");
     }
 }

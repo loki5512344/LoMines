@@ -10,7 +10,8 @@ import org.bukkit.inventory.ItemStack;
  */
 final class BlocksGuiItems {
 
-    private BlocksGuiItems() {}
+    private BlocksGuiItems() {
+    }
 
     static ItemStack blockItem(BlockKey key, double weight) {
         Material material = getMaterialForKey(key);
@@ -18,40 +19,40 @@ final class BlocksGuiItems {
         double percent = weight * 100.0;
 
         return ItemStackFactory.create(material, "§a§l" + name,
-            "§8───────────────",
-            "§7Вес: §f" + String.format("%.1f%%", percent),
-            "",
-            "§e▸ ЛКМ §7+5%",
-            "§e▸ ПКМ §7-5%",
-            "§e▸ Shift+ЛКМ §7+1%",
-            "§e▸ Shift+ПКМ §7-1% §8(удалить если 0%)",
-            "",
-            "§8ID: §7" + key.serialize()
+                "§8───────────────",
+                "§7Вес: §f" + String.format("%.1f%%", percent),
+                "",
+                "§e▸ ЛКМ §7+5%",
+                "§e▸ ПКМ §7-5%",
+                "§e▸ Shift+ЛКМ §7+1%",
+                "§e▸ Shift+ПКМ §7-1% §8(удалить если 0%)",
+                "",
+                "§8ID: §7" + key.serialize()
         );
     }
 
     static ItemStack addBlockItem() {
         return ItemStackFactory.create(Material.EMERALD_BLOCK, "§a§lДобавить блок",
-            "§8───────────────",
-            "§7Добавить новый блок",
-            "§7в конфигурацию",
-            "",
-            "§e▸ Нажмите для выбора материала"
+                "§8───────────────",
+                "§7Добавить новый блок",
+                "§7в конфигурацию",
+                "",
+                "§e▸ Нажмите для выбора материала"
         );
     }
 
     static ItemStack backItem() {
         return ItemStackFactory.create(Material.ARROW, "§c§lНазад",
-            "§8───────────────",
-            "§7Вернуться в редактор шахты",
-            "",
-            "§e▸ Нажмите для возврата"
+                "§8───────────────",
+                "§7Вернуться в редактор шахты",
+                "",
+                "§e▸ Нажмите для возврата"
         );
     }
 
     static Material getMaterialForKey(BlockKey key) {
-        if (key instanceof BlockKey.Vanilla vanilla) {
-            return vanilla.material();
+        if (key instanceof BlockKey.Vanilla(Material material)) {
+            return material;
         }
         if (key instanceof BlockKey.Oraxen) {
             return Material.NETHER_STAR;
@@ -80,8 +81,8 @@ final class BlocksGuiItems {
         for (String word : input.split(" ")) {
             if (!word.isEmpty()) {
                 result.append(Character.toUpperCase(word.charAt(0)))
-                      .append(word.substring(1))
-                      .append(" ");
+                        .append(word.substring(1))
+                        .append(" ");
             }
         }
         return result.toString().trim();

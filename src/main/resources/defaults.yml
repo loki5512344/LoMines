@@ -13,9 +13,9 @@ reset:
   percent-enabled: false
 
   # Commands to run on reset (%mine%, %player%, %blocks% placeholders)
-  commands: []
+  commands: [ ]
     # - "broadcast Mine %mine% has been reset!"
-    # - "eco give %player% 10"
+  # - "eco give %player% 10"
 
   # Broadcast message on reset (empty = no broadcast)
   broadcast: ""
@@ -28,7 +28,7 @@ blocks:
   # For MASK mode: which block marks fill positions
   mask:
     marker: "pink_concrete"
-    positions: []
+    positions: [ ]
 
 # UI settings
 ui:
@@ -43,7 +43,7 @@ ui:
   timer-format: "mm:ss"
 
 # Rewards for mining specific blocks
-rewards: []
+rewards: [ ]
   # Example:
   # - chance: 5.0
   #   blocks:
@@ -56,7 +56,7 @@ rewards: []
   #         - "<gray>Mined from the depths"
   #   commands:
   #     - "eco give %player% 100"
-  #   prevent-drops: true
+#   prevent-drops: true
 
 # Teleport players on reset
 teleport:
@@ -84,12 +84,12 @@ worldguard:
   region-template: "{mine_name}_{random_4}"
 
   # Region owners (player names or "uuid:<uuid>")
-  owners: []
+  owners: [ ]
     # - "player_name"
-    # - "uuid:12345678-1234-1234-1234-123456789012"
+  # - "uuid:12345678-1234-1234-1234-123456789012"
 
   # Region members (player names or "uuid:<uuid>")
-  members: []
+  members: [ ]
 
   # WorldGuard flags to set
   # Можно добавить любые другие флаги: pvp, tnt, build, и т.д.

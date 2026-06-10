@@ -1,11 +1,10 @@
 package dev.loki.lomines.core.mine;
 
 import dev.loki.lomines.LoMinesPlugin;
-import dev.loki.lomines.core.common.MineLoader;
 import dev.loki.lomines.core.service.MaskScanService;
 import dev.loki.lomines.core.service.MineFileManager;
 import dev.loki.lomines.core.service.MineRepository;
-import dev.loki.lomines.data.config.loader.common.ConfigLoader;
+import dev.loki.lomines.data.config.ConfigLoader;
 import dev.loki.lomines.data.config.MineConfig;
 import dev.loki.lomines.integration.worldguard.WorldGuardRegionService;
 import org.bukkit.Location;
@@ -122,7 +121,11 @@ public final class Mines {
         }
 
         // Save new config to file
-        fileManager.saveConfig(name, newConfig);
+        try {
+            fileManager.saveConfig(name, newConfig);
+        } catch (ConfigLoader.ConfigLoadException e) {
+            throw new IOException("Failed to save mine config: " + e.getMessage(), e);
+        }
 
         // Reload to apply changes
         try {

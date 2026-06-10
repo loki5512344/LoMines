@@ -1,7 +1,9 @@
 package dev.loki.lomines.data.config.loader.system;
 
 import dev.loki.lomines.data.config.ui.UIConfig;
+import dev.loki.lomines.data.config.ui.HologramConfig;
 import org.bukkit.configuration.file.YamlConfiguration;
+import java.util.List;
 
 /**
  * Loader for UI configuration section.
@@ -25,8 +27,19 @@ public final class UIConfigLoader {
                 actionBarEnabled,
                 yaml.getString("ui.actionbar.format", UIConfig.DEFAULT_ACTIONBAR_FORMAT),
                 yaml.getDouble("ui.actionbar.range", 50.0),
-                yaml.getString("ui.timer-format", UIConfig.DEFAULT_TIMER_FORMAT)
+                yaml.getString("ui.timer-format", UIConfig.DEFAULT_TIMER_FORMAT),
+                parseHologram(yaml)
         );
+    }
+
+    private HologramConfig parseHologram(YamlConfiguration yaml) {
+        boolean enabled = yaml.getBoolean("ui.hologram.enabled", false);
+        List<String> format = yaml.getStringList("ui.hologram.format");
+        if (format.isEmpty()) {
+            format = HologramConfig.defaults().format();
+        }
+        double height = yaml.getDouble("ui.hologram.height", 2.5);
+        return new HologramConfig(enabled, format, height);
     }
 
     /**
@@ -37,5 +50,8 @@ public final class UIConfigLoader {
         yaml.set("ui.actionbar.format", ui.actionBarFormat());
         yaml.set("ui.actionbar.range", ui.actionBarRange());
         yaml.set("ui.timer-format", ui.timerFormat());
+        yaml.set("ui.hologram.enabled", ui.hologram().enabled());
+        yaml.set("ui.hologram.format", ui.hologram().format());
+        yaml.set("ui.hologram.height", ui.hologram().height());
     }
 }

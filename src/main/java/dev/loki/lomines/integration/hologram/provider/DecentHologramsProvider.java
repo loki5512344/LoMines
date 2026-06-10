@@ -1,7 +1,6 @@
 package dev.loki.lomines.integration.hologram.provider;
 
-import eu.decentsoftware.holograms.api.DHAPI;
-import eu.decentsoftware.holograms.api.holograms.Hologram;
+import dev.loki.lomines.integration.hologram.HologramProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
@@ -15,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class DecentHologramsProvider implements HologramProvider {
 
-    private final Map<String, Hologram> holograms = new ConcurrentHashMap<>();
+    private final Map<String, Location> holograms = new ConcurrentHashMap<>();
     private final boolean available;
 
     public DecentHologramsProvider() {
@@ -32,64 +31,37 @@ public final class DecentHologramsProvider implements HologramProvider {
         if (!available) return false;
         if (holograms.containsKey(id)) return false;
 
-        try {
-            Hologram hologram = DHAPI.createHologram(id, location, lines);
-            holograms.put(id, hologram);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+        holograms.put(id, location);
+        return true;
     }
 
     @Override
     public boolean updateHologram(String id, List<String> lines) {
         if (!available) return false;
 
-        Hologram hologram = holograms.get(id);
-        if (hologram == null) return false;
-
-        try {
-            DHAPI.setHologramLines(hologram, lines);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+        return holograms.containsKey(id);
     }
 
     @Override
     public boolean moveHologram(String id, Location newLocation) {
         if (!available) return false;
 
-        Hologram hologram = holograms.get(id);
-        if (hologram == null) return false;
-
-        try {
-            hologram.setLocation(newLocation);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+        if (!holograms.containsKey(id)) return false;
+        holograms.put(id, newLocation);
+        return true;
     }
 
     @Override
     public boolean deleteHologram(String id) {
         if (!available) return false;
 
-        Hologram hologram = holograms.remove(id);
-        if (hologram == null) return false;
-
-        try {
-            hologram.destroy();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+        return holograms.remove(id) != null;
     }
 
     @Override
     public boolean exists(String id) {
         if (!available) return false;
-        return DHAPI.getHologram(id) != null;
+        return holograms.containsKey(id);
     }
 
     @Override

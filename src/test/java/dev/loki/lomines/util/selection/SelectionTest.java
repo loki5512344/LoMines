@@ -1,5 +1,6 @@
 package dev.loki.lomines.util.selection;
 
+import dev.loki.lomines.util.location.Cuboid;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.junit.jupiter.api.BeforeEach;

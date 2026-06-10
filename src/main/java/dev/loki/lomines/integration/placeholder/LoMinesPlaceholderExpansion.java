@@ -108,19 +108,19 @@ public final class LoMinesPlaceholderExpansion extends PlaceholderExpansion {
 
         String attribute = parts[1];
         var statsManager = plugin.getStatsManager();
-        var stats = statsManager.getStats(player.getUniqueId());
+        var stats = statsManager.getOrCreate(player.getUniqueId());
 
         return switch (attribute) {
-            case "blocksmined" -> String.valueOf(stats.getTotalBlocksMined());
-            case "minesreset" -> String.valueOf(stats.getMinesReset());
-            case "playtime" -> formatPlayTime(stats.getPlayTimeMinutes());
-            case "rank" -> String.valueOf(statsManager.getLeaderboard().getRank(player.getUniqueId()));
+            case "blocksmined" -> String.valueOf(stats.getTotalBlocks());
+            case "minesreset" -> "0";
+            case "playtime" -> formatPlayTime(0);
+            case "rank" -> String.valueOf(statsManager.getLeaderboard().getPosition(player.getUniqueId()));
             default -> null;
         };
     }
 
     private String formatResetTime(Mine mine) {
-        int ticks = mine.getTicksSinceReset();
+        int ticks = mine.getTicks();
         int seconds = ticks / 20;
         int minutes = seconds / 60;
         int remainingSeconds = seconds % 60;
@@ -128,7 +128,7 @@ public final class LoMinesPlaceholderExpansion extends PlaceholderExpansion {
     }
 
     private int getResetSeconds(Mine mine) {
-        return mine.getTicksSinceReset() / 20;
+        return mine.getTicks() / 20;
     }
 
     private String formatPlayTime(int minutes) {

@@ -50,20 +50,6 @@ public record MineConfig(
     }
 
     /**
-     * Total volume of the mine (for progress calculation).
-     */
-    public int volume() {
-        return region.totalVolume();
-    }
-
-    /**
-     * World name where the mine is located.
-     */
-    public String worldName() {
-        return region.worldName();
-    }
-
-    /**
      * Creates builder for fluent construction.
      */
     public static Builder builder(String name) {
@@ -85,6 +71,20 @@ public record MineConfig(
                 WorldGuardConfig.disabled(),
                 PlayerSpawnConfig.disabled()
         );
+    }
+
+    /**
+     * Total volume of the mine (for progress calculation).
+     */
+    public int volume() {
+        return region.totalVolume();
+    }
+
+    /**
+     * World name where the mine is located.
+     */
+    public String worldName() {
+        return region.worldName();
     }
 
     /**

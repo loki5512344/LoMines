@@ -5,8 +5,8 @@ import dev.loki.lomines.data.config.loader.entity.PlayerSpawnConfigLoader;
 import dev.loki.lomines.data.config.loader.entity.TeleportConfigLoader;
 import dev.loki.lomines.data.config.loader.region.RegionConfigLoader;
 import dev.loki.lomines.data.config.loader.region.WorldGuardConfigLoader;
-import dev.loki.lomines.data.config.loader.reset.ResetConfigLoader;
 import dev.loki.lomines.data.config.loader.reward.RewardConfigLoader;
+import dev.loki.lomines.data.config.loader.system.ResetConfigLoader;
 import dev.loki.lomines.data.config.loader.system.UIConfigLoader;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -156,6 +156,7 @@ public final class ConfigLoader {
         public ConfigLoadException(String message) {
             super(message);
         }
+
         public ConfigLoadException(String message, Throwable cause) {
             super(message, cause);
         }

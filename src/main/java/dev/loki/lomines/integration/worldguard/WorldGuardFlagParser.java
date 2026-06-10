@@ -19,7 +19,7 @@ public final class WorldGuardFlagParser {
     /**
      * Parses and sets a flag from a "key=value" string entry.
      *
-     * @param region the region to set the flag on
+     * @param region    the region to set the flag on
      * @param flagEntry the flag entry in format "flag=value"
      */
     public void parseAndSetFlag(ProtectedRegion region, String flagEntry) {

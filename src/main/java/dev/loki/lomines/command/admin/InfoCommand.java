@@ -4,12 +4,11 @@ import dev.loki.lomines.LoMinesPlugin;
 import dev.loki.lomines.core.mine.Mine;
 import dev.loki.lomines.data.config.block.BlockKey;
 import dev.loki.lomines.util.location.Cuboid;
-import dev.lolilb.commands.annotation.Arg;
-import dev.lolilb.commands.annotation.Subcommand;
+import dev.lolib.commands.annotation.Arg;
+import dev.lolib.commands.annotation.Subcommand;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.Map;
@@ -65,10 +64,10 @@ public class InfoCommand {
         sender.sendMessage(Component.text("§6§lБлоки:"));
         Map<BlockKey, Double> weights = config.blocks().weights();
         weights.entrySet().stream()
-            .sorted((a, b) -> Double.compare(b.getValue(), a.getValue()))
-            .limit(10)
-            .forEach(e -> sender.sendMessage(Component.text(
-                "§7  " + formatBlockKey(e.getKey()) + ": §f" + String.format("%.1f", e.getValue() * 100) + "%")));
+                .sorted((a, b) -> Double.compare(b.getValue(), a.getValue()))
+                .limit(10)
+                .forEach(e -> sender.sendMessage(Component.text(
+                        "§7  " + formatBlockKey(e.getKey()) + ": §f" + String.format("%.1f", e.getValue() * 100) + "%")));
         if (weights.size() > 10) {
             sender.sendMessage(Component.text("§7  ... и ещё " + (weights.size() - 10) + " блоков"));
         }

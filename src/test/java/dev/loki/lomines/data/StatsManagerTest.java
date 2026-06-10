@@ -1,6 +1,8 @@
 package dev.loki.lomines.data;
 
 import dev.loki.lomines.LoMinesPlugin;
+import dev.loki.lomines.data.stats.PlayerStats;
+import dev.loki.lomines.data.stats.StatsManager;
 import dev.lolib.core.LoLogger;
 import dev.lolib.scheduler.ScheduledTask;
 import dev.lolib.scheduler.Scheduler;

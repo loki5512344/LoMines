@@ -80,9 +80,11 @@ public final class RegionConfigLoader {
     public void save(YamlConfiguration yaml, RegionConfig region) {
         int i = 1;
         for (var cuboid : region.regions()) {
-            yaml.set("region.selection." + i, LocationParser.format(cuboid.getMin()));
+            Location min = new Location(cuboid.getWorld(), cuboid.getMinX(), cuboid.getMinY(), cuboid.getMinZ());
+            yaml.set("region.selection." + i, LocationParser.format(min));
             i++;
-            yaml.set("region.selection." + i, LocationParser.format(cuboid.getMax()));
+            Location max = new Location(cuboid.getWorld(), cuboid.getMaxX(), cuboid.getMaxY(), cuboid.getMaxZ());
+            yaml.set("region.selection." + i, LocationParser.format(max));
             i++;
         }
     }

@@ -10,7 +10,8 @@ import org.bukkit.block.Block;
  */
 public final class SafeTeleportUtil {
 
-    private SafeTeleportUtil() {}
+    private SafeTeleportUtil() {
+    }
 
     /**
      * Finds a safe teleport location near the given destination.

@@ -6,8 +6,8 @@ import java.util.List;
  * Configuration for holograms displayed above mines.
  *
  * @param enabled whether holograms are enabled
- * @param format list of lines with placeholders {mine}, {percent}, {bar}, {time}
- * @param height offset above the mine region (in blocks)
+ * @param format  list of lines with placeholders {mine}, {percent}, {bar}, {time}
+ * @param height  offset above the mine region (in blocks)
  */
 public record HologramConfig(
         boolean enabled,

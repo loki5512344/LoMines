@@ -1,8 +1,9 @@
 package dev.loki.lomines.command;
 
 import dev.loki.lomines.LoMinesPlugin;
+import dev.loki.lomines.command.admin.AdminCommands;
 import dev.loki.lomines.core.mine.Mine;
-import dev.loki.lomines.core.Mines;
+import dev.loki.lomines.core.mine.Mines;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.junit.jupiter.api.BeforeEach;

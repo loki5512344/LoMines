@@ -28,8 +28,8 @@ public final class ConfirmDeleteGui {
     /**
      * Opens the confirmation GUI for deleting a mine.
      *
-     * @param plugin the plugin instance
-     * @param player the player to open for
+     * @param plugin   the plugin instance
+     * @param player   the player to open for
      * @param mineName the name of the mine to delete
      */
     public static void open(LoMinesPlugin plugin, Player player, String mineName) {

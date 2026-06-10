@@ -2,15 +2,12 @@ package dev.loki.lomines.command.admin;
 
 import dev.loki.lomines.LoMinesPlugin;
 import dev.loki.lomines.core.mine.Mine;
-import dev.loki.lomines.core.mine.MineConfig;
-import dev.lolilb.commands.annotation.Arg;
-import dev.lolilb.commands.annotation.Subcommand;
+import dev.loki.lomines.data.config.MineConfig;
+import dev.lolib.commands.annotation.Arg;
+import dev.lolib.commands.annotation.Subcommand;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * Command to copy mine configuration from one mine to another.
@@ -53,48 +50,24 @@ public class CopyCommand {
         var sourceConfig = fromMine.getConfig();
         var targetConfig = toMine.getConfig();
 
-        // Copy blocks configuration
-        targetConfig.blocks().weights().clear();
-        targetConfig.blocks().weights().putAll(sourceConfig.blocks().weights());
+        // Keep target region/name, copy all other sections from source.
+        MineConfig newTargetConfig = MineConfig.builder(toMine.getName())
+                .region(targetConfig.region())
+                .blocks(sourceConfig.blocks())
+                .reset(sourceConfig.reset())
+                .rewards(sourceConfig.rewards())
+                .teleport(sourceConfig.teleport())
+                .ui(sourceConfig.ui())
+                .worldGuard(sourceConfig.worldGuard())
+                .playerSpawn(sourceConfig.playerSpawn())
+                .build();
 
-        // Copy reset settings
-        var targetReset = targetConfig.reset();
-        var sourceReset = sourceConfig.reset();
-        targetReset.intervalSeconds(sourceReset.intervalSeconds());
-        targetReset.percentTrigger(sourceReset.percentTrigger());
-        targetReset.percentTriggerEnabled(sourceReset.isPercentTriggerEnabled());
-        targetReset.intervalDisplay(sourceReset.intervalDisplay());
-
-        // Copy teleport and spawn settings
-        var targetTeleport = targetConfig.teleport();
-        var sourceTeleport = sourceConfig.teleport();
-        targetTeleport.enabled(sourceTeleport.enabled());
-        if (sourceTeleport.getLocation().isPresent()) {
-            targetTeleport.setLocation(sourceTeleport.getLocation().get());
-        } else {
-            targetTeleport.setLocation(null);
+        try {
+            plugin.getMines().updateMineConfig(toMine.getName(), newTargetConfig);
+        } catch (Exception e) {
+            sender.sendMessage(Component.text("Ошибка сохранения: " + e.getMessage(), NamedTextColor.RED));
+            return;
         }
-
-        var targetSpawn = targetConfig.playerSpawn();
-        var sourceSpawn = sourceConfig.playerSpawn();
-        targetSpawn.enabled(sourceSpawn.enabled());
-        if (sourceSpawn.getLocation().isPresent()) {
-            targetSpawn.setLocation(sourceSpawn.getLocation().get());
-        } else {
-            targetSpawn.setLocation(null);
-        }
-
-        // Copy rewards
-        targetConfig.rewards().entries().clear();
-        targetConfig.rewards().entries().addAll(sourceConfig.rewards().entries());
-
-        // Copy other settings
-        targetConfig.blockPhysics(sourceConfig.isBlockPhysicsEnabled());
-        targetConfig.entitySpawning(sourceConfig.isEntitySpawningEnabled());
-        targetConfig.liquidFlow(sourceConfig.isLiquidFlowEnabled());
-
-        // Save target mine
-        toMine.save();
 
         sender.sendMessage(Component.text("§aКонфигурация скопирована из §f" + fromMine.getName() +
                 " §aв §f" + toMine.getName()));

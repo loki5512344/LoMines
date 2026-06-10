@@ -1,7 +1,6 @@
 package dev.loki.lomines.core.mine;
 
 import dev.loki.lomines.LoMinesPlugin;
-import dev.loki.lomines.core.service.MineFileManager;
 import dev.loki.lomines.block.BlockSetter;
 import dev.loki.lomines.data.config.MineConfig;
 import dev.loki.lomines.data.config.block.BlockKey;
@@ -18,7 +17,9 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -120,8 +121,10 @@ public final class Mine {
         }
         BlockKey firstKey = weights.keySet().iterator().next();
         return switch (firstKey) {
-            case BlockKey.Oraxen oraxen -> throw new IllegalArgumentException("Oraxen integration is currently disabled");
-            case BlockKey.ItemsAdder itemsAdder -> throw new IllegalArgumentException("ItemsAdder integration is currently disabled");
+            case BlockKey.Oraxen oraxen ->
+                    throw new IllegalArgumentException("Oraxen integration is currently disabled");
+            case BlockKey.ItemsAdder itemsAdder ->
+                    throw new IllegalArgumentException("ItemsAdder integration is currently disabled");
             case BlockKey.Vanilla vanilla -> new dev.loki.lomines.block.BukkitBlockSetter(weights, plugin);
         };
     }

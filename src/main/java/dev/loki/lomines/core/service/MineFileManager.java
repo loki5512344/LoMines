@@ -1,6 +1,6 @@
 package dev.loki.lomines.core.service;
 
-import dev.loki.lomines.data.config.loader.common.ConfigLoader;
+import dev.loki.lomines.data.config.ConfigLoader;
 import dev.loki.lomines.data.config.MineConfig;
 import dev.loki.lomines.data.config.block.BlockConfig;
 import dev.loki.lomines.data.config.block.BlockKey;
@@ -82,7 +82,11 @@ public record MineFileManager(Path minesFolder, ConfigLoader configLoader) {
                 .build();
 
         // Save using new loader
-        configLoader.save(config);
+        try {
+            configLoader.save(config);
+        } catch (ConfigLoader.ConfigLoadException e) {
+            throw new IOException("Failed to save default mine config: " + e.getMessage(), e);
+        }
     }
 
     /**
@@ -147,7 +151,7 @@ public record MineFileManager(Path minesFolder, ConfigLoader configLoader) {
     /**
      * Saves a mine configuration to file by name.
      *
-     * @param name the mine name
+     * @param name   the mine name
      * @param config the configuration to save
      * @throws ConfigLoader.ConfigLoadException if saving fails
      */

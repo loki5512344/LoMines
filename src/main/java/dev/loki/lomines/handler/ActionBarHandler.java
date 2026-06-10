@@ -1,7 +1,6 @@
 package dev.loki.lomines.handler;
 
 import dev.loki.lomines.core.mine.Mine;
-import dev.loki.lomines.util.format.TimeFormatter;
 import dev.loki.lomines.util.location.Cuboid;
 import dev.lolib.utils.ActionBar;
 import org.bukkit.Location;

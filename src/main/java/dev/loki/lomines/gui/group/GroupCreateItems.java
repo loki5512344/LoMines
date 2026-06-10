@@ -15,7 +15,8 @@ import java.util.List;
  */
 final class GroupCreateItems {
 
-    private GroupCreateItems() {}
+    private GroupCreateItems() {
+    }
 
     static ItemStack filler() {
         ItemStack pane = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);

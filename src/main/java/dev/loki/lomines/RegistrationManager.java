@@ -1,21 +1,11 @@
 package dev.loki.lomines;
 
-import dev.loki.lomines.command.admin.AdminCommands;
-import dev.loki.lomines.command.admin.CopyCommand;
-import dev.loki.lomines.command.admin.HologramCommands;
-import dev.loki.lomines.command.admin.InfoCommand;
-import dev.loki.lomines.command.admin.MaskCommands;
-import dev.loki.lomines.command.admin.RegionCommands;
-import dev.loki.lomines.command.admin.StatsCommands;
+import dev.loki.lomines.command.admin.*;
 import dev.loki.lomines.command.common.LoMinesTabCompleter;
 import dev.loki.lomines.command.player.PlayerCommands;
 import dev.loki.lomines.command.player.TeleportCommand;
 import dev.loki.lomines.integration.IntegrationManager;
-import dev.loki.lomines.listener.BlockBreakListener;
-import dev.loki.lomines.listener.GroupGuiListener;
-import dev.loki.lomines.listener.MineEditGuiListener;
-import dev.loki.lomines.listener.PlayerInteractListener;
-import dev.loki.lomines.listener.PlayerJoinListener;
+import dev.loki.lomines.listener.*;
 import dev.lolib.commands.CommandManager;
 
 /**

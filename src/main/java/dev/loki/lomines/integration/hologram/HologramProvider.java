@@ -13,9 +13,9 @@ public interface HologramProvider {
     /**
      * Creates a new hologram at the specified location.
      *
-     * @param id unique identifier for this hologram
+     * @param id       unique identifier for this hologram
      * @param location where to place the hologram
-     * @param lines initial lines to display
+     * @param lines    initial lines to display
      * @return true if hologram was created successfully
      */
     boolean createHologram(String id, Location location, List<String> lines);
@@ -23,7 +23,7 @@ public interface HologramProvider {
     /**
      * Updates the lines of an existing hologram.
      *
-     * @param id the hologram identifier
+     * @param id    the hologram identifier
      * @param lines new lines to display
      * @return true if updated successfully
      */
@@ -32,7 +32,7 @@ public interface HologramProvider {
     /**
      * Moves a hologram to a new location.
      *
-     * @param id the hologram identifier
+     * @param id          the hologram identifier
      * @param newLocation new location
      * @return true if moved successfully
      */

@@ -24,7 +24,8 @@ public final class ResetGui {
     private static final int SLOT_MESSAGE = 14;
     private static final int SLOT_COMMANDS = 16;
 
-    private ResetGui() {}
+    private ResetGui() {
+    }
 
     public static void open(LoMinesPlugin plugin, Player player, String mineName) {
         Mine mine = plugin.getMines().find(mineName).orElse(null);
@@ -64,8 +65,8 @@ public final class ResetGui {
     }
 
     public static boolean handleClick(LoMinesPlugin plugin, Player player, int rawSlot,
-                                     String mineName, boolean leftClick, boolean rightClick,
-                                     boolean shiftClick) {
+                                      String mineName, boolean leftClick, boolean rightClick,
+                                      boolean shiftClick) {
         if (rawSlot < 0 || rawSlot >= SIZE) return false;
 
         if (rawSlot == SLOT_BACK) {
@@ -122,7 +123,7 @@ public final class ResetGui {
     }
 
     private static void togglePercentTrigger(LoMinesPlugin plugin, Player player,
-                                              String mineName, boolean leftClick, boolean rightClick) {
+                                             String mineName, boolean leftClick, boolean rightClick) {
         if (leftClick) {
             player.sendMessage(Component.text("§aТриггер по % переключен."));
         } else if (rightClick) {

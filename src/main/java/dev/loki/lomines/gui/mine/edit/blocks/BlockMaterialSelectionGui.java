@@ -9,6 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import dev.loki.lomines.gui.mine.holder.BlockMaterialSelectionGuiHolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +39,8 @@ public final class BlockMaterialSelectionGui {
         AVAILABLE_MATERIALS.sort((a, b) -> a.name().compareTo(b.name()));
     }
 
-    private BlockMaterialSelectionGui() {}
+    private BlockMaterialSelectionGui() {
+    }
 
     public static void open(LoMinesPlugin plugin, Player player, String mineName) {
         open(plugin, player, mineName, 0);
@@ -46,9 +48,9 @@ public final class BlockMaterialSelectionGui {
 
     public static void open(LoMinesPlugin plugin, Player player, String mineName, int page) {
         BlockMaterialSelectionGuiHolder holder = new BlockMaterialSelectionGuiHolder(
-                player.getUniqueId(), mineName, page);
-        Inventory inv = Bukkit.createInventory(holder,
-                Component.text(TITLE + " (стр. " + (page + 1) + ")", NamedTextColor.DARK_GREEN));
+            player.getUniqueId(), mineName, page);
+        Inventory inv = Bukkit.createInventory(holder, SIZE,
+            TITLE + " (стр. " + (page + 1) + ")");
         holder.setInventory(inv);
         fill(inv, page);
         player.openInventory(inv);
@@ -85,11 +87,11 @@ public final class BlockMaterialSelectionGui {
     private static ItemStack materialItem(Material material) {
         String name = formatMaterialName(material);
         return ItemStackFactory.create(material, "§a§l" + name,
-            "§8───────────────",
-            "§7Нажмите для добавления",
-            "§7в конфигурацию шахты",
-            "",
-            "§8ID: §7" + material.name().toLowerCase()
+                "§8───────────────",
+                "§7Нажмите для добавления",
+                "§7в конфигурацию шахты",
+                "",
+                "§8ID: §7" + material.name().toLowerCase()
         );
     }
 
@@ -99,8 +101,8 @@ public final class BlockMaterialSelectionGui {
         for (String word : name.split(" ")) {
             if (!word.isEmpty()) {
                 result.append(Character.toUpperCase(word.charAt(0)))
-                      .append(word.substring(1))
-                      .append(" ");
+                        .append(word.substring(1))
+                        .append(" ");
             }
         }
         return result.toString().trim();
@@ -108,29 +110,29 @@ public final class BlockMaterialSelectionGui {
 
     private static ItemStack prevPageItem() {
         return ItemStackFactory.create(Material.ARROW, "§e§l← Предыдущая",
-            "§8───────────────",
-            "§7Нажмите для перехода",
-            "§7на предыдущую страницу"
+                "§8───────────────",
+                "§7Нажмите для перехода",
+                "§7на предыдущую страницу"
         );
     }
 
     private static ItemStack nextPageItem() {
         return ItemStackFactory.create(Material.ARROW, "§e§lСледующая →",
-            "§8───────────────",
-            "§7Нажмите для перехода",
-            "§7на следующую страницу"
+                "§8───────────────",
+                "§7Нажмите для перехода",
+                "§7на следующую страницу"
         );
     }
 
     private static ItemStack backItem() {
         return ItemStackFactory.create(Material.BARRIER, "§c§lОтмена",
-            "§8───────────────",
-            "§7Вернуться без добавления"
+                "§8───────────────",
+                "§7Вернуться без добавления"
         );
     }
 
     public static boolean handleClick(LoMinesPlugin plugin, Player player, int rawSlot,
-                                     String mineName, int page, boolean leftClick) {
+                                      String mineName, int page, boolean leftClick) {
         if (rawSlot < 0 || rawSlot >= SIZE) return false;
 
         if (rawSlot == SLOT_BACK) {

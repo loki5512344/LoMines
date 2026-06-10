@@ -1,14 +1,10 @@
 package dev.loki.lomines.data.config.loader.region;
 
-import dev.loki.lomines.data.config.ConfigLoader;
 import dev.loki.lomines.integration.worldguard.WorldGuardConfig;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Loader for WorldGuard configuration section.

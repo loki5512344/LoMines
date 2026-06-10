@@ -3,8 +3,6 @@ package dev.loki.lomines.data.config.loader.system;
 import dev.loki.lomines.data.config.reset.ResetConfig;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.util.List;
-
 /**
  * Loader for reset configuration section.
  */

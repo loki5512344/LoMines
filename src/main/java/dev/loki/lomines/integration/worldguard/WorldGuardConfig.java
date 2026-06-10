@@ -1,7 +1,6 @@
 package dev.loki.lomines.integration.worldguard;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 
 /**
@@ -30,6 +29,43 @@ public record WorldGuardConfig(
         // Default: only block-break=allow. User can add any flags they want.
         flags = flags != null && !flags.isEmpty() ? List.copyOf(flags) : List.of("block-break=allow");
         protectOnCreate = protectOnCreate;
+    }
+
+    /**
+     * Default configuration with auto-region enabled.
+     * Default flag: block-break=allow (everyone can mine).
+     * User can add any other flags.
+     */
+    public static WorldGuardConfig defaults() {
+        return new WorldGuardConfig(
+                true,
+                DEFAULT_TEMPLATE,
+                List.of(),
+                List.of(),
+                List.of("block-break=allow"),
+                true
+        );
+    }
+
+    /**
+     * Disabled configuration.
+     */
+    public static WorldGuardConfig disabled() {
+        return new WorldGuardConfig(
+                false,
+                DEFAULT_TEMPLATE,
+                List.of(),
+                List.of(),
+                List.of(),
+                false
+        );
+    }
+
+    /**
+     * Builder for fluent construction.
+     */
+    public static Builder builder() {
+        return new Builder();
     }
 
     /**
@@ -74,43 +110,6 @@ public record WorldGuardConfig(
         return sb.toString();
     }
 
-    /**
-     * Default configuration with auto-region enabled.
-     * Default flag: block-break=allow (everyone can mine).
-     * User can add any other flags.
-     */
-    public static WorldGuardConfig defaults() {
-        return new WorldGuardConfig(
-                true,
-                DEFAULT_TEMPLATE,
-                List.of(),
-                List.of(),
-                List.of("block-break=allow"),
-                true
-        );
-    }
-
-    /**
-     * Disabled configuration.
-     */
-    public static WorldGuardConfig disabled() {
-        return new WorldGuardConfig(
-                false,
-                DEFAULT_TEMPLATE,
-                List.of(),
-                List.of(),
-                List.of(),
-                false
-        );
-    }
-
-    /**
-     * Builder for fluent construction.
-     */
-    public static Builder builder() {
-        return new Builder();
-    }
-
     public static class Builder {
         private boolean enabled = true;
         private String template = DEFAULT_TEMPLATE;
@@ -153,3 +152,4 @@ public record WorldGuardConfig(
             return new WorldGuardConfig(enabled, template, owners, members, flags, protectOnCreate);
         }
     }
+}

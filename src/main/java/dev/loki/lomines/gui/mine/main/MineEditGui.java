@@ -3,11 +3,11 @@ package dev.loki.lomines.gui.mine.main;
 import dev.loki.lomines.LoMinesPlugin;
 import dev.loki.lomines.core.mine.Mine;
 import dev.loki.lomines.data.config.MineConfig;
-import dev.loki.lomines.gui.common.ItemStackFactory;
 import dev.loki.lomines.gui.confirm.ConfirmDeleteGui;
 import dev.loki.lomines.gui.mine.edit.blocks.BlocksGui;
 import dev.loki.lomines.gui.mine.edit.reset.ResetGui;
 import dev.loki.lomines.gui.mine.edit.rewards.RewardsGui;
+import dev.loki.lomines.gui.mine.holder.MineEditGuiHolder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -21,9 +21,6 @@ import org.bukkit.inventory.Inventory;
  */
 public final class MineEditGui {
 
-    private static final int SIZE = 54;
-    private static final String TITLE_PREFIX = "Редактор шахты: ";
-
     // Slot constants
     public static final int SLOT_BACK = 49;
     public static final int SLOT_BLOCKS = 10;
@@ -35,8 +32,11 @@ public final class MineEditGui {
     public static final int SLOT_SAVE = 32;
     public static final int SLOT_DELETE = 34;
     public static final int SLOT_INFO = 40;
+    private static final int SIZE = 54;
+    private static final String TITLE_PREFIX = "Редактор шахты: ";
 
-    private MineEditGui() {}
+    private MineEditGui() {
+    }
 
     public static void open(LoMinesPlugin plugin, Player player, String mineName) {
         Mine mine = plugin.getMines().find(mineName).orElse(null);
@@ -45,8 +45,7 @@ public final class MineEditGui {
             return;
         }
         MineEditGuiHolder holder = new MineEditGuiHolder(player.getUniqueId(), mineName);
-        Inventory inv = Bukkit.createInventory(holder, SIZE,
-                Component.text(TITLE_PREFIX + mineName, NamedTextColor.DARK_GREEN));
+        Inventory inv = Bukkit.createInventory(holder, SIZE, Component.text(TITLE_PREFIX + mineName, NamedTextColor.DARK_GREEN));
         holder.setInventory(inv);
         fill(plugin, mine, inv);
         player.openInventory(inv);
@@ -118,3 +117,4 @@ public final class MineEditGui {
         }
         return true;
     }
+}

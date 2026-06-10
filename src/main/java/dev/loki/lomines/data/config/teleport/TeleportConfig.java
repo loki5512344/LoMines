@@ -3,7 +3,6 @@ package dev.loki.lomines.data.config.teleport;
 import org.bukkit.Location;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -12,10 +11,7 @@ import java.util.Optional;
  * Configuration for mine teleportation on reset.
  * Supports multiple teleport locations for a single mine.
  */
-public final class TeleportConfig {
-
-    private final boolean enabled;
-    private final List<Location> locations;
+public record TeleportConfig(boolean enabled, List<Location> locations) {
 
     public TeleportConfig(boolean enabled, List<Location> locations) {
         this.enabled = enabled;
@@ -33,34 +29,6 @@ public final class TeleportConfig {
             }
             this.locations = List.copyOf(copy);
         }
-    }
-
-    /**
-     * Returns the primary teleport location (first in list) if enabled.
-     */
-    public Optional<Location> getLocation() {
-        return locations.isEmpty() ? Optional.empty() : Optional.of(locations.get(0));
-    }
-
-    /**
-     * Returns all teleport locations.
-     */
-    public List<Location> getLocations() {
-        return locations;
-    }
-
-    /**
-     * Returns true if teleport is enabled and has at least one location.
-     */
-    public boolean enabled() {
-        return enabled && !locations.isEmpty();
-    }
-
-    /**
-     * Returns the number of configured teleport locations.
-     */
-    public int count() {
-        return locations.size();
     }
 
     /**
@@ -82,6 +50,36 @@ public final class TeleportConfig {
      */
     public static TeleportConfig at(List<Location> locations) {
         return new TeleportConfig(true, locations);
+    }
+
+    /**
+     * Returns the primary teleport location (first in list) if enabled.
+     */
+    public Optional<Location> getLocation() {
+        return locations.isEmpty() ? Optional.empty() : Optional.of(locations.get(0));
+    }
+
+    /**
+     * Returns all teleport locations.
+     */
+    @Override
+    public List<Location> locations() {
+        return locations;
+    }
+
+    /**
+     * Returns true if teleport is enabled and has at least one location.
+     */
+    @Override
+    public boolean enabled() {
+        return enabled && !locations.isEmpty();
+    }
+
+    /**
+     * Returns the number of configured teleport locations.
+     */
+    public int count() {
+        return locations.size();
     }
 
     /**

@@ -1,9 +1,9 @@
-package dev.loki.lomines.core.common;
+package dev.loki.lomines.core.mine;
 
 import dev.loki.lomines.LoMinesPlugin;
-import dev.loki.lomines.core.mine.Mine;
 import dev.loki.lomines.core.service.MineFileManager;
-import dev.loki.lomines.data.config.loader.common.ConfigLoader;
+import dev.loki.lomines.core.service.MineRepository;
+import dev.loki.lomines.data.config.ConfigLoader;
 import dev.loki.lomines.data.config.MineConfig;
 
 import java.io.IOException;
@@ -14,19 +14,19 @@ import java.util.stream.Stream;
 /**
  * Loads mine configurations from disk.
  */
-final class MineLoader {
+public final class MineLoader {
 
     private final LoMinesPlugin plugin;
     private final MineFileManager fileManager;
     private final MineRepository repository;
 
-    MineLoader(LoMinesPlugin plugin, MineFileManager fileManager, MineRepository repository) {
+    public MineLoader(LoMinesPlugin plugin, MineFileManager fileManager, MineRepository repository) {
         this.plugin = plugin;
         this.fileManager = fileManager;
         this.repository = repository;
     }
 
-    void loadAll() throws IOException {
+    public void loadAll() throws IOException {
         repository.clear();
 
         Path minesFolder = fileManager.getMinesFolder();

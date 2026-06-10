@@ -1,9 +1,7 @@
 package dev.loki.lomines.data.config.reset;
 
 import java.time.Duration;
-import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Configuration for mine reset behavior.
@@ -42,6 +40,26 @@ public record ResetConfig(
     }
 
     /**
+     * Default config: 5 minutes, 10% trigger disabled.
+     */
+    public static ResetConfig defaults() {
+        return new ResetConfig(
+                DEFAULT_INTERVAL,
+                DEFAULT_PERCENT_TRIGGER,
+                false,
+                List.of(),
+                ""
+        );
+    }
+
+    /**
+     * Builder for fluent construction.
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
      * Interval in ticks (20 ticks = 1 second).
      */
     public long intervalTicks() {
@@ -69,32 +87,32 @@ public record ResetConfig(
         return percentEnabled && percentTrigger > 0;
     }
 
-    /**
-     * Default config: 5 minutes, 10% trigger disabled.
-     */
-    public static ResetConfig defaults() {
-        return new ResetConfig(
-                DEFAULT_INTERVAL,
-                DEFAULT_PERCENT_TRIGGER,
-                false,
-                List.of(),
-                ""
-        );
-    }
-
-    /**
-     * Builder for fluent construction.
-     */
-    public static Builder builder() {
-        return new Builder();
-    }
-
     public static class Builder {
         private Duration interval = DEFAULT_INTERVAL;
         private double percentTrigger = DEFAULT_PERCENT_TRIGGER;
         private boolean percentEnabled = false;
         private List<String> commands = List.of();
         private String broadcastMessage = "";
+
+        private static Duration parseDuration(String s) {
+            s = s.trim().toLowerCase();
+            try {
+                if (s.endsWith("s")) {
+                    return Duration.ofSeconds(Long.parseLong(s.substring(0, s.length() - 1)));
+                } else if (s.endsWith("m")) {
+                    return Duration.ofMinutes(Long.parseLong(s.substring(0, s.length() - 1)));
+                } else if (s.endsWith("h")) {
+                    return Duration.ofHours(Long.parseLong(s.substring(0, s.length() - 1)));
+                } else if (s.endsWith("d")) {
+                    return Duration.ofDays(Long.parseLong(s.substring(0, s.length() - 1)));
+                } else {
+                    // Assume seconds if no suffix
+                    return Duration.ofSeconds(Long.parseLong(s));
+                }
+            } catch (NumberFormatException e) {
+                return DEFAULT_INTERVAL;
+            }
+        }
 
         public Builder interval(Duration interval) {
             this.interval = interval;
@@ -133,26 +151,6 @@ public record ResetConfig(
 
         public ResetConfig build() {
             return new ResetConfig(interval, percentTrigger, percentEnabled, commands, broadcastMessage);
-        }
-
-        private static Duration parseDuration(String s) {
-            s = s.trim().toLowerCase();
-            try {
-                if (s.endsWith("s")) {
-                    return Duration.ofSeconds(Long.parseLong(s.substring(0, s.length() - 1)));
-                } else if (s.endsWith("m")) {
-                    return Duration.ofMinutes(Long.parseLong(s.substring(0, s.length() - 1)));
-                } else if (s.endsWith("h")) {
-                    return Duration.ofHours(Long.parseLong(s.substring(0, s.length() - 1)));
-                } else if (s.endsWith("d")) {
-                    return Duration.ofDays(Long.parseLong(s.substring(0, s.length() - 1)));
-                } else {
-                    // Assume seconds if no suffix
-                    return Duration.ofSeconds(Long.parseLong(s));
-                }
-            } catch (NumberFormatException e) {
-                return DEFAULT_INTERVAL;
-            }
         }
     }
 }

@@ -2,7 +2,7 @@ package dev.loki.lomines.command.admin;
 
 import dev.loki.lomines.LoMinesPlugin;
 import dev.loki.lomines.core.mine.Mines;
-import dev.loki.lomines.data.config.loader.common.ConfigLoader;
+import dev.loki.lomines.data.config.ConfigLoader;
 import dev.loki.lomines.util.ErrorHandler;
 import dev.loki.lomines.util.MessageFormatter;
 import dev.lolib.commands.annotation.Arg;

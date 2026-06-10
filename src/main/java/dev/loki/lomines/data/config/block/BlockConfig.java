@@ -1,5 +1,7 @@
 package dev.loki.lomines.data.config.block;
 
+import org.bukkit.Material;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;

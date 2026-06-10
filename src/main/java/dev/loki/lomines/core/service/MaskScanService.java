@@ -1,7 +1,7 @@
 package dev.loki.lomines.core.service;
 
 import dev.loki.lomines.core.mine.Mine;
-import dev.loki.lomines.data.config.loader.common.ConfigLoader;
+import dev.loki.lomines.data.config.ConfigLoader;
 import dev.loki.lomines.data.config.block.BlockKey;
 import dev.loki.lomines.util.ValidationUtils;
 import dev.loki.lomines.util.location.Cuboid;
@@ -57,8 +57,8 @@ public final class MaskScanService {
     }
 
     private Material parseMarkerMaterial(BlockKey key) {
-        if (key instanceof BlockKey.Vanilla vanilla) {
-            return vanilla.material();
+        if (key instanceof BlockKey.Vanilla(Material material)) {
+            return material;
         }
         // For custom blocks (Oraxen/ItemsAdder), we need to get the underlying material
         // This would need integration with those plugins to get the actual material

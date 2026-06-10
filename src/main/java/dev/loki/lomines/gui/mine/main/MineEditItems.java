@@ -2,7 +2,7 @@ package dev.loki.lomines.gui.mine.main;
 
 import dev.loki.lomines.core.mine.Mine;
 import dev.loki.lomines.data.config.MineConfig;
-import dev.loki.lomines.data.config.RewardConfig;
+import dev.loki.lomines.data.config.reward.RewardConfig;
 import dev.loki.lomines.gui.common.ItemStackFactory;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -21,7 +21,8 @@ final class MineEditItems {
     private static final String SAVE = "§a▸ Нажмите для сохранения";
     private static final String DEL = "§c▸ Нажмите для удаления";
 
-    private MineEditItems() {}
+    private MineEditItems() {
+    }
 
     static ItemStack filler() {
         return ItemStackFactory.filler();
@@ -39,7 +40,7 @@ final class MineEditItems {
             lore.add("");
             lore.add("§7Топ блоков:");
             w.entrySet().stream().sorted((a, b) -> Double.compare(b.getValue(), a.getValue())).limit(3)
-                .forEach(e -> lore.add(String.format("  §8• §7%s §8(§7%.0f%%§8)", e.getKey().serialize(), e.getValue() * 100)));
+                    .forEach(e -> lore.add(String.format("  §8• §7%s §8(§7%.0f%%§8)", e.getKey().serialize(), e.getValue() * 100)));
         }
         lore.add("");
         lore.add(EDIT);
@@ -48,14 +49,14 @@ final class MineEditItems {
 
     static ItemStack regionsItem(MineConfig config) {
         return ItemStackFactory.create(Material.COMPASS, "§a§lРегионы",
-            SEP,
-            "§7Настройки:",
-            "  §fКоличество: §7" + config.region().regionCount(),
-            "  §fОбщий объём: §7" + config.region().totalVolume() + " §8блоков",
-            "",
-            "  §fМир: §7" + config.worldName(),
-            "",
-            "§8Изменяется через палочку"
+                SEP,
+                "§7Настройки:",
+                "  §fКоличество: §7" + config.region().regionCount(),
+                "  §fОбщий объём: §7" + config.region().totalVolume() + " §8блоков",
+                "",
+                "  §fМир: §7" + config.worldName(),
+                "",
+                "§8Изменяется через палочку"
         );
     }
 
@@ -122,39 +123,39 @@ final class MineEditItems {
 
     static ItemStack uiItem(MineConfig config) {
         return ItemStackFactory.create(Material.PAINTING, "§a§lИнтерфейс",
-            SEP,
-            "§7Настройки:",
-            "  §fAction Bar: " + (config.ui().actionBarEnabled() ? "§aвкл" : "§7выкл"),
-            "  §fРадиус: §7" + (int) config.ui().actionBarRange() + " §8блоков",
-            "",
-            "§7Формат ActionBar:",
-            "  §8" + ItemStackFactory.trunc(config.ui().actionBarFormat(), 28),
-            "",
-            "§7Формат таймера: §8" + config.ui().timerFormat(),
-            "",
-            EDIT
+                SEP,
+                "§7Настройки:",
+                "  §fAction Bar: " + (config.ui().actionBarEnabled() ? "§aвкл" : "§7выкл"),
+                "  §fРадиус: §7" + (int) config.ui().actionBarRange() + " §8блоков",
+                "",
+                "§7Формат ActionBar:",
+                "  §8" + ItemStackFactory.trunc(config.ui().actionBarFormat(), 28),
+                "",
+                "§7Формат таймера: §8" + config.ui().timerFormat(),
+                "",
+                EDIT
         );
     }
 
     static ItemStack saveItem() {
         return ItemStackFactory.create(Material.LIME_DYE, "§a§lСохранить изменения",
-            SEP,
-            "§7Сохраняет конфигурацию шахты",
-            "§7в файл на диске",
-            "",
-            SAVE
+                SEP,
+                "§7Сохраняет конфигурацию шахты",
+                "§7в файл на диске",
+                "",
+                SAVE
         );
     }
 
     static ItemStack deleteItem(String mineName) {
         return ItemStackFactory.create(Material.TNT, "§c§lУдалить шахту",
-            SEP,
-            "§c§lВнимание!",
-            "§cЭто действие нельзя отменить!",
-            "",
-            "§7Шахта: §f" + mineName,
-            "",
-            DEL
+                SEP,
+                "§c§lВнимание!",
+                "§cЭто действие нельзя отменить!",
+                "",
+                "§7Шахта: §f" + mineName,
+                "",
+                DEL
         );
     }
 
@@ -166,24 +167,24 @@ final class MineEditItems {
         int filled = (int) Math.round(percent / 100.0 * 10);
         String bar = "§a" + "█".repeat(filled) + "§8" + "░".repeat(10 - filled);
         return ItemStackFactory.create(Material.BOOK, "§b§lИнформация",
-            SEP,
-            "§7Базовые данные:",
-            "  §fНазвание: §7" + mine.getName(),
-            "  §fМир: §7" + mine.getConfig().worldName(),
-            "",
-            "§7Состояние заполнения:",
-            "  §fБлоков: " + c + blocks + "§8/§7" + total,
-            "  §fПроцент: " + c + String.format("%.1f%%", percent),
-            "  " + bar
+                SEP,
+                "§7Базовые данные:",
+                "  §fНазвание: §7" + mine.getName(),
+                "  §fМир: §7" + mine.getConfig().worldName(),
+                "",
+                "§7Состояние заполнения:",
+                "  §fБлоков: " + c + blocks + "§8/§7" + total,
+                "  §fПроцент: " + c + String.format("%.1f%%", percent),
+                "  " + bar
         );
     }
 
     static ItemStack backItem() {
         return ItemStackFactory.create(Material.ARROW, "§c§lЗакрыть",
-            SEP,
-            "§7Закрыть редактор",
-            "",
-            CLOSE
+                SEP,
+                "§7Закрыть редактор",
+                "",
+                CLOSE
         );
     }
 }

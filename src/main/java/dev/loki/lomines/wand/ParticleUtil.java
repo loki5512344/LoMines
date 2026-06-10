@@ -11,7 +11,8 @@ import org.bukkit.entity.Player;
  */
 final class ParticleUtil {
 
-    private ParticleUtil() {}
+    private ParticleUtil() {
+    }
 
     static void showCornerParticles(Player player, Location loc, Color color) {
         World world = loc.getWorld();
@@ -70,8 +71,8 @@ final class ParticleUtil {
                                            double step, Particle.DustOptions dustOptions) {
         double distance = Math.sqrt(
                 Math.pow(x2 - x1, 2) +
-                Math.pow(y2 - y1, 2) +
-                Math.pow(z2 - z1, 2)
+                        Math.pow(y2 - y1, 2) +
+                        Math.pow(z2 - z1, 2)
         );
 
         int count = (int) (distance / step) + 1;

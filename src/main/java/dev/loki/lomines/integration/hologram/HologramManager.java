@@ -8,7 +8,9 @@ import dev.loki.lomines.integration.hologram.provider.HolographicDisplaysProvide
 import dev.loki.lomines.util.format.ColorUtils;
 import org.bukkit.Location;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -18,8 +20,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class HologramManager {
 
     private final LoMinesPlugin plugin;
+    private final Map<String, Integer> activeTasks = new ConcurrentHashMap<>();
     private HologramProvider provider;
-    private final Map<String, UUID> activeTasks = new ConcurrentHashMap<>();
 
     public HologramManager(LoMinesPlugin plugin) {
         this.plugin = plugin;
@@ -85,7 +87,7 @@ public final class HologramManager {
         String id = "lomines_" + mineName;
         provider.deleteHologram(id);
 
-        UUID taskId = activeTasks.remove(mineName);
+        Integer taskId = activeTasks.remove(mineName);
         if (taskId != null) {
             plugin.getServer().getScheduler().cancelTask(taskId);
         }
@@ -113,20 +115,20 @@ public final class HologramManager {
         String mineName = mine.getName();
 
         // Cancel existing task if any
-        UUID existingTask = activeTasks.remove(mineName);
+        Integer existingTask = activeTasks.remove(mineName);
         if (existingTask != null) {
             plugin.getServer().getScheduler().cancelTask(existingTask);
         }
 
         // Start new update task (every second)
         int taskId = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(
-            plugin,
-            () -> updateMineHologram(mine),
-            20L,  // Initial delay (1 second)
-            20L   // Period (1 second)
+                plugin,
+                () -> updateMineHologram(mine),
+                20L,  // Initial delay (1 second)
+                20L   // Period (1 second)
         );
 
-        activeTasks.put(mineName, new UUID(0, taskId));
+        activeTasks.put(mineName, taskId);
     }
 
     private Location calculateHologramLocation(Mine mine, double height) {
@@ -147,10 +149,10 @@ public final class HologramManager {
 
         for (String line : format) {
             String formatted = line
-                .replace("{mine}", mine.getName())
-                .replace("{percent}", String.format("%.1f", mine.getPercentFilled()))
-                .replace("{bar}", createProgressBar(mine.getPercentFilled()))
-                .replace("{time}", formatResetTime(mine));
+                    .replace("{mine}", mine.getName())
+                    .replace("{percent}", String.format("%.1f", mine.getPercentFilled()))
+                    .replace("{bar}", createProgressBar(mine.getPercentFilled()))
+                    .replace("{time}", formatResetTime(mine));
 
             // Convert &#RRGGBB and &codes to legacy for hologram plugins
             result.add(ColorUtils.toLegacy(formatted));
@@ -164,13 +166,12 @@ public final class HologramManager {
         int empty = 10 - filled;
 
         // Use &#RRGGBB format which works with most hologram plugins
-        StringBuilder bar = new StringBuilder();
-        bar.append("&#00FF00"); // Green for filled
-        bar.append("█".repeat(Math.max(0, filled)));
-        bar.append("&#808080"); // Gray for empty
-        bar.append("░".repeat(Math.max(0, empty)));
+        String bar = "&#00FF00" + // Green for filled
+                "█".repeat(Math.max(0, filled)) +
+                "&#808080" + // Gray for empty
+                "░".repeat(Math.max(0, empty));
 
-        return bar.toString();
+        return bar;
     }
 
     private String formatResetTime(Mine mine) {

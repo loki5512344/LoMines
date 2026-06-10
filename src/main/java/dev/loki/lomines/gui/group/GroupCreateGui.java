@@ -20,7 +20,8 @@ public final class GroupCreateGui {
     private static final int SIZE = 54;
     private static final int[] MINE_SLOTS = {10, 11, 12, 19, 20, 21, 28, 29, 30};
 
-    private GroupCreateGui() {}
+    private GroupCreateGui() {
+    }
 
     public static void open(LoMinesPlugin plugin, Player player) {
         GroupCreateGuiHolder holder = new GroupCreateGuiHolder(player.getUniqueId());

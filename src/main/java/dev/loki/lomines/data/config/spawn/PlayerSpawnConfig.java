@@ -12,10 +12,7 @@ import java.util.Optional;
  * Supports multiple spawn points for a single mine.
  * Used to teleport players out when they are suffocating after mine reset.
  */
-public final class PlayerSpawnConfig {
-
-    private final boolean enabled;
-    private final List<Location> locations;
+public record PlayerSpawnConfig(boolean enabled, List<Location> locations) {
 
     public PlayerSpawnConfig(boolean enabled, List<Location> locations) {
         this.enabled = enabled;
@@ -33,34 +30,6 @@ public final class PlayerSpawnConfig {
             }
             this.locations = List.copyOf(copy);
         }
-    }
-
-    /**
-     * Returns the primary spawn location (first in list) if enabled.
-     */
-    public Optional<Location> getLocation() {
-        return locations.isEmpty() ? Optional.empty() : Optional.of(locations.get(0));
-    }
-
-    /**
-     * Returns all spawn locations.
-     */
-    public List<Location> getLocations() {
-        return locations;
-    }
-
-    /**
-     * Returns true if spawn is enabled and has at least one location.
-     */
-    public boolean enabled() {
-        return enabled && !locations.isEmpty();
-    }
-
-    /**
-     * Returns the number of configured spawn locations.
-     */
-    public int count() {
-        return locations.size();
     }
 
     /**
@@ -82,6 +51,36 @@ public final class PlayerSpawnConfig {
      */
     public static PlayerSpawnConfig at(List<Location> locations) {
         return new PlayerSpawnConfig(true, locations);
+    }
+
+    /**
+     * Returns the primary spawn location (first in list) if enabled.
+     */
+    public Optional<Location> getLocation() {
+        return locations.isEmpty() ? Optional.empty() : Optional.of(locations.get(0));
+    }
+
+    /**
+     * Returns all spawn locations.
+     */
+    @Override
+    public List<Location> locations() {
+        return locations;
+    }
+
+    /**
+     * Returns true if spawn is enabled and has at least one location.
+     */
+    @Override
+    public boolean enabled() {
+        return enabled && !locations.isEmpty();
+    }
+
+    /**
+     * Returns the number of configured spawn locations.
+     */
+    public int count() {
+        return locations.size();
     }
 
     /**
