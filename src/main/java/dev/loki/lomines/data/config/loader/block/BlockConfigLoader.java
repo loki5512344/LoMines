@@ -32,7 +32,9 @@ public final class BlockConfigLoader {
         Map<BlockKey, Double> weights = new HashMap<>();
         for (String key : contents.getKeys(false)) {
             double weight = contents.getDouble(key);
-            if (weight <= 0) continue;
+            if (weight <= 0) {
+                continue;
+            }
             weights.put(BlockKey.deserialize(key), weight);
         }
 

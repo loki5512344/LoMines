@@ -1,10 +1,15 @@
 package dev.loki.lomines.data.config.block;
 
 import org.bukkit.Material;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@Disabled("Paper API RegistryAccess not available in unit tests")
 class BlockKeyTest {
 
     @Test

@@ -1,11 +1,11 @@
 package dev.loki.lomines;
 
-import dev.loki.lomines.core.mine.MineTicker;
-import dev.loki.lomines.core.mine.Mines;
-import dev.loki.lomines.data.stats.StatsManager;
+import dev.loki.lomines.core.mine.service.MineTicker;
+import dev.loki.lomines.core.mine.registry.Mines;
+import dev.loki.lomines.data.stats.service.StatsManager;
 import dev.loki.lomines.integration.IntegrationManager;
 import dev.loki.lomines.wand.group.GroupWandManager;
-import dev.lolib.commands.CommandManager;
+
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -28,7 +28,7 @@ final class ComponentInitializer {
 
         if (!Files.exists(minesFolder)) {
             Files.createDirectories(minesFolder);
-            plugin.loLogger().info("Created mines directory");
+            plugin.getLogger().info("Created mines directory");
         }
     }
 
@@ -36,20 +36,19 @@ final class ComponentInitializer {
         Mines mines = new Mines(plugin);
         GroupWandManager groupWandManager = new GroupWandManager();
         StatsManager statsManager = new StatsManager(plugin);
-        CommandManager commandManager = new CommandManager(plugin);
         IntegrationManager integrationManager = new IntegrationManager(plugin);
 
-        plugin.loLogger().info("Core components initialized");
+        plugin.getLogger().info("Core components initialized");
 
-        return new Components(mines, groupWandManager, statsManager, commandManager, integrationManager);
+        return new Components(mines, groupWandManager, statsManager, integrationManager);
     }
 
     void loadMines(Mines mines) {
         try {
             mines.loadAll();
-            plugin.loLogger().info("Loaded " + mines.getAll().size() + " mine(s)");
+            plugin.getLogger().info("Loaded " + mines.getAll().size() + " mine(s)");
         } catch (IOException e) {
-            plugin.loLogger().error("Failed to load mines: " + e.getMessage());
+            plugin.getLogger().severe("Failed to load mines: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -65,9 +64,9 @@ final class ComponentInitializer {
             try {
                 statsManager.load();
                 statsManager.startAutoSave();
-                plugin.loLogger().info("Statistics system enabled");
+                plugin.getLogger().info("Statistics system enabled");
             } catch (IOException e) {
-                plugin.loLogger().warn("Failed to load statistics: " + e.getMessage());
+                plugin.getLogger().warning("Failed to load statistics: " + e.getMessage());
             }
         }
     }
@@ -76,7 +75,6 @@ final class ComponentInitializer {
             Mines mines,
             GroupWandManager groupWandManager,
             StatsManager statsManager,
-            CommandManager commandManager,
             IntegrationManager integrationManager
     ) {
     }

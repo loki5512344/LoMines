@@ -1,19 +1,14 @@
 package dev.loki.lomines.command.player;
 
 import dev.loki.lomines.LoMinesPlugin;
-import dev.loki.lomines.core.mine.Mine;
-import dev.loki.lomines.util.location.Cuboid;
-import dev.lolib.commands.annotation.Arg;
-import dev.lolib.commands.annotation.Subcommand;
+import dev.loki.lomines.core.mine.model.Mine;
+import dev.loki.lomines.util.location.geo.Cuboid;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-/**
- * Command to teleport to a mine.
- */
 public class TeleportCommand {
 
     private final LoMinesPlugin plugin;
@@ -22,12 +17,13 @@ public class TeleportCommand {
         this.plugin = plugin;
     }
 
-    /**
-     * Teleports player to the mine's location.
-     * Usage: /lm tp <mine>
-     */
-    @Subcommand(value = "tp", permission = "lomines.teleport")
-    void teleport(CommandSender sender, @Arg("mine") String mineName) {
+    public void handle(CommandSender sender, String[] args) {
+        if (args.length < 1) {
+            sender.sendMessage(Component.text("Usage: /lm tp <mine>", NamedTextColor.RED));
+            return;
+        }
+        String mineName = args[0];
+
         if (!(sender instanceof Player player)) {
             sender.sendMessage(Component.text("Эта команда только для игроков!", NamedTextColor.RED));
             return;
@@ -42,11 +38,9 @@ public class TeleportCommand {
         var config = mine.getConfig();
         Location target;
 
-        // Try teleport location first
         if (config.teleport().enabled() && config.teleport().getLocation().isPresent()) {
             target = config.teleport().getLocation().get();
         } else if (!mine.getRegions().isEmpty()) {
-            // Use center of first region
             Cuboid region = mine.getRegions().get(0);
             double centerX = (region.getMinX() + region.getMaxX()) / 2.0 + 0.5;
             double centerZ = (region.getMinZ() + region.getMaxZ()) / 2.0 + 0.5;

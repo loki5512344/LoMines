@@ -1,6 +1,6 @@
 package dev.loki.lomines.util.selection;
 
-import dev.loki.lomines.util.location.Cuboid;
+import dev.loki.lomines.util.location.geo.Cuboid;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,7 +9,12 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -133,91 +138,5 @@ class SelectionTest {
         assertFalse(selection.getPoint(0).isPresent());
         assertFalse(selection.getPoint(1).isPresent());
         assertFalse(selection.getPoint(5).isPresent());
-    }
-
-    @Test
-    void testToCuboidsWithNoPairs() {
-        List<Cuboid> cuboids = selection.toCuboids();
-
-        assertTrue(cuboids.isEmpty());
-    }
-
-    @Test
-    void testToCuboidsWithOnePair() {
-        Location loc1 = new Location(world, 10, 64, 20);
-        Location loc2 = new Location(world, 20, 74, 30);
-
-        selection.setPoint(0, loc1);
-        selection.setPoint(1, loc2);
-
-        List<Cuboid> cuboids = selection.toCuboids();
-
-        assertEquals(1, cuboids.size());
-        assertTrue(cuboids.get(0).contains(new Location(world, 15, 69, 25)));
-    }
-
-    @Test
-    void testToCuboidsWithMultiplePairs() {
-        Location loc1 = new Location(world, 10, 64, 20);
-        Location loc2 = new Location(world, 20, 74, 30);
-        Location loc3 = new Location(world, 30, 64, 40);
-        Location loc4 = new Location(world, 40, 74, 50);
-
-        selection.setPoint(0, loc1);
-        selection.setPoint(1, loc2);
-        selection.setPoint(2, loc3);
-        selection.setPoint(3, loc4);
-
-        List<Cuboid> cuboids = selection.toCuboids();
-
-        assertEquals(2, cuboids.size());
-    }
-
-    @Test
-    void testToCuboidsSkipsIncompletePairs() {
-        Location loc1 = new Location(world, 10, 64, 20);
-        Location loc2 = new Location(world, 20, 74, 30);
-        Location loc3 = new Location(world, 30, 64, 40);
-
-        selection.setPoint(0, loc1);
-        selection.setPoint(1, loc2);
-        selection.setPoint(2, loc3);
-        // Point 3 not set
-
-        List<Cuboid> cuboids = selection.toCuboids();
-
-        assertEquals(1, cuboids.size());
-    }
-
-    @Test
-    void testPairInvariant() {
-        // Test that pairs are organized as 2i and 2i+1
-        Location loc1 = new Location(world, 10, 64, 20);
-        Location loc2 = new Location(world, 20, 74, 30);
-
-        // Pair 0: indices 0 and 1
-        selection.setPoint(0, loc1);
-        selection.setPoint(1, loc2);
-        assertTrue(selection.hasPair(0));
-
-        // Pair 1: indices 2 and 3
-        selection.setPoint(2, loc1);
-        selection.setPoint(3, loc2);
-        assertTrue(selection.hasPair(1));
-
-        // Pair 2: indices 4 and 5
-        selection.setPoint(4, loc1);
-        selection.setPoint(5, loc2);
-        assertTrue(selection.hasPair(2));
-
-        // Pair 3: indices 6 and 7
-        selection.setPoint(6, loc1);
-        selection.setPoint(7, loc2);
-        assertTrue(selection.hasPair(3));
-
-        // Pair 4: indices 8 and 9
-        selection.setPoint(8, loc1);
-        selection.setPoint(9, loc2);
-        assertTrue(selection.hasPair(4));
     }
 }

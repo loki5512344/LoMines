@@ -1,6 +1,6 @@
 package dev.loki.lomines.data.config.loader.region;
 
-import dev.loki.lomines.integration.worldguard.WorldGuardConfig;
+import dev.loki.lomines.integration.worldguard.config.WorldGuardConfig;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -38,9 +38,6 @@ public final class WorldGuardConfigLoader {
             return WorldGuardConfig.disabled();
         }
 
-        String template = yaml.getString("worldguard.region-template",
-                defaults.getString("worldguard.region-template", "{mine_name}_{random_4}"));
-
         List<String> owners = yaml.getStringList("worldguard.owners");
         if (owners.isEmpty()) {
             owners = defaults.getStringList("worldguard.owners");
@@ -63,9 +60,12 @@ public final class WorldGuardConfigLoader {
         boolean protect = yaml.getBoolean("worldguard.protect-on-create",
                 defaults.getBoolean("worldguard.protect-on-create", true));
 
+        String tmpl = yaml.getString("worldguard.region-template",
+                defaults.getString("worldguard.region-template", "{mine_name}_{random_4}"));
+
         return WorldGuardConfig.builder()
                 .enabled(true)
-                .template(template)
+                .template(tmpl)
                 .owners(owners)
                 .members(members)
                 .flags(flags)

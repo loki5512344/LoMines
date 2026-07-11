@@ -4,7 +4,10 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UIConfigTest {
 
@@ -23,8 +26,8 @@ class UIConfigTest {
         UIConfig config = UIConfig.disabled();
 
         assertFalse(config.actionBarEnabled());
-        assertEquals("", config.actionBarFormat());
-        assertEquals(0, config.actionBarRange());
+        assertEquals(UIConfig.DEFAULT_ACTIONBAR_FORMAT, config.actionBarFormat());
+        assertEquals(1.0, config.actionBarRange());
     }
 
     @Test

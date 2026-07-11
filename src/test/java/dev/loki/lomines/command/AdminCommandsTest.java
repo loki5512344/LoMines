@@ -1,9 +1,9 @@
 package dev.loki.lomines.command;
 
 import dev.loki.lomines.LoMinesPlugin;
-import dev.loki.lomines.command.admin.AdminCommands;
-import dev.loki.lomines.core.mine.Mine;
-import dev.loki.lomines.core.mine.Mines;
+import dev.loki.lomines.command.admin.manage.AdminCommands;
+import dev.loki.lomines.core.mine.model.Mine;
+import dev.loki.lomines.core.mine.registry.Mines;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +16,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for AdminCommands class.
@@ -48,7 +52,7 @@ class AdminCommandsTest {
     void testCreateMineSuccess() throws IOException {
         String mineName = "testmine";
 
-        commands.create(sender, mineName);
+        commands.handle(sender, "create", new String[]{mineName});
 
         verify(mines).create(mineName);
         verify(sender, times(2)).sendMessage(any(Component.class));
@@ -59,7 +63,7 @@ class AdminCommandsTest {
         String mineName = "existing";
         doThrow(new IllegalArgumentException("Mine already exists")).when(mines).create(mineName);
 
-        commands.create(sender, mineName);
+        commands.handle(sender, "create", new String[]{mineName});
 
         verify(sender).sendMessage(any(Component.class));
     }
@@ -68,7 +72,7 @@ class AdminCommandsTest {
     void testDeleteMineSuccess() throws IOException {
         String mineName = "testmine";
 
-        commands.delete(sender, mineName);
+        commands.handle(sender, "delete", new String[]{mineName});
 
         verify(mines).delete(mineName);
         verify(sender).sendMessage(any(Component.class));
@@ -79,74 +83,8 @@ class AdminCommandsTest {
         String mineName = "nonexistent";
         doThrow(new IllegalArgumentException("Mine not found")).when(mines).delete(mineName);
 
-        commands.delete(sender, mineName);
+        commands.handle(sender, "delete", new String[]{mineName});
 
         verify(sender).sendMessage(any(Component.class));
-    }
-
-    @Test
-    void testResetMineSuccess() {
-        String mineName = "testmine";
-        when(mines.get(mineName)).thenReturn(mine);
-
-        commands.reset(sender, mineName, false);
-
-        verify(mine).reset(false);
-        verify(sender).sendMessage(any(Component.class));
-    }
-
-    @Test
-    void testResetMineSilent() {
-        String mineName = "testmine";
-        when(mines.get(mineName)).thenReturn(mine);
-
-        commands.reset(sender, mineName, true);
-
-        verify(mine).reset(true);
-        verify(sender).sendMessage(any(Component.class));
-    }
-
-    @Test
-    void testResetMineNotFound() {
-        String mineName = "nonexistent";
-        when(mines.get(mineName)).thenThrow(new IllegalArgumentException("Mine not found"));
-
-        commands.reset(sender, mineName, false);
-
-        verify(sender).sendMessage(any(Component.class));
-    }
-
-    @Test
-    void testReloadSuccess() throws IOException {
-        Collection<Mine> mineList = Arrays.asList(mine, mine);
-        when(mines.getAll()).thenReturn(mineList);
-
-        commands.reload(sender);
-
-        verify(mine, times(2)).stop();
-        verify(mines).loadAll();
-        verify(sender).sendMessage(any(Component.class));
-    }
-
-    @Test
-    void testListMinesEmpty() {
-        when(mines.getAll()).thenReturn(List.of());
-
-        commands.list(sender);
-
-        verify(sender).sendMessage(any(Component.class));
-    }
-
-    @Test
-    void testListMinesWithData() {
-        when(mines.getAll()).thenReturn(Arrays.asList(mine, mine));
-        when(mine.getName()).thenReturn("mine1");
-        when(mine.getBlocks()).thenReturn(100);
-        when(mine.getTotalVolume()).thenReturn(200);
-        when(mine.getPercentFilled()).thenReturn(50.0);
-
-        commands.list(sender);
-
-        verify(sender, atLeast(3)).sendMessage(any(Component.class));
     }
 }

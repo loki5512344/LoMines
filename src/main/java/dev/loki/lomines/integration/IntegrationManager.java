@@ -33,13 +33,13 @@ public final class IntegrationManager {
             try {
                 placeholderExpansion = new LoMinesPlaceholderExpansion(plugin);
                 if (placeholderExpansion.register()) {
-                    plugin.loLogger().info("PlaceholderAPI integration enabled");
-                    plugin.loLogger().info("Available placeholders: %lomines_mine_<name>_percent%, %lomines_player_blocksmined%, etc.");
+                    plugin.getLogger().info("PlaceholderAPI integration enabled");
+                    plugin.getLogger().info("Available placeholders: %lomines_mine_<name>_percent%, %lomines_player_blocksmined%, etc.");
                 } else {
-                    plugin.loLogger().warn("Failed to register PlaceholderAPI expansion");
+                    plugin.getLogger().warning("Failed to register PlaceholderAPI expansion");
                 }
             } catch (Exception e) {
-                plugin.loLogger().warn("Failed to enable PlaceholderAPI integration: " + e.getMessage());
+                plugin.getLogger().warning("Failed to enable PlaceholderAPI integration: " + e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -47,7 +47,7 @@ public final class IntegrationManager {
 
     private void checkWorldGuard() {
         if (isPluginEnabled("WorldGuard")) {
-            plugin.loLogger().info("WorldGuard detected - auto-region creation enabled");
+            plugin.getLogger().info("WorldGuard detected - auto-region creation enabled");
         }
     }
 
@@ -67,7 +67,7 @@ public final class IntegrationManager {
             try {
                 placeholderExpansion.unregister();
             } catch (Exception e) {
-                plugin.loLogger().warn("Failed to unregister PlaceholderAPI expansion: " + e.getMessage());
+                plugin.getLogger().warning("Failed to unregister PlaceholderAPI expansion: " + e.getMessage());
             }
         }
     }

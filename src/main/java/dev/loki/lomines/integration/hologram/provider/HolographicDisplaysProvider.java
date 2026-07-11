@@ -28,8 +28,12 @@ public final class HolographicDisplaysProvider implements HologramProvider {
 
     @Override
     public boolean createHologram(String id, Location location, List<String> lines) {
-        if (!available) return false;
-        if (holograms.containsKey(id)) return false;
+        if (!available) {
+            return false;
+        }
+        if (holograms.containsKey(id)) {
+            return false;
+        }
         // Runtime bridge disabled when API jar is absent at compile time.
         // We keep state so manager logic stays consistent.
         holograms.put(id, location);
@@ -38,30 +42,40 @@ public final class HolographicDisplaysProvider implements HologramProvider {
 
     @Override
     public boolean updateHologram(String id, List<String> lines) {
-        if (!available) return false;
+        if (!available) {
+            return false;
+        }
 
         return holograms.containsKey(id);
     }
 
     @Override
     public boolean moveHologram(String id, Location newLocation) {
-        if (!available) return false;
+        if (!available) {
+            return false;
+        }
 
-        if (!holograms.containsKey(id)) return false;
+        if (!holograms.containsKey(id)) {
+            return false;
+        }
         holograms.put(id, newLocation);
         return true;
     }
 
     @Override
     public boolean deleteHologram(String id) {
-        if (!available) return false;
+        if (!available) {
+            return false;
+        }
 
         return holograms.remove(id) != null;
     }
 
     @Override
     public boolean exists(String id) {
-        if (!available) return false;
+        if (!available) {
+            return false;
+        }
 
         return holograms.containsKey(id);
     }

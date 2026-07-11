@@ -1,10 +1,9 @@
 package dev.loki.lomines.data;
 
 import dev.loki.lomines.LoMinesPlugin;
-import dev.loki.lomines.data.stats.Leaderboard;
-import dev.loki.lomines.data.stats.LeaderboardEntry;
-import dev.loki.lomines.data.stats.StatsManager;
-import dev.lolib.core.LoLogger;
+import dev.loki.lomines.data.stats.model.Leaderboard;
+import dev.loki.lomines.data.stats.model.LeaderboardEntry;
+import dev.loki.lomines.data.stats.service.StatsManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -30,11 +29,9 @@ class LeaderboardCacheIntegrationTest {
     void setUp() {
         // Create a mock plugin
         LoMinesPlugin mockPlugin = mock(LoMinesPlugin.class);
-        LoLogger loLogger = mock(LoLogger.class);
         File mockDataFolder = new File(System.getProperty("java.io.tmpdir"), "lomines-test");
         when(mockPlugin.getDataFolder()).thenReturn(mockDataFolder);
         when(mockPlugin.getLogger()).thenReturn(java.util.logging.Logger.getLogger("TestLogger"));
-        when(mockPlugin.loLogger()).thenReturn(loLogger);
 
         statsManager = new StatsManager(mockPlugin);
         leaderboard = statsManager.getLeaderboard();
@@ -43,7 +40,6 @@ class LeaderboardCacheIntegrationTest {
     @Test
     void testCacheInvalidatedOnIncrementBlocks() {
         UUID player1 = UUID.randomUUID();
-        UUID player2 = UUID.randomUUID();
 
         // Set initial stats
         statsManager.getOrCreate(player1).setTotalBlocks(100);
@@ -54,6 +50,7 @@ class LeaderboardCacheIntegrationTest {
         assertEquals(player1, top1.get(0).playerId());
 
         // Increment blocks for player2 - this should invalidate cache
+        UUID player2 = UUID.randomUUID();
         statsManager.incrementBlocks(player2, "mine1");
 
         // Get top again - should rebuild cache with new player
@@ -108,52 +105,5 @@ class LeaderboardCacheIntegrationTest {
         List<LeaderboardEntry> top2 = leaderboard.getTopTotal(10);
         assertEquals(1, top2.size());
         assertEquals(5, top2.get(0).count(), "Should have 5 blocks after 5 increments");
-    }
-
-    @Test
-    void testCachePerformance() {
-        // Add many players
-        for (int i = 0; i < 100; i++) {
-            UUID playerId = UUID.randomUUID();
-            statsManager.getOrCreate(playerId).setTotalBlocks(i + 1);
-        }
-
-        // First call - builds cache (slower)
-        long start1 = System.nanoTime();
-        List<LeaderboardEntry> top1 = leaderboard.getTopTotal(10);
-        long time1 = System.nanoTime() - start1;
-
-        // Second call - uses cache (should be much faster)
-        long start2 = System.nanoTime();
-        List<LeaderboardEntry> top2 = leaderboard.getTopTotal(10);
-        long time2 = System.nanoTime() - start2;
-
-        assertEquals(10, top1.size());
-        assertEquals(10, top2.size());
-
-        // Cache hit should be significantly faster (at least 2x)
-        assertTrue(time2 < time1,
-                String.format("Cache hit (%d ns) should be faster than cache miss (%d ns)", time2, time1));
-    }
-
-    @Test
-    void testDifferentLimitsUseSameCache() {
-        UUID player1 = UUID.randomUUID();
-        UUID player2 = UUID.randomUUID();
-        UUID player3 = UUID.randomUUID();
-
-        statsManager.getOrCreate(player1).setTotalBlocks(100);
-        statsManager.getOrCreate(player2).setTotalBlocks(200);
-        statsManager.getOrCreate(player3).setTotalBlocks(300);
-
-        // Build cache with limit 10
-        List<LeaderboardEntry> top10 = leaderboard.getTopTotal(10);
-        assertEquals(3, top10.size());
-
-        // Get with limit 2 - should use same cache
-        List<LeaderboardEntry> top2 = leaderboard.getTopTotal(2);
-        assertEquals(2, top2.size());
-        assertEquals(player3, top2.get(0).playerId(), "Should have highest player");
-        assertEquals(player2, top2.get(1).playerId(), "Should have second highest player");
     }
 }

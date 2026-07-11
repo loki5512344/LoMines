@@ -36,9 +36,6 @@ public final class RewardConfigLoader {
     }
 
     private RewardEntry parseRewardEntry(Map<?, ?> map) {
-        Object chanceObj = map.get("chance");
-        double chance = chanceObj instanceof Number n ? n.doubleValue() : 0.0;
-
         List<BlockKey> blocks = new ArrayList<>();
         List<?> blockList = (List<?>) map.get("blocks");
         if (blockList != null) {
@@ -69,6 +66,8 @@ public final class RewardConfigLoader {
         Object preventDropsObj = map.get("prevent-drops");
         boolean preventDrops = preventDropsObj instanceof Boolean b && b;
 
+        Object chanceObj = map.get("chance");
+        double chance = chanceObj instanceof Number n ? n.doubleValue() : 0.0;
         return new RewardEntry(blocks, chance, items, commands, preventDrops);
     }
 

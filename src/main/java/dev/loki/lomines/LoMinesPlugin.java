@@ -1,33 +1,26 @@
 package dev.loki.lomines;
 
-import dev.loki.lomines.core.mine.MineTicker;
-import dev.loki.lomines.core.mine.Mines;
-import dev.loki.lomines.data.stats.StatsManager;
+import dev.loki.lomines.core.mine.service.MineTicker;
+import dev.loki.lomines.core.mine.registry.Mines;
+import dev.loki.lomines.data.stats.service.StatsManager;
 import dev.loki.lomines.integration.IntegrationManager;
 import dev.loki.lomines.integration.hologram.HologramManager;
 import dev.loki.lomines.wand.WandParticleService;
 import dev.loki.lomines.wand.group.GroupWandManager;
-import dev.lolib.commands.CommandManager;
-import dev.lolib.core.LoPlugin;
-import dev.lolib.core.dependency.DependencyManager;
+import org.bukkit.plugin.java.JavaPlugin;
 
-/**
- * Main plugin class for LoMines.
- * Extends LoPlugin from LoAPI for Paper/Folia compatibility.
- */
-public final class LoMinesPlugin extends LoPlugin {
+public final class LoMinesPlugin extends JavaPlugin {
 
     private Mines mines;
     private MineTicker mineTicker;
     private GroupWandManager groupWandManager;
     private StatsManager statsManager;
-    private CommandManager commandManager;
     private IntegrationManager integrationManager;
     private WandParticleService wandParticleService;
     private HologramManager hologramManager;
 
     @Override
-    protected void enable() {
+    public void onEnable() {
         try {
             saveDefaultConfig();
 
@@ -38,7 +31,6 @@ public final class LoMinesPlugin extends LoPlugin {
             this.mines = components.mines();
             this.groupWandManager = components.groupWandManager();
             this.statsManager = components.statsManager();
-            this.commandManager = components.commandManager();
             this.integrationManager = components.integrationManager();
             this.wandParticleService = new WandParticleService(this);
             this.hologramManager = new HologramManager(this);
@@ -47,63 +39,49 @@ public final class LoMinesPlugin extends LoPlugin {
             this.mineTicker = initializer.startTicker(mines);
 
             RegistrationManager registrationManager = new RegistrationManager(this);
-            registrationManager.registerCommands(commandManager);
-            registrationManager.registerTabCompleter();
+            registrationManager.registerCommands();
             registrationManager.registerListeners();
             registrationManager.initializeIntegrations(integrationManager);
 
             initializer.startStatistics(statsManager);
 
-            loLogger().info("LoMines has been enabled!");
+            getLogger().info("LoMines has been enabled!");
         } catch (Exception e) {
-            loLogger().error("Failed to enable LoMines: " + e.getMessage());
+            getLogger().severe("Failed to enable LoMines: " + e.getMessage());
             e.printStackTrace();
             getServer().getPluginManager().disablePlugin(this);
         }
     }
 
     @Override
-    protected void disable() {
+    public void onDisable() {
         try {
             if (mineTicker != null) {
                 mineTicker.stop();
                 mineTicker = null;
             }
-
             if (mines != null) {
                 mines.getAll().forEach(mine -> mine.stop());
             }
-
             if (statsManager != null) {
                 statsManager.stopAutoSave();
                 statsManager.save();
-                loLogger().info("Statistics saved successfully");
+                getLogger().info("Statistics saved successfully");
             }
-
             if (integrationManager != null) {
                 integrationManager.shutdown();
             }
-
             if (wandParticleService != null) {
                 wandParticleService.stopAll();
             }
-
             if (hologramManager != null) {
                 hologramManager.shutdown();
             }
-
-            loLogger().info("LoMines has been disabled!");
+            getLogger().info("LoMines has been disabled!");
         } catch (Exception e) {
-            loLogger().error("Error during plugin shutdown: " + e.getMessage());
+            getLogger().severe("Error during plugin shutdown: " + e.getMessage());
             e.printStackTrace();
         }
-    }
-
-    @Override
-    @SuppressWarnings("removal")
-    protected void dependencies(DependencyManager dependencyManager) {
-        dependencyManager.add("org.apache.commons", "commons-math3", "3.6.1");
-        dependencyManager.add("commons-io", "commons-io", "2.18.0");
     }
 
     public Mines getMines() {
@@ -116,10 +94,6 @@ public final class LoMinesPlugin extends LoPlugin {
 
     public StatsManager getStatsManager() {
         return statsManager;
-    }
-
-    public CommandManager getCommandManager() {
-        return commandManager;
     }
 
     public IntegrationManager getIntegrationManager() {

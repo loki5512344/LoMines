@@ -1,9 +1,9 @@
 package dev.loki.lomines.gui.mine.edit.reset;
 
 import dev.loki.lomines.LoMinesPlugin;
-import dev.loki.lomines.core.mine.Mine;
+import dev.loki.lomines.core.mine.model.Mine;
 import dev.loki.lomines.gui.common.ItemStackFactory;
-import dev.loki.lomines.gui.mine.holder.ResetGuiHolder;
+import dev.loki.lomines.gui.mine.holder.edit.reset.ResetGuiHolder;
 import dev.loki.lomines.gui.mine.main.MineEditGui;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -67,7 +67,9 @@ public final class ResetGui {
     public static boolean handleClick(LoMinesPlugin plugin, Player player, int rawSlot,
                                       String mineName, boolean leftClick, boolean rightClick,
                                       boolean shiftClick) {
-        if (rawSlot < 0 || rawSlot >= SIZE) return false;
+        if (rawSlot < 0 || rawSlot >= SIZE) {
+            return false;
+        }
 
         if (rawSlot == SLOT_BACK) {
             MineEditGui.open(plugin, player, mineName);

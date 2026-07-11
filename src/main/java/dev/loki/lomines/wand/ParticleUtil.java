@@ -16,7 +16,9 @@ final class ParticleUtil {
 
     static void showCornerParticles(Player player, Location loc, Color color) {
         World world = loc.getWorld();
-        if (world == null) return;
+        if (world == null) {
+            return;
+        }
 
         Particle.DustOptions dustOptions = new Particle.DustOptions(color, 1.0f);
 
@@ -33,14 +35,15 @@ final class ParticleUtil {
 
     static void showEdgeParticles(Player player, Location pos1, Location pos2, Color color) {
         World world = pos1.getWorld();
-        if (world == null) return;
+        if (world == null) {
+            return;
+        }
 
         Particle.DustOptions dustOptions = new Particle.DustOptions(color, 0.8f);
 
         int minX = Math.min(pos1.getBlockX(), pos2.getBlockX());
         int maxX = Math.max(pos1.getBlockX(), pos2.getBlockX());
         int minY = Math.min(pos1.getBlockY(), pos2.getBlockY());
-        int maxY = Math.max(pos1.getBlockY(), pos2.getBlockY());
         int minZ = Math.min(pos1.getBlockZ(), pos2.getBlockZ());
         int maxZ = Math.max(pos1.getBlockZ(), pos2.getBlockZ());
 
@@ -51,6 +54,8 @@ final class ParticleUtil {
         spawnEdgeParticles(player, world, minX, minY, maxZ, maxX, minY, maxZ, step, dustOptions);
         spawnEdgeParticles(player, world, minX, minY, minZ, minX, minY, maxZ, step, dustOptions);
         spawnEdgeParticles(player, world, maxX, minY, minZ, maxX, minY, maxZ, step, dustOptions);
+
+        int maxY = Math.max(pos1.getBlockY(), pos2.getBlockY());
 
         // Top face edges
         spawnEdgeParticles(player, world, minX, maxY, minZ, maxX, maxY, minZ, step, dustOptions);
@@ -65,10 +70,11 @@ final class ParticleUtil {
         spawnEdgeParticles(player, world, maxX, minY, maxZ, maxX, maxY, maxZ, step, dustOptions);
     }
 
+    @SuppressWarnings("checkstyle:ParameterNumber")
     private static void spawnEdgeParticles(Player player, World world,
-                                           double x1, double y1, double z1,
-                                           double x2, double y2, double z2,
-                                           double step, Particle.DustOptions dustOptions) {
+                                            double x1, double y1, double z1,
+                                            double x2, double y2, double z2,
+                                            double step, Particle.DustOptions dustOptions) {
         double distance = Math.sqrt(
                 Math.pow(x2 - x1, 2) +
                         Math.pow(y2 - y1, 2) +
@@ -92,7 +98,9 @@ final class ParticleUtil {
 
     static void showOutlineParticles(Player player, Location pos1, Location pos2, Color color, int density) {
         World world = pos1.getWorld();
-        if (world == null || !world.equals(player.getWorld())) return;
+        if (world == null || !world.equals(player.getWorld())) {
+            return;
+        }
 
         Particle.DustOptions dustOptions = new Particle.DustOptions(color, 0.5f);
 
@@ -104,14 +112,14 @@ final class ParticleUtil {
         int maxZ = Math.max(pos1.getBlockZ(), pos2.getBlockZ());
 
         Location[] corners = {
-                new Location(world, minX + 0.5, minY + 0.5, minZ + 0.5),
-                new Location(world, maxX + 0.5, minY + 0.5, minZ + 0.5),
-                new Location(world, minX + 0.5, minY + 0.5, maxZ + 0.5),
-                new Location(world, maxX + 0.5, minY + 0.5, maxZ + 0.5),
-                new Location(world, minX + 0.5, maxY + 0.5, minZ + 0.5),
-                new Location(world, maxX + 0.5, maxY + 0.5, minZ + 0.5),
-                new Location(world, minX + 0.5, maxY + 0.5, maxZ + 0.5),
-                new Location(world, maxX + 0.5, maxY + 0.5, maxZ + 0.5)
+            new Location(world, minX + 0.5, minY + 0.5, minZ + 0.5),
+            new Location(world, maxX + 0.5, minY + 0.5, minZ + 0.5),
+            new Location(world, minX + 0.5, minY + 0.5, maxZ + 0.5),
+            new Location(world, maxX + 0.5, minY + 0.5, maxZ + 0.5),
+            new Location(world, minX + 0.5, maxY + 0.5, minZ + 0.5),
+            new Location(world, maxX + 0.5, maxY + 0.5, minZ + 0.5),
+            new Location(world, minX + 0.5, maxY + 0.5, maxZ + 0.5),
+            new Location(world, maxX + 0.5, maxY + 0.5, maxZ + 0.5)
         };
 
         for (Location corner : corners) {

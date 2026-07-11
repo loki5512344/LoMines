@@ -34,12 +34,16 @@ public final class ItemStackFactory {
     }
 
     public static String loc(Location l) {
-        if (l == null || l.getWorld() == null) return "§7не задана";
+        if (l == null || l.getWorld() == null) {
+            return "§7не задана";
+        }
         return String.format("§7%.0f§8/§7%.0f§8/§7%.0f", l.getX(), l.getY(), l.getZ());
     }
 
     public static String trunc(String s, int max) {
-        if (s == null || s.isEmpty()) return "§7нет";
+        if (s == null || s.isEmpty()) {
+            return "§7нет";
+        }
         return s.length() > max ? s.substring(0, max - 3) + "..." : s;
     }
 

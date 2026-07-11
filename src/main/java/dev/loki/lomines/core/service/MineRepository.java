@@ -1,13 +1,17 @@
 package dev.loki.lomines.core.service;
 
 import dev.loki.lomines.LoMinesPlugin;
-import dev.loki.lomines.core.mine.Mine;
+import dev.loki.lomines.core.mine.model.Mine;
 import dev.loki.lomines.data.config.ConfigLoader;
-import dev.loki.lomines.data.config.MineConfig;
+import dev.loki.lomines.data.config.model.MineConfig;
 import org.bukkit.Location;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -84,6 +88,6 @@ public final class MineRepository {
         stopAndRemove(name);
         MineConfig config = fileManager.loadConfig(name);
         Mine mine = createAndStart(name, config);
-        plugin.loLogger().info("Reloaded mine: " + name);
+        plugin.getLogger().info("Reloaded mine: " + name);
     }
 }

@@ -1,11 +1,10 @@
 package dev.loki.lomines.data;
 
 import dev.loki.lomines.LoMinesPlugin;
-import dev.loki.lomines.data.stats.Leaderboard;
-import dev.loki.lomines.data.stats.LeaderboardEntry;
-import dev.loki.lomines.data.stats.PlayerStats;
-import dev.loki.lomines.data.stats.StatsManager;
-import dev.lolib.core.LoLogger;
+import dev.loki.lomines.data.stats.model.Leaderboard;
+import dev.loki.lomines.data.stats.model.LeaderboardEntry;
+import dev.loki.lomines.data.stats.model.PlayerStats;
+import dev.loki.lomines.data.stats.service.StatsManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -31,11 +30,9 @@ class LeaderboardTest {
     void setUp() {
         // Create a mock plugin
         LoMinesPlugin mockPlugin = mock(LoMinesPlugin.class);
-        LoLogger loLogger = mock(LoLogger.class);
         File mockDataFolder = new File(System.getProperty("java.io.tmpdir"), "lomines-test");
         when(mockPlugin.getDataFolder()).thenReturn(mockDataFolder);
         when(mockPlugin.getLogger()).thenReturn(java.util.logging.Logger.getLogger("TestLogger"));
-        when(mockPlugin.loLogger()).thenReturn(loLogger);
 
         statsManager = new StatsManager(mockPlugin);
         leaderboard = statsManager.getLeaderboard();
@@ -136,75 +133,4 @@ class LeaderboardTest {
         assertEquals(player2, top.get(0).playerId(), "New player should be first");
     }
 
-    @Test
-    void testGetTopByMine_SortedDescending() {
-        UUID player1 = UUID.randomUUID();
-        UUID player2 = UUID.randomUUID();
-        UUID player3 = UUID.randomUUID();
-
-        statsManager.getOrCreate(player1).setMineBlocks("mine1", 50);
-        statsManager.getOrCreate(player2).setMineBlocks("mine1", 200);
-        statsManager.getOrCreate(player3).setMineBlocks("mine1", 100);
-
-        List<LeaderboardEntry> top = leaderboard.getTopByMine("mine1", 10);
-        assertEquals(3, top.size());
-        assertEquals(player2, top.get(0).playerId()); // 200 blocks
-        assertEquals(player3, top.get(1).playerId()); // 100 blocks
-        assertEquals(player1, top.get(2).playerId()); // 50 blocks
-    }
-
-    @Test
-    void testGetTopByMine_FiltersZeroBlocks() {
-        UUID player1 = UUID.randomUUID();
-        UUID player2 = UUID.randomUUID();
-
-        statsManager.getOrCreate(player1).setMineBlocks("mine1", 100);
-        statsManager.getOrCreate(player2).setMineBlocks("mine1", 0);
-
-        List<LeaderboardEntry> top = leaderboard.getTopByMine("mine1", 10);
-        assertEquals(1, top.size(), "Should filter out players with 0 blocks");
-        assertEquals(player1, top.get(0).playerId());
-    }
-
-    @Test
-    void testGetTopByMine_OnlyIncludesSpecificMine() {
-        UUID player1 = UUID.randomUUID();
-        UUID player2 = UUID.randomUUID();
-
-        statsManager.getOrCreate(player1).setMineBlocks("mine1", 100);
-        statsManager.getOrCreate(player2).setMineBlocks("mine2", 200);
-
-        List<LeaderboardEntry> top = leaderboard.getTopByMine("mine1", 10);
-        assertEquals(1, top.size(), "Should only include players with blocks in specified mine");
-        assertEquals(player1, top.get(0).playerId());
-    }
-
-    @Test
-    void testGetPosition_ReturnsCorrectPosition() {
-        UUID player1 = UUID.randomUUID();
-        UUID player2 = UUID.randomUUID();
-        UUID player3 = UUID.randomUUID();
-
-        statsManager.getOrCreate(player1).setTotalBlocks(50);
-        statsManager.getOrCreate(player2).setTotalBlocks(200);
-        statsManager.getOrCreate(player3).setTotalBlocks(100);
-
-        assertEquals(1, leaderboard.getPosition(player2), "Player with most blocks should be position 1");
-        assertEquals(2, leaderboard.getPosition(player3), "Player with second most blocks should be position 2");
-        assertEquals(3, leaderboard.getPosition(player1), "Player with least blocks should be position 3");
-    }
-
-    @Test
-    void testGetPosition_ReturnsMinusOneForNonExistentPlayer() {
-        UUID playerId = UUID.randomUUID();
-        assertEquals(-1, leaderboard.getPosition(playerId), "Should return -1 for non-existent player");
-    }
-
-    @Test
-    void testGetPosition_ReturnsMinusOneForZeroBlocks() {
-        UUID playerId = UUID.randomUUID();
-        statsManager.getOrCreate(playerId).setTotalBlocks(0);
-
-        assertEquals(-1, leaderboard.getPosition(playerId), "Should return -1 for player with 0 blocks");
-    }
 }

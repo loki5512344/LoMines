@@ -79,10 +79,14 @@ public final class LocationParser {
             return null;
         }
         String[] parts = locationString.split(";");
-        if (parts.length < 4) return null;
+        if (parts.length < 4) {
+            return null;
+        }
 
         World world = Bukkit.getWorld(parts[0]);
-        if (world == null) return null;
+        if (world == null) {
+            return null;
+        }
 
         try {
             double x = Double.parseDouble(parts[1]);

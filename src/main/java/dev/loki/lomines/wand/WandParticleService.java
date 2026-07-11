@@ -51,7 +51,9 @@ public final class WandParticleService {
 
     public void stopShowingParticles(UUID playerId) {
         BukkitRunnable task = activeTasks.remove(playerId);
-        if (task != null) task.cancel();
+        if (task != null) {
+            task.cancel();
+        }
     }
 
     public void stopAll() {
@@ -92,7 +94,9 @@ public final class WandParticleService {
 
     private void showOtherSlots(Player player, GroupWandSession session, int activeSlot) {
         for (int i = 0; i < 9; i++) {
-            if (i == activeSlot) continue;
+            if (i == activeSlot) {
+                continue;
+            }
             if (session.isSlotReady(i)) {
                 Location p1 = session.getPos1(i);
                 Location p2 = session.getPos2(i);

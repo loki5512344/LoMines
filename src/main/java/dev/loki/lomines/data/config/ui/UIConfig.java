@@ -1,7 +1,9 @@
 package dev.loki.lomines.data.config.ui;
 
-import dev.loki.lomines.util.format.ColorUtils;
+import dev.loki.lomines.util.format.color.ColorUtils;
 import net.kyori.adventure.text.Component;
+
+import java.util.Locale;
 
 /**
  * Configuration for UI elements (action bar, messages).
@@ -16,6 +18,7 @@ public record UIConfig(
 
     public static final String DEFAULT_ACTIONBAR_FORMAT = "<green>{mine}</green> <gray>{percent}%</gray> <dark_gray>({time})";
     public static final String DEFAULT_TIMER_FORMAT = "mm:ss";
+
     public UIConfig {
         hologram = hologram != null ? hologram : HologramConfig.disabled();
         actionBarFormat = actionBarFormat != null && !actionBarFormat.isBlank()
@@ -49,7 +52,7 @@ public record UIConfig(
     public Component formatActionBar(String mineName, double percent, String timeStr, int blocks, int total) {
         String parsed = actionBarFormat
                 .replace("{mine}", mineName)
-                .replace("{percent}", String.format("%.1f", percent))
+                .replace("{percent}", String.format(Locale.US, "%.1f", percent))
                 .replace("{time}", timeStr)
                 .replace("{blocks}", String.valueOf(blocks))
                 .replace("{total}", String.valueOf(total));

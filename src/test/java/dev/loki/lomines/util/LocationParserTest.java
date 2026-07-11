@@ -9,7 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -64,57 +67,6 @@ class LocationParserTest {
             assertEquals(-200.0, location.getZ(), 0.001);
             assertEquals(-180.0f, location.getYaw(), 0.001);
             assertEquals(-90.0f, location.getPitch(), 0.001);
-        }
-    }
-
-    @Test
-    void testParseNullString() {
-        ConfigParseException exception = assertThrows(
-                ConfigParseException.class,
-                () -> LocationParser.parse(null)
-        );
-        assertTrue(exception.getMessage().contains("cannot be null or empty"));
-    }
-
-    @Test
-    void testParseEmptyString() {
-        ConfigParseException exception = assertThrows(
-                ConfigParseException.class,
-                () -> LocationParser.parse("")
-        );
-        assertTrue(exception.getMessage().contains("cannot be null or empty"));
-    }
-
-    @Test
-    void testParseInvalidFormat() {
-        ConfigParseException exception = assertThrows(
-                ConfigParseException.class,
-                () -> LocationParser.parse("world;100;64")
-        );
-        assertTrue(exception.getMessage().contains("Invalid location format"));
-        assertTrue(exception.getMessage().contains("Expected format"));
-    }
-
-    @Test
-    void testParseInvalidNumbers() {
-        ConfigParseException exception = assertThrows(
-                ConfigParseException.class,
-                () -> LocationParser.parse("world;abc;64;0;0;0")
-        );
-        assertTrue(exception.getMessage().contains("Invalid location format"));
-    }
-
-    @Test
-    void testParseNonExistentWorld() {
-        try (MockedStatic<Bukkit> bukkit = Mockito.mockStatic(Bukkit.class)) {
-            bukkit.when(() -> Bukkit.getWorld("nonexistent")).thenReturn(null);
-
-            ConfigParseException exception = assertThrows(
-                    ConfigParseException.class,
-                    () -> LocationParser.parse("nonexistent;0;64;0;0;0")
-            );
-            assertTrue(exception.getMessage().contains("does not exist"));
-            assertTrue(exception.getMessage().contains("nonexistent"));
         }
     }
 

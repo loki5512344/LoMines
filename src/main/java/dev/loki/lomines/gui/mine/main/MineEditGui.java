@@ -1,13 +1,13 @@
 package dev.loki.lomines.gui.mine.main;
 
 import dev.loki.lomines.LoMinesPlugin;
-import dev.loki.lomines.core.mine.Mine;
-import dev.loki.lomines.data.config.MineConfig;
+import dev.loki.lomines.core.mine.model.Mine;
+import dev.loki.lomines.data.config.model.MineConfig;
 import dev.loki.lomines.gui.confirm.ConfirmDeleteGui;
-import dev.loki.lomines.gui.mine.edit.blocks.BlocksGui;
+import dev.loki.lomines.gui.mine.edit.blocks.view.BlocksGui;
 import dev.loki.lomines.gui.mine.edit.reset.ResetGui;
 import dev.loki.lomines.gui.mine.edit.rewards.RewardsGui;
-import dev.loki.lomines.gui.mine.holder.MineEditGuiHolder;
+import dev.loki.lomines.gui.mine.holder.main.MineEditGuiHolder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -62,21 +62,25 @@ public final class MineEditGui {
 
     private static void fill(LoMinesPlugin plugin, Mine mine, Inventory inv) {
         MineConfig config = mine.getConfig();
-        for (int i = 0; i < SIZE; i++) inv.setItem(i, MineEditItems.filler());
+        for (int i = 0; i < SIZE; i++) {
+            inv.setItem(i, MineEditItems.filler());
+        }
         inv.setItem(SLOT_BLOCKS, MineEditItems.blocksItem(config));
         inv.setItem(SLOT_REGIONS, MineEditItems.regionsItem(config));
         inv.setItem(SLOT_RESET, MineEditItems.resetItem(config));
         inv.setItem(SLOT_REWARDS, MineEditItems.rewardsItem(config));
-        inv.setItem(SLOT_TELEPORT, MineEditItems.teleportItem(config));
-        inv.setItem(SLOT_UI, MineEditItems.uiItem(config));
-        inv.setItem(SLOT_SAVE, MineEditItems.saveItem());
-        inv.setItem(SLOT_DELETE, MineEditItems.deleteItem(mine.getName()));
-        inv.setItem(SLOT_INFO, MineEditItems.infoItem(mine));
-        inv.setItem(SLOT_BACK, MineEditItems.backItem());
+        inv.setItem(SLOT_TELEPORT, MineEditExtraItems.teleportItem(config));
+        inv.setItem(SLOT_UI, MineEditExtraItems.uiItem(config));
+        inv.setItem(SLOT_SAVE, MineEditExtraItems.saveItem());
+        inv.setItem(SLOT_DELETE, MineEditExtraItems.deleteItem(mine.getName()));
+        inv.setItem(SLOT_INFO, MineEditExtraItems.infoItem(mine));
+        inv.setItem(SLOT_BACK, MineEditExtraItems.backItem());
     }
 
     public static boolean handleClick(LoMinesPlugin plugin, Player player, int rawSlot, String mineName) {
-        if (rawSlot < 0 || rawSlot >= SIZE) return false;
+        if (rawSlot < 0 || rawSlot >= SIZE) {
+            return false;
+        }
         switch (rawSlot) {
             case SLOT_BACK -> {
                 player.closeInventory();
@@ -114,6 +118,7 @@ public final class MineEditGui {
             case SLOT_INFO, SLOT_REGIONS -> {
                 return true;
             }
+            default -> {}
         }
         return true;
     }

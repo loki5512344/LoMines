@@ -6,7 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Унифицированная обработка ошибок и отправка сообщений
+ * Унифицированная обработка ошибок и отправка сообщений.
  */
 public class ErrorHandler {
     private final Logger logger;
@@ -18,35 +18,35 @@ public class ErrorHandler {
     }
 
     /**
-     * Отправить сообщение об ошибке игроку
+     * Отправить сообщение об ошибке игроку.
      */
     public void sendError(CommandSender sender, String message) {
         sender.sendMessage(MessageFormatter.error(message));
     }
 
     /**
-     * Отправить сообщение об ошибке игроку с причиной
+     * Отправить сообщение об ошибке игроку с причиной.
      */
     public void sendError(CommandSender sender, String message, String reason) {
         sender.sendMessage(MessageFormatter.error(message + ": " + reason));
     }
 
     /**
-     * Залогировать ошибку
+     * Залогировать ошибку.
      */
     public void logError(String message) {
         logger.log(Level.SEVERE, prefix + message);
     }
 
     /**
-     * Залогировать ошибку с исключением
+     * Залогировать ошибку с исключением.
      */
     public void logError(String message, Throwable throwable) {
         logger.log(Level.SEVERE, prefix + message, throwable);
     }
 
     /**
-     * Отправить ошибку игроку и залогировать
+     * Отправить ошибку игроку и залогировать.
      */
     public void handleError(CommandSender sender, String userMessage, String logMessage) {
         sendError(sender, userMessage);
@@ -54,7 +54,7 @@ public class ErrorHandler {
     }
 
     /**
-     * Отправить ошибку игроку и залогировать с исключением
+     * Отправить ошибку игроку и залогировать с исключением.
      */
     public void handleError(CommandSender sender, String userMessage, String logMessage, Throwable throwable) {
         sendError(sender, userMessage);
@@ -62,21 +62,21 @@ public class ErrorHandler {
     }
 
     /**
-     * Обработать ошибку валидации
+     * Обработать ошибку валидации.
      */
     public void handleValidationError(CommandSender sender, String fieldName, String value) {
         sendError(sender, "Некорректное значение для " + fieldName + ": " + value);
     }
 
     /**
-     * Обработать ошибку "не найдено"
+     * Обработать ошибку "не найдено".
      */
     public void handleNotFound(CommandSender sender, String entityType, String identifier) {
         sendError(sender, entityType + " '" + identifier + "' не найден");
     }
 
     /**
-     * Обработать ошибку доступа
+     * Обработать ошибку доступа.
      */
     public void handlePermissionDenied(CommandSender sender, String action) {
         sendError(sender, "У вас нет прав для: " + action);

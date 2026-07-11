@@ -1,8 +1,8 @@
 package dev.loki.lomines.core;
 
 import dev.loki.lomines.LoMinesPlugin;
-import dev.loki.lomines.core.mine.MineTicker;
-import dev.loki.lomines.core.mine.Mines;
+import dev.loki.lomines.core.mine.service.MineTicker;
+import dev.loki.lomines.core.mine.registry.Mines;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;

@@ -3,8 +3,8 @@ package dev.loki.lomines.block;
 import dev.loki.lomines.LoMinesPlugin;
 import dev.loki.lomines.data.config.block.BlockKey;
 import dev.loki.lomines.util.block.BlockUpdateUtil;
-import dev.loki.lomines.util.location.Cuboid;
-import dev.lolib.scheduler.Scheduler;
+import dev.loki.lomines.util.location.geo.Cuboid;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -35,11 +35,11 @@ public final class BukkitBlockSetter extends BlockSetter {
 
     @Override
     public void fill(Cuboid region, IntConsumer callback) {
-        Scheduler.get(plugin).runAsync(() -> {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             int count = fillSync(region);
 
             // Send block updates on main thread to prevent ghost blocks
-            Scheduler.get(plugin).run(() -> {
+            Bukkit.getScheduler().runTask(plugin, () -> {
                 BlockUpdateUtil.sendRegionUpdate(
                         region.getWorld(),
                         region.getMinX(), region.getMinY(), region.getMinZ(),
@@ -53,14 +53,14 @@ public final class BukkitBlockSetter extends BlockSetter {
     @Override
     public void fillAtLocations(List<Location> locations, IntConsumer callback) {
         if (locations == null || locations.isEmpty()) {
-            Scheduler.get(plugin).run(() -> callback.accept(0));
+            Bukkit.getScheduler().runTask(plugin, () -> callback.accept(0));
             return;
         }
-        Scheduler.get(plugin).runAsync(() -> {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             int count = fillAtLocationsSync(locations);
 
             // Send block updates on main thread to prevent ghost blocks
-            Scheduler.get(plugin).run(() -> {
+            Bukkit.getScheduler().runTask(plugin, () -> {
                 BlockUpdateUtil.sendLocationsUpdate(locations);
                 callback.accept(count);
             });

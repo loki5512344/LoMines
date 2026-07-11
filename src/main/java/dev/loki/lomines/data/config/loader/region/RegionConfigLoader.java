@@ -66,7 +66,9 @@ public final class RegionConfigLoader {
                             break;
                         }
                     }
-                    if (!hasMore) break;
+                    if (!hasMore) {
+                        break;
+                    }
                 }
             }
         }

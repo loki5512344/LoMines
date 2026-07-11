@@ -1,7 +1,7 @@
 package dev.loki.lomines.gui.group;
 
 import dev.loki.lomines.LoMinesPlugin;
-import dev.loki.lomines.core.mine.Mines;
+import dev.loki.lomines.core.mine.registry.Mines;
 import dev.loki.lomines.wand.group.GroupWandManager;
 import dev.loki.lomines.wand.group.GroupWandSession;
 import net.kyori.adventure.text.Component;
@@ -99,7 +99,9 @@ public final class GroupCreateGui {
         int skipped = 0;
 
         for (int i = 0; i < 9; i++) {
-            if (!session.isSlotReady(i)) continue;
+            if (!session.isSlotReady(i)) {
+                continue;
+            }
             String mineName = base + "_" + (i + 1);
             try {
                 mines.create(mineName, session.getPos1(i), session.getPos2(i));
@@ -109,7 +111,8 @@ public final class GroupCreateGui {
                 skipped++;
             } catch (Exception e) {
                 player.sendMessage(Component.text("Ошибка " + mineName + ": " + e.getMessage(), NamedTextColor.RED));
-                plugin.loLogger().error("Group create failed for " + mineName, e);
+                plugin.getLogger().severe("Group create failed for " + mineName);
+                e.printStackTrace();
             }
         }
 

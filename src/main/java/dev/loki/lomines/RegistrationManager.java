@@ -1,16 +1,13 @@
 package dev.loki.lomines;
 
-import dev.loki.lomines.command.admin.*;
-import dev.loki.lomines.command.common.LoMinesTabCompleter;
-import dev.loki.lomines.command.player.PlayerCommands;
-import dev.loki.lomines.command.player.TeleportCommand;
+import dev.loki.lomines.command.LmCommand;
 import dev.loki.lomines.integration.IntegrationManager;
-import dev.loki.lomines.listener.*;
-import dev.lolib.commands.CommandManager;
+import dev.loki.lomines.listener.block.BlockBreakListener;
+import dev.loki.lomines.listener.gui.GroupGuiListener;
+import dev.loki.lomines.listener.gui.MineEditGuiListener;
+import dev.loki.lomines.listener.player.PlayerInteractListener;
+import dev.loki.lomines.listener.player.PlayerJoinListener;
 
-/**
- * Handles registration of commands, listeners, and integrations.
- */
 final class RegistrationManager {
 
     private final LoMinesPlugin plugin;
@@ -19,28 +16,16 @@ final class RegistrationManager {
         this.plugin = plugin;
     }
 
-    void registerCommands(CommandManager commandManager) {
-        commandManager.register(new AdminCommands(plugin));
-        commandManager.register(new PlayerCommands(plugin));
-        commandManager.register(new StatsCommands(plugin));
-        commandManager.register(new MaskCommands(plugin));
-        commandManager.register(new HologramCommands(plugin));
-        commandManager.register(new InfoCommand(plugin));
-        commandManager.register(new TeleportCommand(plugin));
-        commandManager.register(new CopyCommand(plugin));
-        commandManager.register(new RegionCommands(plugin));
-
-        plugin.loLogger().info("Commands registered");
-    }
-
-    void registerTabCompleter() {
-        LoMinesTabCompleter tabCompleter = new LoMinesTabCompleter(plugin);
-        plugin.getCommand("lm").setTabCompleter(tabCompleter);
-        plugin.getCommand("lomines").setTabCompleter(tabCompleter);
-        plugin.getCommand("mine").setTabCompleter(tabCompleter);
-        plugin.getCommand("mines").setTabCompleter(tabCompleter);
-
-        plugin.loLogger().info("Tab completer registered");
+    void registerCommands() {
+        LmCommand executor = new LmCommand(plugin);
+        for (String alias : new String[]{"lm", "lomines", "mine", "mines"}) {
+            var cmd = plugin.getCommand(alias);
+            if (cmd != null) {
+                cmd.setExecutor(executor);
+                cmd.setTabCompleter(executor);
+            }
+        }
+        plugin.getLogger().info("Commands registered");
     }
 
     void registerListeners() {
@@ -52,12 +37,11 @@ final class RegistrationManager {
         if (plugin.getConfig().getBoolean("statistics-enabled", true)) {
             plugin.getServer().getPluginManager().registerEvents(new PlayerJoinListener(plugin), plugin);
         }
-
-        plugin.loLogger().info("Event listeners registered");
+        plugin.getLogger().info("Event listeners registered");
     }
 
     void initializeIntegrations(IntegrationManager integrationManager) {
         integrationManager.initAll();
-        plugin.loLogger().info("Integrations initialized");
+        plugin.getLogger().info("Integrations initialized");
     }
 }

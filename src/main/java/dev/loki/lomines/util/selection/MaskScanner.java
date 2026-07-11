@@ -1,6 +1,6 @@
 package dev.loki.lomines.util.selection;
 
-import dev.loki.lomines.util.location.Cuboid;
+import dev.loki.lomines.util.location.geo.Cuboid;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
