@@ -1,219 +1,141 @@
+<div align="center">
+
 # LoMines
 
-Advanced mine management plugin for Paper 1.21.4+
+Multi-region mine management plugin with WorldGuard integration and player statistics for Paper servers.
 
-## Features
+![Java](https://img.shields.io/badge/Java-21+-orange?style=flat-square&logo=openjdk&logoColor=white)
+![Paper](https://img.shields.io/badge/Paper-1.19.2+-blue?style=flat-square)
+![Folia](https://img.shields.io/badge/Folia-supported-purple?style=flat-square)
+![License](https://img.shields.io/badge/license-GPLv3-blue?style=flat-square&logo=gnu&logoColor=white)
+![version](https://img.shields.io/badge/version-3.0.0-green?style=flat-square)
 
-- **Multiple fill modes**: Cuboid (fill entire region) or Mask (fill marked positions only)
-- **Weighted block system**: Configure different blocks with spawn chances
-- **Automatic resets**: Timer-based or percentage-based triggers
-- **WorldGuard integration**: Auto-create regions for new mines
-- **PlaceholderAPI support**: Display mine info in other plugins
-- **GUI editor**: In-game mine configuration editor
-- **Player statistics**: Track blocks mined, mines reset, playtime
+[English](#english) | [Русский](#russian)
 
-## Commands
+</div>
 
-### Admin Commands
+---
+
+<a name="english"></a>
+
+## English
+
+### Overview
+
+LoMines is an advanced mine management plugin for Paper 1.19.2+ servers. It supports multiple fill modes, weighted block systems, automatic resets, WorldGuard integration, in-game GUI editor, and player statistics.
+
+### Features
+
+| Feature | Description |
+|---------|-------------|
+| Multiple fill modes | Cuboid (fill entire region) or Mask (fill marked positions) |
+| Weighted blocks | Configure spawn chances per block type |
+| Automatic resets | Timer-based or percentage-based triggers |
+| WorldGuard integration | Auto-create regions for new mines |
+| GUI editor | In-game mine configuration |
+| Player statistics | Track blocks mined, resets, playtime |
+| Leaderboards | Top players per mine or global |
+| Group wand | Create multiple mines from batch selections |
+| PlaceholderAPI | Display mine info in other plugins |
+| Holograms | DecentHolograms and HolographicDisplays support |
+
+### Commands
 
 | Command | Permission | Description |
 |---------|------------|-------------|
-| `/lm create <name>` | `lomines.admin.create` | Create a new mine |
-| `/lm delete <name>` | `lomines.admin.delete` | Delete a mine |
-| `/lm reset <name> [silent]` | `lomines.admin.reset` | Reset a mine manually |
-| `/lm reload` | `lomines.admin.reload` | Reload all mine configs |
-| `/lm list` | `lomines.admin.list` | List all mines |
-| `/lm edit <mine>` | `lomines.admin.edit` | Open GUI editor for a mine |
-| `/lm setteleport <mine>` | `lomines.admin.setteleport` | Set teleport location (your current position) |
-| `/lm setspawn <mine>` | `lomines.admin.setspawn` | Set safe spawn location for stuck players |
-| `/lm clearspawn <mine>` | `lomines.admin.setspawn` | Clear spawn location |
-| `/lm maskscan <mine>` | `lomines.admin.maskscan` | Scan mask marker blocks |
-
-### Player Commands
-
-| Command | Permission | Description |
-|---------|------------|-------------|
-| `/lm stats [player]` | `lomines.stats` | View mining statistics |
+| `/lm create <name>` | `lomines.admin` | Create a new mine |
+| `/lm delete <name>` | `lomines.admin` | Delete a mine |
+| `/lm reset <name> [silent]` | `lomines.admin` | Reset a mine |
+| `/lm reload` | `lomines.admin` | Reload configs |
+| `/lm list` | `lomines.admin` | List all mines |
+| `/lm edit <mine>` | `lomines.admin.edit` | Open GUI editor |
+| `/lm wand` | `lomines.admin.wand` | Get selection wand |
+| `/lm group <prefix>` | `lomines.admin.wand` | Batch mine creation |
+| `/lm setteleport <mine>` | `lomines.admin.setteleport` | Set teleport point |
+| `/lm setspawn <mine>` | `lomines.admin.setspawn` | Set safe spawn |
+| `/lm maskscan <mine>` | `lomines.admin.maskscan` | Scan mask markers |
+| `/lm stats [player]` | `lomines.stats` | View statistics |
 | `/lm top [mine] [limit]` | `lomines.stats` | View leaderboard |
 
-### Wand Commands
+### Placeholders
 
-| Command | Permission | Description |
-|---------|------------|-------------|
-| `/lm wand` | `lomines.admin.wand` | Get the region selection wand |
-| `/lm group <prefix>` | `lomines.admin.wand` | Create mines from group wand selections |
+| Placeholder | Description |
+|-------------|-------------|
+| `%lomines_mine_<name>_blocks%` | Current blocks in mine |
+| `%lomines_mine_<name>_percent%` | Fill percentage |
+| `%lomines_mine_<name>_remaining%` | Remaining blocks |
+| `%lomines_mine_<name>_resettime%` | Time since reset |
+| `%lomines_player_blocksmined%` | Total blocks mined |
+| `%lomines_player_rank%` | Leaderboard rank |
+| `%lomines_count%` | Total mines count |
 
-## Permissions
+### Dependencies
 
-```yaml
-lomines.admin:
-  description: All admin commands
-  default: op
-  children:
-    lomines.use: true
-    lomines.admin.create: true
-    lomines.admin.delete: true
-    lomines.admin.reset: true
-    lomines.admin.reload: true
-    lomines.admin.list: true
-    lomines.admin.edit: true
-    lomines.admin.setteleport: true
-    lomines.admin.setspawn: true
-    lomines.admin.maskscan: true
-    lomines.admin.wand: true
-    lomines.stats: true
-    lomines.stats.others: true
+- Required: Paper 1.19.2+, Java 21+
+- Optional: PlaceholderAPI, WorldGuard, DecentHolograms, HolographicDisplays, Oraxen, ItemsAdder
 
-lomines.use:
-  description: Basic usage
-  default: true
+### Installation
 
-lomines.stats:
-  description: View own stats and leaderboards
-  default: true
+1. Drop the jar into `plugins/`
+2. Restart the server
+3. Configure `plugins/LoMines/mines/` and `plugins/LoMines/defaults.yml`
 
-lomines.stats.others:
-  description: View other players' stats
-  default: op
-```
+---
 
-## Placeholders (PlaceholderAPI)
+<a name="russian"></a>
 
-### Mine Information
+## Русский
 
-| Placeholder | Description | Example |
-|-------------|-------------|---------|
-| `%lomines_mine_<name>_name%` | Mine name | `mymine` |
-| `%lomines_mine_<name>_blocks%` | Current blocks | `8542` |
-| `%lomines_mine_<name>_total%` | Total volume | `10000` |
-| `%lomines_mine_<name>_percent%` | Fill percentage (1 decimal) | `85.4` |
-| `%lomines_mine_<name>_percentint%` | Fill percentage (integer) | `85` |
-| `%lomines_mine_<name>_world%` | World name | `world` |
-| `%lomines_mine_<name>_remaining%` | Remaining blocks | `1458` |
-| `%lomines_mine_<name>_resettime%` | Time since reset (mm:ss) | `03:45` |
-| `%lomines_mine_<name>_resetseconds%` | Seconds since reset | `225` |
+### Обзор
 
-### Player Statistics
+LoMines - продвинутый плагин управления шахтами для Paper 1.19.2+ серверов. Поддерживает несколько режимов заполнения, взвешенные блоки, автоматические сбросы, интеграцию с WorldGuard, GUI-редактор и статистику игроков.
 
-| Placeholder | Description | Example |
-|-------------|-------------|---------|
-| `%lomines_player_blocksmined%` | Total blocks mined | `15234` |
-| `%lomines_player_minesreset%` | Mines reset count | `45` |
-| `%lomines_player_playtime%` | Formatted play time | `2h 15m` |
-| `%lomines_player_rank%` | Leaderboard rank | `3` |
+### Возможности
 
-### Global
+| Возможность | Описание |
+|-------------|----------|
+| Режимы заполнения | Cuboid (весь регион) или Mask (по меткам) |
+| Взвешенные блоки | Настройка шансов появления для каждого блока |
+| Авто-сбросы | По таймеру или по проценту добычи |
+| WorldGuard | Авто-создание регионов для новых шахт |
+| GUI-редактор | Настройка шахт прямо в игре |
+| Статистика | Добыто блоков, сбросы, время игры |
+| Лидерборды | Топ игроков по шахте или глобально |
+| Групповая палка | Создание нескольких шахт за раз |
+| PlaceholderAPI | Информация о шахтах в других плагинах |
+| Голограммы | Поддержка DecentHolograms и HolographicDisplays |
 
-| Placeholder | Description | Example |
-|-------------|-------------|---------|
-| `%lomines_count%` | Total number of mines | `12` |
+### Команды
 
-## Configuration
+| Команда | Право | Описание |
+|---------|-------|----------|
+| `/lm create <имя>` | `lomines.admin` | Создать шахту |
+| `/lm delete <имя>` | `lomines.admin` | Удалить шахту |
+| `/lm reset <имя>` | `lomines.admin` | Сбросить шахту |
+| `/lm edit <имя>` | `lomines.admin.edit` | Открыть GUI-редактор |
+| `/lm wand` | `lomines.admin.wand` | Получить палку выделения |
+| `/lm stats [игрок]` | `lomines.stats` | Статистика |
+| `/lm top [шахта]` | `lomines.stats` | Лидерборд |
 
-### defaults.yml
+### Зависимости
 
-Default configuration applied to all mines:
+- Обязательные: Paper 1.19.2+, Java 21+
+- Опциональные: PlaceholderAPI, WorldGuard, DecentHolograms, Oraxen, ItemsAdder
 
-```yaml
-# Reset settings
-reset:
-  interval: "5m"              # Reset interval (30s, 5m, 2h, 1d)
-  percent-trigger: 10.0       # Trigger reset when X% of blocks mined
-  percent-enabled: false      # Enable percentage trigger
-  commands: []                # Commands to run on reset
-  broadcast: ""               # Broadcast message on reset
+### Установка
 
-# Block settings
-blocks:
-  fill-mode: CUBOID           # CUBOID or MASK
-  mask:
-    marker: "pink_concrete"   # Marker block for mask mode
+1. Положите jar в папку `plugins/`
+2. Перезапустите сервер
+3. Настройте `plugins/LoMines/mines/` и `plugins/LoMines/defaults.yml`
 
-# Teleport settings
-teleport:
-  enabled: false
-  location: ""
+---
 
-# Safe spawn for stuck players
-player-spawn:
-  enabled: false
-  location: ""
+### Links
 
-# UI settings
-ui:
-  actionbar:
-    enabled: true
-    format: "<green>{mine}</green> <gray>{percent}%</gray> <dark_gray>({time})"
-    range: 50.0
+- [Releases](../../releases)
+- [Issues](../../issues)
+- [License](LICENSE)
 
-# WorldGuard integration
-worldguard:
-  enabled: false
-  region-template: "{mine_name}_{random_4}"
-  owners: []
-  members: []
-  flags:
-    - "passthrough=deny"
-    - "build=allow"
-```
+### License
 
-## Usage Examples
-
-### Creating a Simple Mine
-
-```bash
-# 1. Get the wand
-/lm wand
-
-# 2. Select two corners (left and right click)
-# 3. Create the mine
-/lm create mymine
-
-# 4. Edit the config file or use GUI
-/lm edit mymine
-```
-
-### Setting Up Teleport
-
-```bash
-# Stand where players should be teleported
-/lm setteleport mymine
-
-# Stand where STUCK players should spawn (optional, falls back to teleport location)
-/lm setspawn mymine
-```
-
-### Using Mask Fill Mode
-
-```bash
-# 1. Paint positions with pink_concrete (or configured marker)
-# 2. Scan the markers
-/lm maskscan mymine
-
-# Mine will now only fill at marked positions
-```
-
-### WorldGuard Auto-Regions
-
-Enable in `plugins/LoMines/mines/_defaults.yml`:
-
-```yaml
-worldguard:
-  enabled: true
-  region-template: "mine_{mine_name}_{random_4}"
-  flags:
-    - "passthrough=deny"
-    - "build=allow"
-```
-
-When you create a mine, a WorldGuard region `mine_mymine_7392` is automatically created.
-
-## Support
-
-- Paper 1.21.4+
-- Java 21+
-- Optional: PlaceholderAPI, WorldGuard
-
-## License
-
-MIT License
+GNU General Public License v3.0
